@@ -38,3 +38,8 @@ prisma/migrations
 
 # uploads
 /public/uploads
+
+# Railway
+.railway
+.env.production
+.env.railway
