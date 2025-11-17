@@ -370,7 +370,33 @@ The system automatically tracks upcoming order production:
 
 ## 🚢 Deployment
 
-### Recommended: Vercel + Vercel Postgres
+### Recommended: Railway (Easiest & Fastest)
+
+Railway provides the simplest deployment experience with built-in PostgreSQL and excellent Next.js support.
+
+**Quick Deploy:**
+```bash
+# Set your Railway token
+export RAILWAY_TOKEN=your-token-here
+
+# Run automated deployment
+./railway-deploy.sh
+```
+
+**Or manually:**
+```bash
+railway login
+railway init
+railway add --database postgresql
+railway up
+railway run npx prisma migrate deploy
+```
+
+**📚 See detailed guides:**
+- **Quick Start**: `RAILWAY_QUICKSTART.md` - Get deployed in 5 minutes
+- **Complete Guide**: `RAILWAY_DEPLOYMENT.md` - Comprehensive deployment documentation
+
+### Alternative: Vercel + Vercel Postgres
 
 1. Push code to GitHub
 2. Import project to Vercel
@@ -389,6 +415,8 @@ The system automatically tracks upcoming order production:
 ### Environment Variables for Production
 
 Make sure to set all required environment variables from `.env.example` in your hosting platform.
+
+For Railway, use the `.env.railway.template` file as a reference.
 
 ## 📝 Development Workflow
 
