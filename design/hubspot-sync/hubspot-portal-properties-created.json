@@ -1,0 +1,286 @@
+{
+  "_description": "Portal properties created on HubSpot Order object (portal ID: 50966981). These are populated by workflows syncing from Contact, Deal, and Ticket objects.",
+  "_created_at": "2026-04-06",
+  "_group": "portal_sync (Customer Portal)",
+  "_total": 27,
+  "properties": [
+    {
+      "name": "portal_contact_base_size",
+      "label": "Portal: Contact Base Size",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Default base size from Contact",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_email",
+      "label": "Portal: Contact Email",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Synced from Contact email",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_hair_color",
+      "label": "Portal: Contact Hair Color",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Default hair color from Contact",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_hair_density",
+      "label": "Portal: Contact Hair Density",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Default hair density from Contact",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_hair_length",
+      "label": "Portal: Contact Hair Length",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Default hair length from Contact",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_hair_system_type",
+      "label": "Portal: Contact System Type",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Default hair system type from Contact",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_phone",
+      "label": "Portal: Contact Phone",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Synced from Contact phone",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_contact_plan",
+      "label": "Portal: Contact Plan",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Subscription plan name from Contact",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_amount",
+      "label": "Portal: Deal Amount",
+      "type": "number",
+      "fieldType": "number",
+      "description": "Synced from Deal amount",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_name",
+      "label": "Portal: Deal Name",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Synced from associated Deal name",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_next_unit_date",
+      "label": "Portal: Next Unit Date",
+      "type": "date",
+      "fieldType": "date",
+      "description": "Next unit delivery date",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_plan_units",
+      "label": "Portal: Plan Units",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Number of units in plan",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_stage",
+      "label": "Portal: Deal Stage",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Synced from Deal stage label",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_type",
+      "label": "Portal: Deal Type",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Order type: single_unit, plan, repair, etc.",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_deal_units_delivered",
+      "label": "Portal: Units Delivered",
+      "type": "number",
+      "fieldType": "number",
+      "description": "Units delivered so far",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_invoice_amount",
+      "label": "Portal: Invoice Amount",
+      "type": "number",
+      "fieldType": "number",
+      "description": "Total invoiced amount",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_invoice_number",
+      "label": "Portal: Invoice Number",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Invoice number for this order",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_invoice_paid_date",
+      "label": "Portal: Invoice Paid Date",
+      "type": "date",
+      "fieldType": "date",
+      "description": "Date invoice was paid",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_invoice_status",
+      "label": "Portal: Invoice Status",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "Invoice payment status",
+      "groupName": "portal_sync",
+      "options": [
+        {
+          "label": "Pending",
+          "value": "PENDING"
+        },
+        {
+          "label": "Paid",
+          "value": "PAID"
+        },
+        {
+          "label": "Overdue",
+          "value": "OVERDUE"
+        },
+        {
+          "label": "Cancelled",
+          "value": "CANCELLED"
+        }
+      ]
+    },
+    {
+      "name": "portal_production_confirmed",
+      "label": "Portal: Production Confirmed",
+      "type": "enumeration",
+      "fieldType": "booleancheckbox",
+      "description": "Customer confirmed customization",
+      "groupName": "portal_sync",
+      "options": [
+        {
+          "label": "Yes",
+          "value": "true"
+        },
+        {
+          "label": "No",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "name": "portal_production_stage",
+      "label": "Portal: Production Stage",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "Detailed production stage",
+      "groupName": "portal_sync",
+      "options": [
+        {
+          "label": "Awaiting Confirmation",
+          "value": "AWAITING_CONFIRMATION"
+        },
+        {
+          "label": "Materials Preparation",
+          "value": "MATERIALS_PREP"
+        },
+        {
+          "label": "Base Construction",
+          "value": "BASE_CONSTRUCTION"
+        },
+        {
+          "label": "Hair Ventilation",
+          "value": "HAIR_VENTILATION"
+        },
+        {
+          "label": "Styling",
+          "value": "STYLING"
+        },
+        {
+          "label": "Quality Inspection",
+          "value": "QUALITY_INSPECTION"
+        },
+        {
+          "label": "Packaging",
+          "value": "PACKAGING"
+        },
+        {
+          "label": "Completed",
+          "value": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "portal_ticket_category",
+      "label": "Portal: Ticket Category",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Ticket category",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_ticket_description",
+      "label": "Portal: Ticket Description",
+      "type": "string",
+      "fieldType": "textarea",
+      "description": "Ticket body preview",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_ticket_id",
+      "label": "Portal: Ticket ID",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Associated ticket ID",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_ticket_priority",
+      "label": "Portal: Ticket Priority",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Ticket priority level",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_ticket_status",
+      "label": "Portal: Ticket Status",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Ticket status (Open, In Progress, Closed)",
+      "groupName": "portal_sync"
+    },
+    {
+      "name": "portal_ticket_subject",
+      "label": "Portal: Ticket Subject",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Ticket subject line",
+      "groupName": "portal_sync"
+    }
+  ]
+}

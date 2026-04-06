@@ -106,6 +106,39 @@ export interface HubSpotOrder {
   order_margin_pct: string | null
   hs_order_note: string | null
   hs_pipeline_stage: string | null
+
+  // Portal sync properties (populated by workflows from Contact/Deal/Ticket)
+  portal_contact_email: string | null
+  portal_contact_phone: string | null
+  portal_contact_plan: string | null
+  portal_contact_hair_system_type: string | null
+  portal_contact_hair_color: string | null
+  portal_contact_hair_density: string | null
+  portal_contact_hair_length: string | null
+  portal_contact_base_size: string | null
+
+  portal_deal_name: string | null
+  portal_deal_stage: string | null
+  portal_deal_amount: string | null
+  portal_deal_type: string | null
+  portal_deal_plan_units: string | null
+  portal_deal_units_delivered: string | null
+  portal_deal_next_unit_date: string | null
+
+  portal_ticket_id: string | null
+  portal_ticket_subject: string | null
+  portal_ticket_status: string | null
+  portal_ticket_priority: string | null
+  portal_ticket_category: string | null
+  portal_ticket_description: string | null
+
+  portal_production_stage: string | null
+  portal_production_confirmed: string | null
+
+  portal_invoice_number: string | null
+  portal_invoice_status: string | null
+  portal_invoice_amount: string | null
+  portal_invoice_paid_date: string | null
 }
 
 export interface HubSpotDeal {
@@ -146,6 +179,19 @@ export const ORDER_PROPERTIES = [
   'payment_date', 'payment_date_custom', 'payment_due',
   'paired_po_number', 'po_number',
   'order_margin', 'order_margin_pct', 'hs_order_note', 'hs_pipeline_stage',
+
+  // Portal sync properties (populated by workflows from Contact/Deal/Ticket)
+  'portal_contact_email', 'portal_contact_phone', 'portal_contact_plan',
+  'portal_contact_hair_system_type', 'portal_contact_hair_color',
+  'portal_contact_hair_density', 'portal_contact_hair_length', 'portal_contact_base_size',
+  'portal_deal_name', 'portal_deal_stage', 'portal_deal_amount',
+  'portal_deal_type', 'portal_deal_plan_units', 'portal_deal_units_delivered',
+  'portal_deal_next_unit_date',
+  'portal_ticket_id', 'portal_ticket_subject', 'portal_ticket_status',
+  'portal_ticket_priority', 'portal_ticket_category', 'portal_ticket_description',
+  'portal_production_stage', 'portal_production_confirmed',
+  'portal_invoice_number', 'portal_invoice_status', 'portal_invoice_amount',
+  'portal_invoice_paid_date',
 ]
 
 // ---------------------------------------------------------------------------
