@@ -41,6 +41,17 @@ See `package.json` scripts. Most useful:
 | Support | `support@hairsolutions.co` | `support123` |
 | Customer | `demo@example.com` | `demo123` |
 
+### HubSpot sync architecture
+
+The portal is designed to work with HubSpot's native **Order** object as the single data source per customer. A HubSpot workflow denormalizes fields from Contact, Deal, Ticket, and Line Item objects onto Order properties prefixed with `portal_*`. This means the agent only needs one API call (fetch orders for a contact) instead of querying 4-5 separate objects.
+
+Key files:
+- `lib/hubspot.ts` — HubSpot API client and TypeScript types for all portal order properties
+- `design/hubspot-sync/PROPERTY_MAPPING.md` — full source→target mapping, workflow definitions, and what the customer sees
+- `design/hubspot-sync/hubspot-properties.json` — property definitions for creating custom properties in HubSpot
+
+The local dev database (Prisma/PostgreSQL) works independently and does not require HubSpot. Set `HUBSPOT_ACCESS_TOKEN` in `.env` to enable live HubSpot API calls.
+
 ### External integrations (all optional for local dev)
 
-Stripe, Shopify, Notion, and SMTP are optional. Their clients degrade gracefully (return `null` or empty arrays) when credentials are missing. Only `DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` are required in `.env`.
+Stripe, Shopify, Notion, HubSpot, and SMTP are optional. Their clients degrade gracefully (return `null` or empty arrays) when credentials are missing. Only `DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` are required in `.env`.
