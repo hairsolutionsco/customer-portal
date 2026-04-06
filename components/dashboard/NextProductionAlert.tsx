@@ -8,6 +8,7 @@ interface NextProductionAlertProps {
     scheduledProductionDate: Date
     customizationConfirmed: boolean
     order: {
+      id: string
       orderNumber: string
       productName: string
     }
@@ -40,13 +41,13 @@ export function NextProductionAlert({ production }: NextProductionAlertProps) {
             {!production.customizationConfirmed ? (
               <>
                 <Link
-                  href={`/app/orders/${production.order}/confirm`}
+                  href={`/app/orders/${production.order.id}/confirm`}
                   className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                 >
                   Confirm customization
                 </Link>
                 <Link
-                  href={`/app/orders/${production.order}/postpone`}
+                  href={`/app/orders/${production.order.id}/postpone`}
                   className="inline-flex items-center px-3 py-1.5 border border-primary-600 text-xs font-medium rounded-md text-primary-700 bg-white hover:bg-primary-50"
                 >
                   Change date
