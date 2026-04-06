@@ -1,0 +1,344 @@
+{
+  "_description": "HubSpot custom property definitions for the Customer Portal sync. Use the HubSpot API or UI to create these properties on each object type.",
+
+  "order_properties": {
+    "group": "portal_sync",
+    "group_label": "Customer Portal",
+    "properties": [
+      {
+        "name": "portal_contact_name",
+        "label": "Portal: Contact Name",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact firstname + lastname"
+      },
+      {
+        "name": "portal_contact_email",
+        "label": "Portal: Contact Email",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact email"
+      },
+      {
+        "name": "portal_contact_phone",
+        "label": "Portal: Contact Phone",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact phone"
+      },
+      {
+        "name": "portal_contact_shipping_address",
+        "label": "Portal: Shipping Address",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact address"
+      },
+      {
+        "name": "portal_contact_shipping_city",
+        "label": "Portal: Shipping City",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact city"
+      },
+      {
+        "name": "portal_contact_shipping_state",
+        "label": "Portal: Shipping State",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact state"
+      },
+      {
+        "name": "portal_contact_shipping_zip",
+        "label": "Portal: Shipping ZIP",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact zip"
+      },
+      {
+        "name": "portal_contact_plan_name",
+        "label": "Portal: Subscription Plan",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from Contact portal_subscription_plan"
+      },
+      {
+        "name": "portal_deal_stage",
+        "label": "Portal: Deal Stage",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from associated Deal dealstage label"
+      },
+      {
+        "name": "portal_deal_close_date",
+        "label": "Portal: Deal Close Date",
+        "type": "date",
+        "fieldType": "date",
+        "description": "Synced from associated Deal closedate"
+      },
+      {
+        "name": "portal_deal_amount",
+        "label": "Portal: Deal Amount",
+        "type": "number",
+        "fieldType": "number",
+        "description": "Synced from associated Deal amount"
+      },
+      {
+        "name": "portal_deal_pipeline",
+        "label": "Portal: Deal Pipeline",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from associated Deal pipeline label"
+      },
+      {
+        "name": "portal_system_base_type",
+        "label": "Portal: System Base Type",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair system base material (Swiss Lace, Mono, Skin, etc.)"
+      },
+      {
+        "name": "portal_system_hair_color",
+        "label": "Portal: System Hair Color",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair system color"
+      },
+      {
+        "name": "portal_system_density",
+        "label": "Portal: System Density",
+        "type": "enumeration",
+        "fieldType": "select",
+        "description": "Hair system density",
+        "options": [
+          { "label": "Light", "value": "Light" },
+          { "label": "Medium", "value": "Medium" },
+          { "label": "Heavy", "value": "Heavy" }
+        ]
+      },
+      {
+        "name": "portal_system_hair_length",
+        "label": "Portal: System Hair Length",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair system length"
+      },
+      {
+        "name": "portal_system_style",
+        "label": "Portal: System Style",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair system style"
+      },
+      {
+        "name": "portal_system_attachment_method",
+        "label": "Portal: System Attachment",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Attachment method (Tape, Glue, Clips, etc.)"
+      },
+      {
+        "name": "portal_ticket_id",
+        "label": "Portal: Ticket ID",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from associated Ticket object ID"
+      },
+      {
+        "name": "portal_ticket_subject",
+        "label": "Portal: Ticket Subject",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Synced from associated Ticket subject"
+      },
+      {
+        "name": "portal_ticket_status",
+        "label": "Portal: Ticket Status",
+        "type": "enumeration",
+        "fieldType": "select",
+        "description": "Synced from associated Ticket pipeline stage",
+        "options": [
+          { "label": "Open", "value": "OPEN" },
+          { "label": "In Progress", "value": "IN_PROGRESS" },
+          { "label": "Waiting for Customer", "value": "WAITING_FOR_CUSTOMER" },
+          { "label": "Resolved", "value": "RESOLVED" },
+          { "label": "Closed", "value": "CLOSED" }
+        ]
+      },
+      {
+        "name": "portal_ticket_priority",
+        "label": "Portal: Ticket Priority",
+        "type": "enumeration",
+        "fieldType": "select",
+        "description": "Synced from associated Ticket priority",
+        "options": [
+          { "label": "Low", "value": "LOW" },
+          { "label": "Medium", "value": "MEDIUM" },
+          { "label": "High", "value": "HIGH" },
+          { "label": "Urgent", "value": "URGENT" }
+        ]
+      },
+      {
+        "name": "portal_ticket_last_message",
+        "label": "Portal: Ticket Last Message",
+        "type": "string",
+        "fieldType": "textarea",
+        "description": "Latest ticket message preview"
+      },
+      {
+        "name": "portal_production_stage",
+        "label": "Portal: Production Stage",
+        "type": "enumeration",
+        "fieldType": "select",
+        "description": "Current production stage",
+        "options": [
+          { "label": "Awaiting Confirmation", "value": "AWAITING_CONFIRMATION" },
+          { "label": "Materials Preparation", "value": "MATERIALS_PREPARATION" },
+          { "label": "Base Construction", "value": "BASE_CONSTRUCTION" },
+          { "label": "Hair Ventilation", "value": "HAIR_VENTILATION" },
+          { "label": "Styling", "value": "STYLING" },
+          { "label": "Quality Inspection", "value": "QUALITY_INSPECTION" },
+          { "label": "Packaging", "value": "PACKAGING" },
+          { "label": "Completed", "value": "COMPLETED" }
+        ]
+      },
+      {
+        "name": "portal_production_scheduled_date",
+        "label": "Portal: Production Start Date",
+        "type": "date",
+        "fieldType": "date",
+        "description": "Scheduled production start"
+      },
+      {
+        "name": "portal_production_estimated_completion",
+        "label": "Portal: Estimated Completion",
+        "type": "date",
+        "fieldType": "date",
+        "description": "Estimated completion date"
+      },
+      {
+        "name": "portal_production_confirmed",
+        "label": "Portal: Production Confirmed",
+        "type": "enumeration",
+        "fieldType": "booleancheckbox",
+        "description": "Customer confirmed customization",
+        "options": [
+          { "label": "Yes", "value": "true" },
+          { "label": "No", "value": "false" }
+        ]
+      },
+      {
+        "name": "portal_invoice_number",
+        "label": "Portal: Invoice Number",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Invoice number for this order"
+      },
+      {
+        "name": "portal_invoice_status",
+        "label": "Portal: Invoice Status",
+        "type": "enumeration",
+        "fieldType": "select",
+        "description": "Invoice payment status",
+        "options": [
+          { "label": "Pending", "value": "PENDING" },
+          { "label": "Paid", "value": "PAID" },
+          { "label": "Overdue", "value": "OVERDUE" },
+          { "label": "Cancelled", "value": "CANCELLED" }
+        ]
+      },
+      {
+        "name": "portal_invoice_amount",
+        "label": "Portal: Invoice Amount",
+        "type": "number",
+        "fieldType": "number",
+        "description": "Total invoiced amount"
+      },
+      {
+        "name": "portal_invoice_paid_date",
+        "label": "Portal: Invoice Paid Date",
+        "type": "date",
+        "fieldType": "date",
+        "description": "When the invoice was paid"
+      }
+    ]
+  },
+
+  "contact_properties": {
+    "group": "portal_sync",
+    "group_label": "Customer Portal",
+    "properties": [
+      {
+        "name": "portal_subscription_plan",
+        "label": "Portal: Subscription Plan",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Current subscription plan name (set by Stripe webhook or manual)"
+      },
+      {
+        "name": "portal_profile_completed",
+        "label": "Portal: Profile Completed",
+        "type": "enumeration",
+        "fieldType": "booleancheckbox",
+        "description": "Whether the customer completed their hair profile onboarding",
+        "options": [
+          { "label": "Yes", "value": "true" },
+          { "label": "No", "value": "false" }
+        ]
+      }
+    ]
+  },
+
+  "deal_properties": {
+    "group": "hair_system",
+    "group_label": "Hair System Configuration",
+    "properties": [
+      {
+        "name": "hair_system_base_type",
+        "label": "Base Type",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair system base material"
+      },
+      {
+        "name": "hair_system_color",
+        "label": "Hair Color",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair color selection"
+      },
+      {
+        "name": "hair_system_density",
+        "label": "Hair Density",
+        "type": "enumeration",
+        "fieldType": "select",
+        "description": "Hair density level",
+        "options": [
+          { "label": "Light", "value": "Light" },
+          { "label": "Medium", "value": "Medium" },
+          { "label": "Heavy", "value": "Heavy" }
+        ]
+      },
+      {
+        "name": "hair_system_length",
+        "label": "Hair Length",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair length"
+      },
+      {
+        "name": "hair_system_style",
+        "label": "Hair Style",
+        "type": "string",
+        "fieldType": "text",
+        "description": "Hair style"
+      },
+      {
+        "name": "hair_system_attachment",
+        "label": "Attachment Method",
+        "type": "string",
+        "fieldType": "text",
+        "description": "How the system attaches"
+      }
+    ]
+  }
+}
