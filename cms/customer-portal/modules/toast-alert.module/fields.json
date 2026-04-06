@@ -1,0 +1,21 @@
+[
+  {
+    "name": "default_message",
+    "label": "Default Message",
+    "type": "text",
+    "default": "Portal ready"
+  },
+  {
+    "name": "default_variant",
+    "label": "Default Variant",
+    "type": "choice",
+    "display": "select",
+    "choices": [
+      ["info", "Info"],
+      ["success", "Success"],
+      ["warning", "Warning"],
+      ["danger", "Danger"]
+    ],
+    "default": "info"
+  }
+]

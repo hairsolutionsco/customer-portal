@@ -1,0 +1,18 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Hair Solutions - Dashboard (Liquid Glass Lab)
+-->
+{% set portal_route = "dashboard" %}
+{% set requires_auth = true %}
+{% extends "../layouts/base.html" %}
+
+{% block body_class %} theme-liquid-glass{% endblock body_class %}
+
+{% block head_extra %}
+  <link rel="stylesheet" href="{{ get_asset_url('../public/css/dashboard-liquid-glass.css') }}" />
+{% endblock head_extra %}
+
+{% block title %}Dashboard Lab | Hair Solutions Co{% endblock title %}
+{% block page_header %}Command Dashboard{% endblock page_header %}
+{% block page_subheader %}Liquid glass concept with elevated card surfaces and high-contrast activity insights.{% endblock page_subheader %}

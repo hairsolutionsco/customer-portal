@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Hair Solutions Co - Customer Portal" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; font-src 'self' cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://*.workers.dev https://api.hubapi.com;" />
+    <title>{% block title %}Hair Solutions Co - Customer Portal{% endblock title %}</title>
+    {{ standard_header_includes }}
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="{{ get_asset_url('../public/css/portal.css') }}" />
+    <style>
+      .route-login .portal-main { align-items: stretch !important; }
+      .route-login .portal-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem !important;
+      }
+      .route-login #portal-app { width: 100%; max-width: 560px; margin: 0 auto; }
+      .route-login #portal-app .row { margin: 0; width: 100%; }
+      .route-login #portal-app [class*="col-"] { width: 100%; max-width: none; padding: 0; }
+      .route-login .portal-login-wrap { width: 100%; max-width: 520px; margin: 0 auto; }
+      .route-login .portal-login-card { width: 100%; }
+    </style>
+
+    {% block head_extra %}{% endblock head_extra %}
+  </head>
+
+  <body class="portal-body route-{{ portal_route|default('dashboard') }}{% block body_class %}{% endblock body_class %}">
+    <div class="portal-shell">
+      <!-- Mobile Header -->
+      <header class="portal-mobile-header d-lg-none">
+        <button id="portal-sidebar-toggle" class="btn btn-sm btn-outline-light" type="button" aria-label="Toggle navigation">
+          <i class="bi bi-list fs-5"></i>
+        </button>
+        <span class="portal-mobile-brand">Hair Solutions Co</span>
+        {% if requires_auth is undefined or requires_auth %}
+          <button id="portal-logout-btn-mobile" class="btn btn-sm btn-outline-light" type="button">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        {% endif %}
+      </header>
+
+      <!-- Sidebar Overlay (mobile) -->
+      <div id="portal-sidebar-overlay" class="portal-sidebar-overlay d-lg-none"></div>
+
+      <!-- Sidebar -->
+      <aside id="portal-sidebar" class="portal-sidebar {% if requires_auth is defined and not requires_auth %}portal-sidebar-hidden{% endif %}">
+        <div class="portal-brand">
+          <div class="portal-brand-icon" aria-hidden="true">
+            <i class="bi bi-flower1"></i>
+          </div>
+          <div>
+            <h2 class="h6 mb-0 text-white">Hair Solutions Co</h2>
+            <p class="small text-white-50 mb-0">Customer Portal</p>
+          </div>
+        </div>
+
+        <nav id="portal-nav" class="portal-nav">
+          <div class="portal-nav-section">
+            <a href="#/dashboard" data-route="dashboard" data-spa-link class="portal-nav-link">
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+          </div>
+
+          <div class="portal-nav-section">
+            <p class="portal-nav-group-label">My Account</p>
+            <a href="#/orders" data-route="orders" data-spa-link class="portal-nav-link">
+              <i class="bi bi-bag-check"></i> My Orders
+            </a>
+            <a href="#/hair-systems" data-route="hair-systems" data-spa-link class="portal-nav-link">
+              <i class="bi bi-scissors"></i> Hair Systems
+            </a>
+            <a href="#/invoices" data-route="invoices" data-spa-link class="portal-nav-link">
+              <i class="bi bi-receipt"></i> My Invoices
+            </a>
+          </div>
+
+          <div class="portal-nav-section">
+            <p class="portal-nav-group-label">Support</p>
+            <a href="/_hcms/mem/login?redirect_url=https%3A%2F%2Fhelpcenter.hairsolutions.co%2Fsupport" class="portal-nav-link">
+              <i class="bi bi-ticket-detailed"></i> Support
+            </a>
+            <a href="/_hcms/mem/login?redirect_url=https%3A%2F%2Fhelpcenter.hairsolutions.co%2Fen%2Fknowledge-base" class="portal-nav-link">
+              <i class="bi bi-book"></i> Knowledge Base
+            </a>
+          </div>
+
+          <div class="portal-nav-section">
+            <p class="portal-nav-group-label">Resources</p>
+            <a href="#/documents" data-route="documents" data-spa-link class="portal-nav-link">
+              <i class="bi bi-folder2-open"></i> Documents
+            </a>
+            <a href="#/ai-agent" data-route="ai-agent" data-spa-link class="portal-nav-link">
+              <i class="bi bi-robot"></i> AI Assistant
+            </a>
+          </div>
+
+          <div class="portal-nav-section portal-admin-only">
+            <p class="portal-nav-group-label">Admin</p>
+            <a href="#/contacts" data-route="contacts" data-spa-link class="portal-nav-link">
+              <i class="bi bi-people"></i> Contacts
+            </a>
+            <a href="#/companies" data-route="companies" data-spa-link class="portal-nav-link">
+              <i class="bi bi-building"></i> Companies
+            </a>
+            <a href="#/settings" data-route="settings" data-spa-link class="portal-nav-link">
+              <i class="bi bi-gear"></i> Settings
+            </a>
+          </div>
+
+          <div class="portal-nav-section portal-nav-section-bottom">
+            <p class="portal-nav-group-label">Account</p>
+            <a href="#/account" data-route="account" data-spa-link class="portal-nav-link">
+              <i class="bi bi-person-circle"></i> My Profile
+            </a>
+          </div>
+        </nav>
+
+        {% if requires_auth is undefined or requires_auth %}
+          <div class="portal-sidebar-footer">
+            <button id="portal-logout-btn" class="btn btn-sm btn-outline-light w-100" type="button">
+              <i class="bi bi-box-arrow-left me-1"></i> Logout
+            </button>
+          </div>
+        {% endif %}
+      </aside>
+
+      <!-- Main Content -->
+      <div class="portal-main">
+        <header class="portal-header border-bottom d-none d-lg-flex">
+          <div>
+            <h1 id="portal-page-title" class="h5 m-0">{% block page_header %}Customer Portal{% endblock page_header %}</h1>
+            <p id="portal-page-subtitle" class="text-muted small m-0">{% block page_subheader %}Enterprise support, account controls, and customer operations.{% endblock page_subheader %}</p>
+          </div>
+          <div class="portal-header-actions">
+            <div id="portal-user-badge" class="portal-user-badge d-none">
+              <i class="bi bi-person-circle"></i>
+              <span id="portal-user-name" class="small"></span>
+            </div>
+          </div>
+        </header>
+
+        <div id="portal-toast-root" class="portal-toast-root"></div>
+
+        {% block pre_app %}{% endblock pre_app %}
+
+        <main id="portal-app" class="portal-content py-3 px-3 px-lg-4"></main>
+
+        {% block post_app %}{% endblock post_app %}
+
+        <footer class="portal-footer border-top">
+          <small class="text-muted">&copy; 2026 Hair Solutions Co &mdash; Customer Portal</small>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav id="portal-mobile-nav" class="portal-mobile-nav d-lg-none {% if requires_auth is defined and not requires_auth %}d-none{% endif %}">
+      <a href="#/dashboard" data-route="dashboard" data-spa-link class="portal-mobile-nav-item">
+        <i class="bi bi-speedometer2"></i><span>Home</span>
+      </a>
+      <a href="#/orders" data-route="orders" data-spa-link class="portal-mobile-nav-item">
+        <i class="bi bi-bag-check"></i><span>Orders</span>
+      </a>
+      <a href="/_hcms/mem/login?redirect_url=https%3A%2F%2Fhelpcenter.hairsolutions.co%2Fsupport" class="portal-mobile-nav-item">
+        <i class="bi bi-ticket-detailed"></i><span>Support</span>
+      </a>
+      <a href="#/hair-systems" data-route="hair-systems" data-spa-link class="portal-mobile-nav-item">
+        <i class="bi bi-scissors"></i><span>Hair</span>
+      </a>
+      <a href="#/account" data-route="account" data-spa-link class="portal-mobile-nav-item">
+        <i class="bi bi-person-circle"></i><span>Account</span>
+      </a>
+    </nav>
+
+    {% module "toast_defaults" path="../modules/toast-alert.module", label="Toast Defaults" %}
+
+    <script>
+      window.PORTAL_CONFIG = {
+        route: {{ portal_route|default('dashboard')|tojson }},
+        requiresAuth: {{ (requires_auth is undefined or requires_auth)|tojson }},
+        apiBase: "https://customer-portal-api.notionsync.workers.dev",
+        hubspotPortalId: "50966981",
+        routes: {
+          login: "/login",
+          dashboard: "/dashboard",
+          contacts: "/contacts",
+          companies: "/companies",
+          deals: "/deals",
+          orders: "/orders",
+          "hair-systems": "/hair-systems",
+          quotes: "/quotes",
+          invoices: "/invoices",
+          tickets: "/tickets",
+          "knowledge-base": "/knowledge-base",
+          documents: "/documents",
+          account: "/account",
+          settings: "/settings",
+          "ai-agent": "/ai-agent"
+        },
+        // HubSpot CMS personalization tokens — rendered server-side for logged-in members
+        contact: {
+          firstName: "{{ contact.firstname|default('', true) }}",
+          lastName: "{{ contact.lastname|default('', true) }}",
+          email: "{{ contact.email|default('', true) }}",
+          phone: "{{ contact.phone|default('', true) }}",
+          company: "{{ company.name|default('', true) }}",
+          jobTitle: "{{ contact.jobtitle|default('', true) }}",
+          city: "{{ contact.city|default('', true) }}",
+          state: "{{ contact.state|default('', true) }}",
+          address: "{{ contact.address|default('', true) }}",
+          zip: "{{ contact.zip|default('', true) }}",
+          profileUrl: "{{ contact.hs_avatar_filemanager_key|default('', true) }}"
+        }
+      };
+
+      window.portalAnalytics = window.portalAnalytics || {
+        identify: function () {},
+        track: function () {}
+      };
+      window.dataLayer = window.dataLayer || [];
+    </script>
+
+    <script src="{{ get_asset_url('../public/js/portal.bundle.js') }}"></script>
+    {{ standard_footer_includes }}
+    <script>
+      // Mobile sidebar toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        var toggle = document.getElementById('portal-sidebar-toggle');
+        var sidebar = document.getElementById('portal-sidebar');
+        var overlay = document.getElementById('portal-sidebar-overlay');
+        function close() { sidebar && sidebar.classList.remove('open'); overlay && overlay.classList.remove('open'); }
+        if (toggle) toggle.addEventListener('click', function() {
+          sidebar.classList.toggle('open'); overlay.classList.toggle('open');
+        });
+        if (overlay) overlay.addEventListener('click', close);
+        // Also wire mobile logout
+        var mLogout = document.getElementById('portal-logout-btn-mobile');
+        var dLogout = document.getElementById('portal-logout-btn');
+        if (mLogout && dLogout) mLogout.addEventListener('click', function() { dLogout.click(); });
+      });
+    </script>
+    {% block script_extra %}{% endblock script_extra %}
+  </body>
+</html>

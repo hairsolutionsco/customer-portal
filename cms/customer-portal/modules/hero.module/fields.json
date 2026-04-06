@@ -1,0 +1,26 @@
+[
+  {
+    "name": "heading",
+    "label": "Heading",
+    "type": "text",
+    "default": "Portal Heading"
+  },
+  {
+    "name": "subheading",
+    "label": "Subheading",
+    "type": "text",
+    "default": "Portal subheading"
+  },
+  {
+    "name": "cta_text",
+    "label": "CTA Text",
+    "type": "text",
+    "default": "Learn more"
+  },
+  {
+    "name": "cta_url",
+    "label": "CTA URL",
+    "type": "text",
+    "default": "/dashboard"
+  }
+]

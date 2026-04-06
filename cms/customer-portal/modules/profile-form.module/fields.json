@@ -1,0 +1,14 @@
+[
+  {
+    "name": "title",
+    "label": "Form Title",
+    "type": "text",
+    "default": "Profile"
+  },
+  {
+    "name": "submit_label",
+    "label": "Submit Label",
+    "type": "text",
+    "default": "Save"
+  }
+]

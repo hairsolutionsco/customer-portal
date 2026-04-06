@@ -1,0 +1,14 @@
+[
+  {
+    "name": "portal_name",
+    "label": "Portal Name",
+    "type": "text",
+    "default": "CORE Portal"
+  },
+  {
+    "name": "portal_subtitle",
+    "label": "Portal Subtitle",
+    "type": "text",
+    "default": "Customer Workspace"
+  }
+]

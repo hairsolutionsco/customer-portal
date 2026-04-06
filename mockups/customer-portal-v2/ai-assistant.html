@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant — Hair Solutions Co</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    /* ── Chat-specific styles ── */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .msg {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: .9rem;
+      line-height: 1.55;
+      animation: fade-up var(--duration-normal, .4s) var(--ease-out, cubic-bezier(.16,1,.3,1)) both;
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: var(--bg-1, rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.06);
+      border-bottom-left-radius: 4px;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--accent, #2563eb), var(--accent-light, #38bdf8));
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .72rem;
+      opacity: .4;
+      margin-bottom: 4px;
+    }
+    .msg-meta svg { opacity: .6; }
+    .chat-input-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .chat-input-bar input {
+      flex: 1;
+    }
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .suggestion-chips .chip {
+      cursor: pointer;
+      font-size: .8rem;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .msg { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge" aria-hidden="true">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m12 2-10 5 10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+        </div>
+        <div>
+          <h1>Hair Solutions Co</h1>
+          <p>Customer Portal</p>
+        </div>
+      </div>
+      <nav aria-label="Portal navigation">
+        <a class="nav-link" href="./dashboard.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+        <p class="nav-group-title">Account</p>
+        <a class="nav-link" href="./orders.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+          Orders
+        </a>
+        <a class="nav-link" href="./invoices.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          Invoices
+        </a>
+        <a class="nav-link" href="./account.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile &amp; Account
+        </a>
+        <p class="nav-group-title">Support</p>
+        <a class="nav-link" href="/_hcms/mem/">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/></svg>
+          Support Center
+        </a>
+        <a class="nav-link" href="/_hcms/mem/kb">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Knowledge Base
+        </a>
+        <a class="nav-link active" href="./ai-assistant.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          AI Assistant
+        </a>
+        <p class="nav-group-title">Commerce</p>
+        <a class="nav-link" href="./store.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Mini Store
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="avatar">VL</div>
+          <div>
+            <span class="user-name">Vincent Laroche</span>
+            <span class="user-role">Account Owner</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main-content">
+      <header class="page-header fade-up">
+        <div>
+          <h2>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;opacity:.55;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            AI Assistant
+          </h2>
+          <p>Powered by your account data, orders, and knowledge-base articles.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="clear-chat" aria-label="Clear conversation">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Clear Chat
+          </button>
+        </div>
+      </header>
+
+      <section class="content split" aria-label="AI chat and context panel">
+        <!-- Chat panel -->
+        <div class="card fade-up" style="display:flex;flex-direction:column;">
+          <div class="chat-container" role="log" aria-label="Chat messages" aria-live="polite">
+            <div class="msg bot">
+              <div class="msg-meta">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                AI Assistant
+              </div>
+              Hi Vincent! I can help you with orders, invoices, product care, and account questions. What can I look into for you?
+            </div>
+
+            <div class="msg user">
+              Why does invoice INV-9921 still show as unpaid? I paid it last week.
+            </div>
+
+            <div class="msg bot">
+              <div class="msg-meta">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                AI Assistant
+              </div>
+              <p style="margin:0 0 8px;">I checked your account — INV-9921 for <strong>$249.00</strong> shows a payment attempt on <strong>Mar 5</strong> that was declined by your card issuer (code: <code>card_declined</code>).</p>
+              <p style="margin:0 0 8px;">Here's what you can do:</p>
+              <ol style="padding-left:18px;margin:0 0 8px;">
+                <li>Update your card on <a href="./account.html">Profile &amp; Account</a></li>
+                <li>Retry the payment from your <a href="./invoices.html">Invoices</a> page</li>
+                <li>Contact your bank if the card should be valid</li>
+              </ol>
+              <p style="margin:0;">Want me to open a support ticket for this?</p>
+              <div class="suggestion-chips">
+                <span class="chip">
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                  Open ticket
+                </span>
+                <span class="chip">
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                  View invoice
+                </span>
+                <span class="chip">
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Update card
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-bar">
+            <label for="chat-input" class="sr-only">Type your message</label>
+            <input id="chat-input" type="text" placeholder="Ask me anything about your account…" autocomplete="off" />
+            <button class="btn primary" aria-label="Send message">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Context panel -->
+        <aside class="card fade-up" style="animation-delay:100ms;" aria-label="AI context sources">
+          <h3>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;opacity:.5;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Context Sources
+          </h3>
+          <p style="font-size:.82rem;opacity:.55;margin:4px 0 14px;">The AI references these data sources for this conversation:</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;opacity:.6;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+              <div>
+                <strong style="font-size:.85rem;">Invoice INV-9921</strong>
+                <p style="margin:0;font-size:.75rem;opacity:.45;">$249.00 · Mar 5 · Declined</p>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;opacity:.6;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <div>
+                <strong style="font-size:.85rem;">Account Profile</strong>
+                <p style="margin:0;font-size:.75rem;opacity:.45;">Visa ending 4242 · Active</p>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;opacity:.6;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <div>
+                <strong style="font-size:.85rem;">KB: Troubleshooting Failed Payments</strong>
+                <p style="margin:0;font-size:.75rem;opacity:.45;">5 min read · Dec 20</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);">
+            <p style="font-size:.75rem;opacity:.4;margin:0 0 8px;">Capabilities</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <span class="badge info" style="font-size:.72rem;">Account lookup</span>
+              <span class="badge info" style="font-size:.72rem;">Order tracking</span>
+              <span class="badge info" style="font-size:.72rem;">Invoice queries</span>
+              <span class="badge info" style="font-size:.72rem;">KB search</span>
+              <span class="badge info" style="font-size:.72rem;">Ticket creation</span>
+              <span class="badge info" style="font-size:.72rem;">Product care</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="footer">Conversational AI with account context — KB, invoices, orders as grounded sources</footer>
+    </main>
+  </div>
+
+  <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+  </button>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Hair Solutions Co</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge" aria-hidden="true">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m12 2-10 5 10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+        </div>
+        <div>
+          <h1>Hair Solutions Co</h1>
+          <p>Customer Portal</p>
+        </div>
+      </div>
+      <nav aria-label="Portal navigation">
+        <a class="nav-link active" href="./dashboard.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+        <p class="nav-group-title">Account</p>
+        <a class="nav-link" href="./orders.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+          Orders
+        </a>
+        <a class="nav-link" href="./invoices.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          Invoices
+        </a>
+        <a class="nav-link" href="./account.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile &amp; Account
+        </a>
+        <p class="nav-group-title">Support</p>
+        <a class="nav-link" href="/_hcms/mem/">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/></svg>
+          Support Center
+        </a>
+        <a class="nav-link" href="/_hcms/mem/kb">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Knowledge Base
+        </a>
+        <a class="nav-link" href="./ai-assistant.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          AI Assistant
+        </a>
+        <p class="nav-group-title">Commerce</p>
+        <a class="nav-link" href="./store.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Mini Store
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="avatar">VL</div>
+          <div>
+            <span class="user-name">Vincent Laroche</span>
+            <span class="user-role">Account Owner</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main-content">
+      <header class="page-header fade-up">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Welcome back, Vincent — here's your account at a glance.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="toggleCustomize" aria-expanded="false" aria-controls="customizePanel">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Customize
+          </button>
+          <button class="btn primary">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Quick Action
+          </button>
+        </div>
+      </header>
+
+      <section class="content" aria-label="Dashboard overview">
+        <div class="grid-4 stagger">
+          <article class="card card-lift">
+            <div class="tag">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Orders
+            </div>
+            <div class="kpi-value">12</div>
+            <p class="kpi-foot good">↑ 3 this week</p>
+          </article>
+          <article class="card card-lift">
+            <div class="tag">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+              Unpaid Invoices
+            </div>
+            <div class="kpi-value">$4,320</div>
+            <p class="kpi-foot warn">2 invoices due in 5 days</p>
+          </article>
+          <article class="card card-lift">
+            <div class="tag">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+              Open Tickets
+            </div>
+            <div class="kpi-value">3</div>
+            <p class="kpi-foot">1 waiting for your reply</p>
+          </article>
+          <article class="card card-lift">
+            <div class="tag">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              Health Score
+            </div>
+            <div class="kpi-value">92</div>
+            <p class="kpi-foot good">Excellent account standing</p>
+          </article>
+        </div>
+
+        <section class="widget-grid stagger" id="widgetGrid" aria-label="Dashboard widgets">
+          <article class="card span-4" data-widget="orders">
+            <div class="row-between">
+              <h3>Recent Orders</h3>
+              <a class="btn" href="./orders.html">View all →</a>
+            </div>
+            <p>#00429 · Processing &nbsp;·&nbsp; #00424 · Delivered &nbsp;·&nbsp; #00418 · Delivered</p>
+          </article>
+
+          <article class="card span-4" data-widget="invoices">
+            <div class="row-between">
+              <h3>Invoice Watchlist</h3>
+              <a class="btn" href="./invoices.html">View all →</a>
+            </div>
+            <p>INV-9921 due Mar 20 &nbsp;·&nbsp; INV-9914 overdue by 2 days</p>
+          </article>
+
+          <article class="card span-4" data-widget="support">
+            <div class="row-between">
+              <h3>Support Snapshot</h3>
+              <a class="btn" href="/_hcms/mem/">Open support →</a>
+            </div>
+            <p>2 open tickets &nbsp;·&nbsp; Avg response time 2h 11m</p>
+          </article>
+
+          <article class="card span-6" data-widget="activity">
+            <h3>Activity Timeline</h3>
+            <p><strong>Today</strong> — Invoice paid &nbsp;·&nbsp; <strong>Yesterday</strong> — Ticket #382 resolved &nbsp;·&nbsp; <strong>3 days ago</strong> — Order #00424 delivered</p>
+          </article>
+
+          <article class="card span-3 card-lift" data-widget="reorder">
+            <h3>Buy Again</h3>
+            <p>Top repeat item: Keratin Recovery Kit</p>
+            <a class="btn primary" href="./store.html" style="margin-top:10px; display:inline-flex;">Reorder in 1 click</a>
+          </article>
+
+          <article class="card span-3 card-lift" data-widget="agent">
+            <h3>Need Help Fast?</h3>
+            <p>AI assistant with full account context.</p>
+            <a class="btn" href="./ai-assistant.html" style="margin-top:10px; display:inline-flex;">Open AI chat →</a>
+          </article>
+
+          <article class="card span-12" id="customizePanel" style="display:none;" role="region" aria-label="Customize dashboard">
+            <h3>Customize Dashboard Cards</h3>
+            <p>Toggle cards on or off. Drag-and-drop reorder available in production.</p>
+            <div class="chips" id="widgetToggles" style="margin-top:10px;">
+              <button class="chip" data-toggle="orders">Orders</button>
+              <button class="chip" data-toggle="invoices">Invoices</button>
+              <button class="chip" data-toggle="support">Support</button>
+              <button class="chip" data-toggle="activity">Activity</button>
+              <button class="chip" data-toggle="reorder">Reorder</button>
+              <button class="chip" data-toggle="agent">AI</button>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <footer class="footer">Mockup — Customer-configurable cards · Modular layout</footer>
+    </main>
+  </div>
+
+  <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+  </button>
+
+  <script>
+    const panel = document.getElementById('customizePanel');
+    const toggleBtn = document.getElementById('toggleCustomize');
+    const toggles = document.querySelectorAll('[data-toggle]');
+
+    toggleBtn.addEventListener('click', () => {
+      const open = panel.style.display === 'none';
+      panel.style.display = open ? 'block' : 'none';
+      toggleBtn.setAttribute('aria-expanded', open);
+    });
+
+    function getState() {
+      try { return JSON.parse(localStorage.getItem('portalWidgetState') || '{}'); }
+      catch { return {}; }
+    }
+    function setState(next) { localStorage.setItem('portalWidgetState', JSON.stringify(next)); }
+
+    function applyState() {
+      const state = getState();
+      document.querySelectorAll('[data-widget]').forEach(el => {
+        const key = el.getAttribute('data-widget');
+        el.style.display = state[key] !== false ? '' : 'none';
+      });
+      toggles.forEach(btn => {
+        const on = getState()[btn.getAttribute('data-toggle')] !== false;
+        btn.style.opacity = on ? '1' : '0.40';
+        btn.classList.toggle('active', on);
+      });
+    }
+
+    toggles.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-toggle');
+        const state = getState();
+        state[key] = state[key] === false;
+        setState(state);
+        applyState();
+      });
+    });
+    applyState();
+  </script>
+</body>
+</html>

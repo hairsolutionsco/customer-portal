@@ -1,0 +1,14 @@
+[
+  {
+    "name": "table_title",
+    "label": "Table Title",
+    "type": "text",
+    "default": "Data Table"
+  },
+  {
+    "name": "empty_state",
+    "label": "Empty State Text",
+    "type": "text",
+    "default": "No data yet."
+  }
+]
