@@ -14,7 +14,8 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 
 - **Repo:** `00-engineering/apps/customer-portal` · theme: `hair-solutions-portal/`
 - **Issues:** #3–#57 · exports: `exports/github-issues.json` (run `npm run portal:issues` to refresh)
-- **Baseline:** Theme + schema JSON + HubDB seed JSON + GraphQL files exist in repo; CRM/HubDB must still be created in HubSpot and **SCHEMA_REGISTRY.md** filled before GraphQL is trusted.
+- **Data model:** **Hair profile + saved templates → Contact properties.** **Orders → native Commerce `order`.** **Invoices → native `invoices`.** **Custom objects not required** for go-live (CMS custom objects = Enterprise per HubSpot docs). **GraphQL** on membership pages officially lists contact, company, deal, ticket, quote, line_item — **confirm** whether `order`/invoices appear in **your** explorer; if not, use **Deal/Contact mirror** via workflows.
+- **Baseline:** Theme + optional `schemas/*.json` (reference) + HubDB seed JSON + GraphQL files exist in repo; **SCHEMA_REGISTRY.md** must reflect **contact property names + HubDB IDs + native commerce** before trusting non-stub queries.
 
 ### Lead agent — run in order
 
@@ -28,9 +29,9 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|--------|
 | 1 | **A0** | Platform bootstrap | #3, #4, #5 | `cd hair-solutions-portal && hs init`; portal choice per **§4**; no PAKs in git |
-| 2a | **A1** | CRM schema (hair profile) | #6 | Can run parallel with 2b after group 1 if portal connected |
-| 2b | **A1** | CRM schema (order) | #7 | **Before** A1 work on #8 |
-| — | **A1** | CRM schema (status history) | #8 | **Only after** #7 object exists in HubSpot |
+| 2a | **A1** | CRM config (hair profile → contact props) | #6 | Parallel with 2b after group 1 if portal connected |
+| 2b | **A1** | CRM config (native orders + associations) | #7 | Not blocked on custom object; introspect GraphQL for `order` |
+| — | **A1** | Timeline / status (#8) | #8 | Deal stages, tickets, or native order — **not** strictly after custom order schema |
 | 2c | **A2** | HubDB | #12–#14 | Parallel with 2a/2b once portal ready; table names must match seeds |
 | *later* | **A3** | Membership & access | #49–#50 | After subdomain/plan clear |
 | *later* | **A5** + **A6** | GraphQL CRM + HubDB | #20–#29 | **Only after** `SCHEMA_REGISTRY.md` has real IDs/names |
@@ -40,12 +41,12 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 | *later* | **A14** | Service / KB | #51–#53 | |
 | *later* | **A15** | Release | #54–#57 | |
 
-**Delete or mark *later* rows** so the next agent only spawns what applies **this** session. For a minimal first paste, use **group 1 only (A0)** until `hs accounts list` works (global **`~/.hscli/config.yml`** or local `hubspot.config.yml`); then **2a + 2b + 2c** together (and add **#8** sequence after #7 lands).
+**Delete or mark *later* rows** so the next agent only spawns what applies **this** session. For a minimal first paste, use **group 1 only (A0)** until `hs accounts list` works (global **`~/.hscli/config.yml`** or local `hubspot.config.yml`); then **2a + 2b + 2c** together; add **#8** when timeline approach is chosen.
 
 ### Blockers / do not launch until
 
 - **A5/A6:** `hair-solutions-portal/SCHEMA_REGISTRY.md` populated enough to match explorer names (see plan handoff).
-- **#8:** Order custom object live (**#7** done).
+- **#8:** Agreed pattern for order timeline (native order fields / deal / ticket) documented in **SCHEMA_REGISTRY.md** — **not** dependent on custom order object.
 - **Parallel A8–A12:** **A7** (#30–#31) merged first.
 
 ---

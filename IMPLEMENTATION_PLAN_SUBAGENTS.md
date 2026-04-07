@@ -13,7 +13,7 @@ This document ties **`master-plan`** (architecture + file layout) to **GitHub Is
 | Principle | Implication for implementation |
 |-----------|--------------------------------|
 | **Membership + GraphQL** | Every contact-scoped query uses `request.contact.contact_vid` (or equivalent) as in recruiting-agency theme; templates declare `dataQueryPath` matching `src/data-queries/*.graphql`. |
-| **Custom objects first** | Order must exist before **Order Status History** association target is known (#8 after #7). HubDB tables (#12–14) can run after a **target HubSpot portal** is connected (#3–#4) in parallel with contact-only schema work only where there is no dependency. A separate sandbox portal is **recommended** when available but **not** required for the CLI — see **`HANDOFF_PROMPT.md`** (HubSpot CLI and portal choice). |
+| **Contact properties + native commerce first** | **Hair profile** and **saved templates** are **Contact properties**, not custom objects. **Orders** and **invoices** use HubSpot’s **native** Commerce CRM objects. **Custom objects are optional** — HubSpot documents CMS use of custom objects as **Content Hub Enterprise**; the theme **must compile and upload** with GraphQL stubs / contact-only queries when custom objects are absent. **Order status history** is **not** gated on a custom order object: use native order fields, **deals**, **tickets**, or workflows. HubDB (#12–14) runs after **target portal** is connected (#3–#4). Sandbox **recommended** — see **`HANDOFF_PROMPT.md`**. |
 | **Single theme upload surface** | All code lives under one CLI theme path (e.g. `src/` → **`hs cms upload`** or legacy **`hs upload`** per #54); naming matches `master-plan` tree (`hair-solutions-portal/` logical root). |
 | **Writes via HubSpot Forms** | No bespoke POST from HubL; forms (#43–48) embed with `{% form form_to_use='...' %}` per Phase 5 in `master-plan`. |
 | **Access group** | `/portal/*` and KB/support surfaces align with **Portal Customers** (#49–50, Phase 6–7 in `master-plan`). |
@@ -28,10 +28,10 @@ Edges are **hard blockers** (must finish A before B).
 flowchart TB
   subgraph W1["Week 1 milestone"]
     P0["#3 CLI #4 Portal #5 Subdomain"]
-    P1a["#6 Hair Profile schema"]
-    P1b["#7 Order schema"]
-    P1c["#8 Status History after Order"]
-    P1d["#9–#11 Templates + Contact props"]
+    P1a["#6 Hair profile → Contact props"]
+    P1b["#7 Native orders + contact association"]
+    P1c["#8 Timeline / status (deal/ticket/native — optional custom)"]
+    P1d["#9–#11 Templates → Contact props + billing props"]
     P1e["#12–#14 HubDB"]
     P6["#49 Access group #50 Workflow"]
   end
@@ -50,7 +50,6 @@ flowchart TB
   P0 --> P1a
   P0 --> P1b
   P0 --> P1e
-  P1b --> P1c
   P1a --> P3
   P1b --> P3
   P1c --> P3
@@ -65,7 +64,7 @@ flowchart TB
   P7 --> P8
 ```
 
-**Efficiency note:** Inside Week 1, after **#7** is done, **#8** is sequential; **#6**, **#9–#11**, and **#12–#14** can proceed in parallel **except** any step that needs association IDs from live schemas (document IDs in JSON and in GraphQL association names).
+**Efficiency note:** **#6**, **#7**, **#9–#11**, and **#12–#14** can run in parallel once the portal exists; **#8** can overlap **#7** if it uses deals/tickets rather than a custom object. Document **GraphQL explorer** results for `order` / invoices on membership pages in **`SCHEMA_REGISTRY.md`** before trusting order-detail queries.
 
 ---
 
@@ -76,7 +75,7 @@ Each role is a **stable persona** you assign to a subagent. Give each agent: rep
 | Agent | Scope | Primary issues | Outputs / artifacts |
 |-------|--------|----------------|---------------------|
 | **A0 — Platform bootstrap** | CLI, portal target (#3–#4), subdomain (#5), gitignore for optional local `hubspot.config.yml` | #3, #4, #5 | `hs` working (`hs accounts list`); auth via **`~/.hscli/config.yml`** and/or local gitignored config; portal chosen (sandbox **or** production per handoff); DNS/subdomain plan for memberships documented |
-| **A1 — CRM schema** | Custom object JSON under `schemas/`, API create/patch, association wiring | #6–#11 | Five schemas + contact groups; recorded internal object type IDs for GraphQL |
+| **A1 — CRM configuration** | Contact property groups (hair profile, templates, billing flags), native **order** / **invoices** setup + associations; optional `schemas/*.json` only if needed outside CMS | #6–#11 | `SCHEMA_REGISTRY.md` filled: property internal names, HubDB IDs, native object FQNs; GraphQL notes for order/invoice vs mirror strategy |
 | **A2 — HubDB** | Table definitions + seed JSON under `hubdb/` | #12–#14 | Three tables; published rows or import-ready seed |
 | **A3 — Membership & access** | Access group, page gates, registration workflow | #49, #50 | `is_portal_customer` (or agreed flag), gated `/portal/*`, workflows documented |
 | **A4 — Theme scaffold** | `theme.json`, `fields.json`, folder skeleton, `base.html` / `portal.html`, CSS variables | #15–#19 | Compilable empty theme uploaded once for smoke test |
@@ -105,9 +104,9 @@ Each role is a **stable persona** you assign to a subagent. Give each agent: rep
 
 **Handoff:** `SCHEMA_REGISTRY.md` (optional, repo-local) listing: object type IDs, association type names, HubDB table IDs — **required before A5/A6 run GraphQL**.
 
-### Wave 1 — Schemas completion (parallel with constraints)
+### Wave 1 — CRM + HubDB (parallel with light constraints)
 
-- **A1:** #7 → #8 → #9 → #10 → #11 (strict: #8 after #7).
+- **A1:** #6–#11 interpreted as **contact properties + native commerce** (not mandatory custom-object creation). If GitHub issue text still says “custom object,” follow **`AGENT_PROMPT.md` §1** and this plan’s north star. **#8** is flexible: deal/ticket/native order timeline — not blocked on custom `order` schema.
 - **A2:** #12–#14 (parallel among themselves).
 
 **Handoff:** GraphQL association labels in queries must match **generated** portal naming (recruiting-agency pattern); verify in HubSpot GraphQL explorer before merging.
@@ -216,7 +215,7 @@ Orchestrators and solo agents run this after **each** merged PR slice, **each** 
 
 | Gate | When | Check |
 |------|------|--------|
-| **G1 Schema** | After #6–#11 | CRM objects visible in UI; associations create from test contact |
+| **G1 CRM** | After #6–#11 | Contact properties visible; native orders/invoices (or documented mirror) associated to test contact; optional custom objects not required |
 | **G2 HubDB** | After #12–#14 | Rows queryable; columns match `master-plan` |
 | **G3 GraphQL** | After #20–#29 | Every query executes against **target portal** data (seeded or manual); no null blowups on empty associations |
 | **G4 Theme compile** | After #19 | `hs upload` succeeds (or full **§6a** `portal_task_complete.sh`) |
@@ -231,6 +230,7 @@ Orchestrators and solo agents run this after **each** merged PR slice, **each** 
 | Risk | Mitigation |
 |------|------------|
 | Association / GraphQL names drift from HubSpot generator | A1 maintains **registry**; A5/A6 re-query introspection or UI after each schema change |
+| Orders/invoices not in membership GraphQL schema | Document in **SCHEMA_REGISTRY**; implement **Deal + line_item** or **workflow → Contact** mirror; keep stubs until path is known |
 | Dynamic order page slug mismatch | Lock **#22** variable contract (`request.path_param_dict.dynamic_slug` + `order_number`) before #34 |
 | Membership subdomain delays #5 | Proceed on target portal; defer production DNS to #57 |
 | Module duplication (badges, cards) | Single owner for **status-badge** + shared CSS in `css/components/` |

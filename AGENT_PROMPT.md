@@ -2,11 +2,13 @@
 
 ## Context
 
-You are building **Customer Portal 2.0** for a hair replacement company called **Hair Solutions**. This is a full HubSpot CMS theme that replaces an existing Next.js/Prisma customer portal. The portal uses **HubSpot Memberships** for authentication, **GraphQL data queries** to show per-customer CRM data, **Custom Objects** for domain models, **HubDB tables** for catalog data, and **HubSpot Forms** for all write operations.
+You are building **Customer Portal 2.0** for a hair replacement company called **Hair Solutions**. This is a full HubSpot CMS theme that replaces an existing Next.js/Prisma customer portal. The portal uses **HubSpot Memberships** for authentication, **GraphQL data queries** to show per-customer CRM data, **HubDB tables** for catalog data, and **HubSpot Forms** for all write operations.
 
-**The architectural blueprint is the [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpot/recruiting-agency-graphql-theme) repo.** That theme does exactly what we need — membership-gated pages, GraphQL queries scoped to `request.contact.contact_vid`, custom object schemas, dynamic pages, and HubSpot forms. Our portal follows the same patterns with hair-industry data instead of job applications.
+**The architectural blueprint is the [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpot/recruiting-agency-graphql-theme) repo.** That theme shows membership-gated pages, GraphQL scoped to `request.contact.contact_vid`, and HubSpot forms. **Our production data model intentionally avoids relying on custom objects in CMS GraphQL** (HubSpot documents **custom object data on CMS pages as Content Hub Enterprise**). The theme **must upload and run** when custom objects are absent: use **contact properties** and **standard CRM objects** first; treat `schemas/*.json` as **optional reference** (Enterprise alternate or documentation of field names only).
 
-The customer has **HubSpot Content Hub Professional** and **Service Hub Professional**.
+**Hub entitlements (baseline):** **Content Hub Professional** + **Service Hub Professional** (+ Sales Professional if deals are used for mirroring). **Native Commerce `order` records and the native `invoices` object** are real CRM objects in HubSpot’s Commerce APIs — **confirm** your portal has Commerce / invoicing features enabled; product packaging varies. **CMS “CRM objects in CMS pages” documentation** currently lists **private (membership) page** object types as: `contact`, `company`, `deal`, `ticket`, `quote`, `line_item` — **not** `order` or `invoices`. So: **orders and invoices are the system of record in CRM**, but **GraphQL on membership pages may not expose them** until HubSpot extends the schema. **Mitigation:** verify names in the portal GraphQL explorer; if missing, use **associated deals + line items**, **tickets**, or **workflows/automations** that copy the fields you need onto **Contact** (or **Deal** / **Company**) so the portal always has something to query. That mirror path is first-class, not a hack.
+
+**Authoritative modeling decisions:** **Hair profile** and **saved customization templates** → **Contact properties** (groups + internal names documented in `SCHEMA_REGISTRY.md`). **Orders** → **native HubSpot Commerce orders** (not a custom `order` object). **Invoices** → **native HubSpot invoices** object (not a custom invoice object). **Order timeline / status history** → prefer **native order properties**, **deal stage history**, **tickets**, or **notes**; custom `order_status_history` object is **optional** and **not required** for the theme to ship.
 
 ---
 
@@ -48,7 +50,7 @@ This runs **issues sync → HubSpot upload → git add / commit / push** (use `S
 
 | This file (`AGENT_PROMPT.md`) | Agent role | Issues (primary) |
 |-------------------------------|------------|------------------|
-| §1 Custom Object Schemas | **A1** — CRM schema | #6–#11 |
+| §1 CRM data model (contact properties + native commerce; optional schema JSON) | **A1** — CRM configuration | #6–#11 |
 | §2 HubDB Table Seed Data | **A2** — HubDB | #12–#14 |
 | §3 Theme Configuration, §4 CSS, §5 JS, §9 Partials, §10 Sections | **A4** — Theme scaffold | #15–#19 |
 | §6 GraphQL Data Queries | **A5** (CRM) + **A6** (HubDB) | #20–#29 |
@@ -79,7 +81,7 @@ Done when: issue acceptance criteria + relevant quality gate in IMPLEMENTATION_P
 
 ```
 hair-solutions-portal/
-├── schemas/
+├── schemas/                    # optional — reference / API-only / Enterprise alternate; not required for theme upload
 │   ├── hair_profile.json
 │   ├── order.json
 │   ├── order_status_history.json
@@ -235,9 +237,18 @@ hair-solutions-portal/
 
 ---
 
-## 1. Custom Object Schemas
+## 1. CRM data model (Professional Suite — no custom-object dependency)
 
-Create these as JSON files under `schemas/`. They will be posted to **`POST /crm/v3/schemas`**. Follow the exact format from [HubSpot/recruiting-agency-graphql-theme/schemas/](https://github.com/HubSpot/recruiting-agency-graphql-theme/tree/main/schemas).
+### 1.0 Implementation priority
+
+1. **Create Contact properties** for hair measurements, customization presets, and portal flags (see `SCHEMA_REGISTRY.md` and `npm run portal:hubspot-props` for automation-friendly creation). Use **property groups** mirroring the old custom-object groupings for clarity.
+2. **Use native CRM objects** for **orders** (`order`) and **invoices** (`invoices`) as the business source of truth; associate them to **contacts**. Use HubSpot’s own Commerce / invoicing setup docs for your account.
+3. **GraphQL:** Start from **contact** on membership pages; add associations to **deals** / **line_item** / **tickets** as needed. **Introspect** whether `order` / invoice types appear in **your** portal’s CMS GraphQL schema — do not assume from CRM API alone.
+4. **Optional JSON under `schemas/`** — The files below describe **field vocabulary** and an **optional** path (`POST /crm/v3/schemas`) if you later use custom objects **outside** CMS (API, workflows) or upgrade to **Content Enterprise** for CMS custom-object queries. **Do not block theme upload** on creating these custom schemas.
+
+### 1.1 Optional custom object schema JSON (reference / Enterprise / API-only)
+
+If you maintain these files, follow the format from [HubSpot/recruiting-agency-graphql-theme/schemas/](https://github.com/HubSpot/recruiting-agency-graphql-theme/tree/main/schemas). **Production portal 2.0 does not require posting them** for the customer portal theme to function.
 
 ### `schemas/hair_profile.json`
 

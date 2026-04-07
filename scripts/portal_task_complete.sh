@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Run after every Portal 2.0 task / wave completes:
+# Run after every Portal 2.0 task / wave completes (actual order below):
 #   1) Refresh exports/github-issues.json (+ milestones)
-#   2) Commit + push git (this repo)
-#   3) Upload theme src → HubSpot Design Manager (`hs cms upload` or legacy `hs upload`)
+#   2) Upload hair-solutions-portal/src → HubSpot Design Manager, theme name $HUBSPOT_THEME_DEST (default: hair-solutions-portal)
+#   3) Commit + push git (this repo) — only when you pass a commit message as the first argument
 #
 # Usage:
-#   ./scripts/portal_task_complete.sh "chore(portal): describe the task"
+#   ./scripts/portal_task_complete.sh "chore(portal): describe the task"   # full ritual incl. git
+#   ./scripts/portal_task_complete.sh   # issues + HubSpot only; git skipped (IDE-friendly)
 #   SKIP_HUBSPOT=1 ./scripts/portal_task_complete.sh "docs: ..."
-#   SKIP_GIT=1 ./scripts/portal_task_complete.sh "wip"   # issues + HubSpot only
+#   SKIP_GIT=1 ./scripts/portal_task_complete.sh "wip"   # issues + HubSpot only (explicit)
 #
 # HubSpot: runs theme upload from hair-solutions-portal/ using the CLI default account
 # (~/.hscli/config.yml). Optional local hair-solutions-portal/hubspot.config.yml (gitignored)
@@ -89,9 +90,11 @@ fi
 
 if [[ "$SKIP_GIT" != "1" ]]; then
   if [[ -z "$COMMIT_MSG" ]]; then
-    echo "error: provide a commit message, e.g. ./scripts/portal_task_complete.sh \"feat(portal): wave 3 templates\"" >&2
-    exit 1
-  fi
+    echo ""
+    echo "WARN: No commit message — skipping git add/commit/push (issues + HubSpot steps already ran)." >&2
+    echo "      To commit: ./scripts/portal_task_complete.sh \"feat(portal): your summary\"" >&2
+    echo ""
+  else
   git add -A
   if git diff --cached --quiet; then
     echo "Git: nothing to commit (exports may be unchanged and no other edits)."
@@ -103,6 +106,7 @@ if [[ "$SKIP_GIT" != "1" ]]; then
     git push -u origin "$current_branch" 2>/dev/null || git push
   fi
   echo "Git push complete (branch: $current_branch)."
+  fi
 else
   echo "Skipping git (SKIP_GIT or --skip-git / --issues-only)."
 fi
