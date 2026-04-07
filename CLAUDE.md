@@ -161,13 +161,6 @@ Do **not** commit tokens. Use `HUBSPOT_PRIVATE_APP_TOKEN` env var from shell or 
 
 The following skill references are automatically loaded as background context for every session. You do not need to invoke them manually — their rules, patterns, and reference material apply at all times.
 
-### CRM & Business Skills
-@.claude/commands/hubspot-crm-model.md
-@.claude/commands/hubspot-business-ops.md
-@.claude/commands/hubspot-how-to.md
-@.claude/commands/hubspot-ai-expert.md
-@.claude/commands/hubspot-customer-sitrep.md
-
 ### CMS Developer Skills
 @.claude/commands/hubspot-developer.md
 @.claude/commands/hubspot-cms-fundamentals.md
