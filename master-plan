@@ -1,0 +1,875 @@
+
+## Customer Portal 2.0 — HubSpot CMS Build Plan
+
+### Architecture Overview
+
+Based on the [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpot/recruiting-agency-graphql-theme) reference (which does *exactly* what you need — membership-gated pages showing per-contact CRM data via GraphQL), here's the full plan.
+
+### Phase 0: Prerequisites & Environment Setup
+
+| Step | Action |
+|---|---|
+| 0.1 | Install HubSpot CLI: `npm install -g @hubspot/cli` |
+| 0.2 | Run `hs init` → paste your PAK → connect your portal |
+| 0.3 | Set up a **sandbox account** for development (`hs sandbox create`) |
+| 0.4 | Connect a custom subdomain (e.g., `portal.hairsolutions.co`) — required for memberships |
+
+### Phase 1: CRM Custom Object Schemas
+
+Create these via API (`POST /crm/v3/schemas`) — JSON schema files in a `schemas/` directory, same pattern as the recruiting-agency-graphql-theme:
+
+**1.1 `schemas/hair_profile.json`** — Custom Object: Hair Profile
+```
+Properties: head_circumference (number), front_to_nape (number), ear_to_ear (number),
+temple_to_temple (number), preferred_style (text), density (enumeration: light/medium/heavy),
+hair_color (text), base_type (enumeration: lace/skin/mono), attachment_method (enumeration: tape/glue/clips),
+activity_level (text), sweating_level (enumeration: low/moderate/high),
+work_environment (text), sports_activities (text),
+photo_front (file), photo_side (file), photo_back (file), photo_top (file),
+notes (textarea), onboarding_completed (booleancheckbox)
+Associations: CONTACT
+Primary display: preferred_style
+```
+
+**1.2 `schemas/order.json`** — Custom Object: Order
+```
+Properties: order_number (text, hasUniqueValue), product_name (text),
+status (enumeration: pending/confirmed/in_production/quality_check/shipped/delivered/cancelled),
+production_stage (enumeration: awaiting_confirmation/materials_preparation/base_construction/
+  hair_ventilation/styling/quality_inspection/packaging/completed),
+subtotal (number), tax (number), shipping (number), total (number), currency (text),
+estimated_production_start (date), estimated_completion (date),
+actual_completion_date (date), shipped_at (date), delivered_at (date),
+customer_notes (textarea), configuration_snapshot (textarea)
+Associations: CONTACT
+Primary display: order_number
+```
+
+**1.3 `schemas/order_status_history.json`** — Custom Object: Order Status Update
+```
+Properties: status (enumeration: same as order), stage (enumeration: same as order),
+notes (textarea), created_by (text)
+Associations: order (custom object)
+Primary display: status
+```
+
+**1.4 `schemas/customization_template.json`** — Custom Object: Customization Template
+```
+Properties: template_name (text), base_type (enumeration: lace/skin/mono),
+hair_color (text), density (enumeration: light/medium/heavy),
+hair_length (text), style (text), attachment_method (enumeration: tape/glue/clips),
+additional_options (textarea), is_default (booleancheckbox), notes (textarea)
+Associations: CONTACT
+Primary display: template_name
+```
+
+**1.5 `schemas/invoice.json`** — Custom Object: Invoice
+```
+Properties: invoice_number (text, hasUniqueValue), amount (number), tax (number),
+total (number), currency (text), status (enumeration: pending/paid/overdue/cancelled),
+issue_date (date), due_date (date), paid_at (date), pdf_url (text), description (textarea)
+Associations: CONTACT, order (custom object)
+Primary display: invoice_number
+```
+
+**1.6 Contact property groups** — Add to native Contact object:
+```
+Group "Subscription Plan": current_plan (text), plan_price (number),
+  billing_interval (enumeration: month/year), period_start (date),
+  period_end (date), plan_status (enumeration: active/cancelled/past_due)
+Group "Notification Preferences": notify_order_updates (booleancheckbox),
+  notify_production_reminders (booleancheckbox), notify_marketing (booleancheckbox)
+```
+
+**1.7 HubDB Tables:**
+- `subscription_plans` — name, description, price, currency, interval, systems_per_year, features (rich text), is_active, display_order
+- `affiliated_locations` — name, country, state, city, address, postal_code, phone, email, website, services_offered, specialties, latitude, longitude, description, logo_url, is_featured, display_order
+- `products` — name, slug, description, short_description, price, compare_at_price, currency, category, primary_image (image), in_stock (boolean), featured (boolean), display_order
+
+### Phase 2: Theme Structure
+
+```
+hair-solutions-portal/
+├── schemas/                          # Custom object definitions (Phase 1)
+│   ├── hair_profile.json
+│   ├── order.json
+│   ├── order_status_history.json
+│   ├── customization_template.json
+│   └── invoice.json
+├── hubdb/                            # HubDB table seed data
+│   ├── subscription_plans.json
+│   ├── affiliated_locations.json
+│   └── products.json
+└── src/
+    ├── theme.json
+    ├── fields.json                   # Global theme fields (brand colors, fonts)
+    ├── css/
+    │   ├── main.css                  # Global styles + CSS variables
+    │   ├── portal-layout.css         # Sidebar + header layout
+    │   ├── components/
+    │   │   ├── cards.css
+    │   │   ├── tables.css
+    │   │   ├── badges.css
+    │   │   ├── forms.css
+    │   │   └── buttons.css
+    │   └── templates/
+    │       └── system.css            # Auth page styles
+    ├── js/
+    │   └── main.js                   # Sidebar toggle, lightweight interactions
+    ├── images/
+    │   ├── logo.svg
+    │   ├── module-icons/
+    │   └── template-previews/
+    ├── data-queries/                  # GraphQL queries (the core of the portal)
+    │   ├── dashboard.graphql
+    │   ├── hair_profile.graphql
+    │   ├── orders_list.graphql
+    │   ├── order_detail.graphql
+    │   ├── order_status_history.graphql
+    │   ├── customization_templates.graphql
+    │   ├── invoices.graphql
+    │   ├── billing.graphql
+    │   ├── locations.graphql
+    │   ├── products.graphql
+    │   └── settings.graphql
+    ├── modules/
+    │   ├── portal-sidebar.module/     # Global: sidebar navigation
+    │   ├── portal-header.module/      # Global: top header with user name
+    │   ├── dashboard-stats.module/    # Stats cards (orders, profile, plan)
+    │   ├── recent-orders.module/      # Recent orders table
+    │   ├── quick-actions.module/      # Action button grid
+    │   ├── production-alert.module/   # Next production date alert
+    │   ├── order-list.module/         # Full order table with filters
+    │   ├── order-detail.module/       # Single order detail + timeline
+    │   ├── hair-profile-display.module/  # Read-only profile view
+    │   ├── hair-profile-form.module/  # Form CTA → links to HubSpot form
+    │   ├── customization-grid.module/ # Template cards grid
+    │   ├── invoice-table.module/      # Invoice list with status
+    │   ├── billing-current.module/    # Current plan display
+    │   ├── billing-plans.module/      # Plan comparison grid
+    │   ├── product-grid.module/       # Shop product cards
+    │   ├── location-cards.module/     # Location directory
+    │   ├── settings-profile.module/   # Profile info + edit form
+    │   └── status-badge.module/       # Reusable status badge
+    ├── templates/
+    │   ├── layouts/
+    │   │   ├── base.html              # Full page skeleton (head, standard includes)
+    │   │   └── portal.html            # Extends base — adds sidebar + header + content area
+    │   ├── partials/
+    │   │   ├── header.html            # Site header (outside portal — marketing pages)
+    │   │   └── footer.html            # Site footer
+    │   ├── portal-dashboard.html
+    │   ├── portal-orders.html
+    │   ├── portal-order-detail.html   # Dynamic page template
+    │   ├── portal-profile.html
+    │   ├── portal-customization.html
+    │   ├── portal-shop.html
+    │   ├── portal-billing.html
+    │   ├── portal-invoices.html
+    │   ├── portal-locations.html
+    │   ├── portal-settings.html
+    │   └── system/                    # Membership auth pages
+    │       ├── membership-login.html
+    │       ├── membership-register.html
+    │       ├── membership-reset-password.html
+    │       ├── membership-reset-password-request.html
+    │       ├── 404.html
+    │       └── 500.html
+    └── sections/                      # Reusable DnD sections
+        └── portal-content-section.html
+```
+
+### Phase 3: GraphQL Queries
+
+**3.1 `data-queries/dashboard.graphql`**
+```graphql
+# label: "Portal Dashboard"
+# description: "Dashboard data for logged-in customer"
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query dashboard($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      current_plan
+      plan_status
+      period_end
+      associations {
+        p_hair_profile_collection__primary {
+          items { onboarding_completed }
+        }
+        p_order_collection__primary {
+          items {
+            order_number
+            product_name
+            status
+            total
+            estimated_completion
+            hs_createdate
+          }
+          total
+        }
+      }
+    }
+  }
+}
+```
+
+**3.2 `data-queries/orders_list.graphql`** — Contact → all associated orders
+
+**3.3 `data-queries/order_detail.graphql`** — Single order by `order_number` (dynamic slug) + status history
+
+**3.4 `data-queries/hair_profile.graphql`** — Contact → associated Hair Profile with all fields
+
+**3.5 `data-queries/customization_templates.graphql`** — Contact → associated templates
+
+**3.6 `data-queries/invoices.graphql`** — Contact → associated invoices with order links
+
+**3.7 `data-queries/billing.graphql`** — Contact plan properties + HubDB subscription_plans table
+
+**3.8 `data-queries/products.graphql`** — HubDB products table (no contact scoping needed)
+
+**3.9 `data-queries/locations.graphql`** — HubDB affiliated_locations table
+
+**3.10 `data-queries/settings.graphql`** — Contact properties for profile/notification editing
+
+### Phase 4: Templates & Modules Build
+
+**4.1 Portal Layout** (`templates/layouts/portal.html`)
+```
+Extends base.html. Adds:
+- Sidebar (global module: portal-sidebar.module)
+- Header bar showing {{ request.contact.firstname }} (global module: portal-header.module)
+- {% block portal_content %} for page-specific content
+All portal templates extend this layout.
+```
+
+**4.2 Build each page template** (dataQueryPath in annotation → corresponding .graphql file):
+Each template follows the pattern from the recruiting-agency theme:
+```html
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Dashboard
+  dataQueryPath: ../data-queries/dashboard
+-->
+{% extends './layouts/portal.html' %}
+{% block portal_content %}
+  {% dnd_area 'portal_content' %}
+    {% dnd_section %}
+      {% dnd_module path='../modules/dashboard-stats.module' %}{% end_dnd_module %}
+      {% dnd_module path='../modules/production-alert.module' %}{% end_dnd_module %}
+      {% dnd_module path='../modules/recent-orders.module' %}{% end_dnd_module %}
+      {% dnd_module path='../modules/quick-actions.module' %}{% end_dnd_module %}
+    {% end_dnd_section %}
+  {% end_dnd_area %}
+{% endblock %}
+```
+
+**4.3 Build each module** (each `.module/` directory contains):
+- `meta.json` — label, host_template_types, optional `data_query_path`
+- `fields.json` — editable fields (heading text, column count, button text, style options)
+- `module.html` — HubL template accessing `data_query.data.CRM.*` or `data_query.data.HUBDB.*`
+- `module.css` — Scoped styles
+
+**4.4 System templates** — Brand the membership login/register/reset pages with your styling
+
+### Phase 5: Forms (All Write Operations)
+
+| Form | Purpose | Creates/Updates |
+|---|---|---|
+| Hair Profile Form | Multi-step: measurements → preferences → lifestyle → photos | Creates/updates Hair Profile custom object + associates to contact |
+| New Customization Template | Base type, color, density, method, notes | Creates Customization Template custom object |
+| New Support Ticket | Subject, category, priority, description | Creates Service Hub Ticket |
+| Profile Update | Name, phone, shipping address | Updates Contact properties |
+| Plan Change Request | Plan selection + notes | Updates Contact plan properties (or triggers workflow) |
+| Notification Preferences | Checkbox toggles | Updates Contact notification properties |
+
+All forms are HubSpot forms created in the HubSpot UI, embedded in modules via `{% form form_to_use='...' %}`.
+
+### Phase 6: Memberships & Access Control
+
+| Step | Action |
+|---|---|
+| 6.1 | Create Access Group "Portal Customers" (Content → Memberships) — dynamic list based on contact property `is_portal_customer = true` |
+| 6.2 | Gate all `/portal/*` pages behind this access group |
+| 6.3 | Assign membership login/register/reset templates to the system pages |
+| 6.4 | Configure password requirements and admin email |
+
+### Phase 7: Support & Knowledge Base (Native)
+
+| Step | Action |
+|---|---|
+| 7.1 | Set up Knowledge Base (Service Hub) — create categories: Care Guides, How-To, Product Info, FAQ |
+| 7.2 | Migrate Notion articles → HubSpot KB articles |
+| 7.3 | Enable Customer Portal in Service Hub — native ticket view/creation for logged-in contacts |
+| 7.4 | Gate KB + Customer Portal behind the same membership access group |
+
+### Phase 8: Deployment & Page Creation
+
+| Step | Action |
+|---|---|
+| 8.1 | Upload theme: `hs upload src hair-solutions-portal` |
+| 8.2 | Create pages in HubSpot using your templates: |
+| | `/portal` → Portal Dashboard template |
+| | `/portal/orders` → Portal Orders template |
+| | `/portal/orders/[dynamic]` → Portal Order Detail template (dynamic page, data source: Order) |
+| | `/portal/profile` → Portal Profile template |
+| | `/portal/customization` → Portal Customization template |
+| | `/portal/shop` → Portal Shop template |
+| | `/portal/billing` → Portal Billing template |
+| | `/portal/invoices` → Portal Invoices template |
+| | `/portal/locations` → Portal Locations template |
+| | `/portal/settings` → Portal Settings template |
+| 8.3 | Gate each page behind the Portal Customers access group |
+| 8.4 | Publish all pages |
+
+### Build Order (Recommended Sequence)
+
+```
+Week 1: Phase 0 (setup) + Phase 1 (schemas + HubDB tables) + Phase 6 (memberships)
+Week 2: Phase 2 (theme scaffold) + Phase 3 (all GraphQL queries) + base layout
+Week 3: Phase 4 (templates + modules — dashboard, orders, order detail, profile)
+Week 4: Phase 4 cont'd (customization, shop, billing, invoices, locations, settings)
+Week 5: Phase 5 (forms) + Phase 7 (KB + support) + Phase 8 (deploy + QA)
+```
+
+### Key Working References
+
+| Resource | URL |
+|---|---|
+| **GraphQL Reference Theme** (closest to what you're building) | `github.com/HubSpot/recruiting-agency-graphql-theme` |
+| **CMS Theme Boilerplate** (structure/conventions) | `github.com/HubSpot/cms-theme-boilerplate` |
+| **Elevate Theme** (latest HubSpot conventions) | `github.com/HubSpot/cms-elevate-theme-public` |
+| **Custom Objects API** | `developers.hubspot.com/docs/guides/api/crm/objects/custom-objects` |
+| **GraphQL Queries** | `developers.hubspot.com/docs/cms/.../graphql/query-hubspot-data-using-graphql` |
+| **GraphQL in Pages** | `developers.hubspot.com/docs/cms/.../graphql/use-graphql-data-in-your-website-pages` |
+| **HubSpot CLI** | `github.com/HubSpot/hubspot-cli` |
+
+The **recruiting-agency-graphql-theme** is your exact blueprint — it does membership-gated pages, GraphQL queries scoped to `request.contact.contact_vid`, custom objects with associations, dynamic pages, and forms. Your portal follows the same pattern but with hair-industry data instead of job applications.
+
+Ran terminal command:  curl -sL "https://api.github.com/search/repositories?q=hubspot+developer+docs&sort=stars&per_page=10" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for r in data.get('items', []):
+    print(f\"{r['full_name']:50s} ⭐{r['stargazers_count']:>5d}  {r['description'] or ''}\"[:120])
+"
+
+Ran terminal command:  curl -sL "https://api.github.com/search/repositories?q=org:HubSpot+docs&sort=stars&per_page=20" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for r in data.get('items', []):
+    print(f\"{r['full_name']:55s} ⭐{r['stargazers_count']:>5d}  {r['description'] or ''}\"[:140])
+" && echo "---" && curl -sL "https://api.github.com/search/repositories?q=org:HubSpot+cms+theme&sort=stars&per_page=10" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for r in data.get('items', []):
+    print(f\"{r['full_name']:55s} ⭐{r['stargazers_count']:>5d}  {r['description'] or ''}\"[:140])
+"
+
+Ran terminal command:  # Search for the main HubSpot developer docs repo
+curl -sL "https://api.github.com/search/repositories?q=org:HubSpot+developer&sort=stars&per_page=15" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for r in data.get('items', []):
+    print(f\"{r['full_name']:55s} ⭐{r['stargazers_count']:>5d}  {r['html_url']}\")
+    print(f\"   {r['description'] or ''}\")
+" && echo "===" && curl -sL "https://api.github.com/search/repositories?q=org:HubSpot+graphql&sort=stars&per_page=10" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for r in data.get('items', []):
+    print(f\"{r['full_name']:55s} ⭐{r['stargazers_count']:>5d}  {r['html_url']}\")
+    print(f\"   {r['description'] or ''}\")
+"
+
+Ran terminal command:  # Search more broadly
+curl -sL "https://api.github.com/search/repositories?q=org:HubSpot&sort=stars&per_page=30" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+print(f'Total: {data.get(\"total_count\", 0)} repos')
+for r in data.get('items', []):
+    print(f\"{r['full_name']:55s} ⭐{r['stargazers_count']:>5d}  {(r['description'] or '')[:80]}\")
+"
+
+Ran terminal command:  # Check the key repos that are relevant
+echo "=== hubspot-cli ===" && curl -sL "https://api.github.com/repos/HubSpot/hubspot-cli" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d.get('description',''));print(d.get('html_url',''))"
+echo
+echo "=== cms-theme-boilerplate ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-theme-boilerplate/contents/" | python3 -c "import json,sys;[print(f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== recruiting-agency-graphql-theme ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/" | python3 -c "import json,sys;[print(f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== ui-extensions-examples ===" && curl -sL "https://api.github.com/repos/HubSpot/ui-extensions-examples" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d.get('description',''))"
+echo
+echo "=== developer-code-examples ===" && curl -sL "https://api.github.com/repos/HubSpot/developer-code-examples/contents/" | python3 -c "import json,sys;[print(f['name']) for f in json.load(sys.stdin)]"
+
+Ran terminal command:  # The recruiting-agency-graphql-theme is the GraphQL reference theme - let's look deeper
+echo "=== GraphQL Theme - src ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== GraphQL Theme - data queries ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/data" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== GraphQL Theme - schemas ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/schemas" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== GraphQL Theme - src/templates ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/templates" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== GraphQL Theme - src/modules ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/modules" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== Boilerplate - src ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-theme-boilerplate/contents/src" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== Boilerplate - src/templates ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-theme-boilerplate/contents/src/templates" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+
+Ran terminal command:  # Let's look at the GraphQL theme's key files - data queries, schemas, and a module
+echo "=== data-queries ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/data-queries" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+echo "=== role-details module ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/modules/role-details.module" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]"
+echo
+# Get the actual GraphQL query files
+echo "=== GraphQL queries ==="
+for f in $(curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/data-queries" | python3 -c "import json,sys;[print(f['name']) for f in json.load(sys.stdin)]"); do
+    echo "--- $f ---"
+    curl -sL "https://raw.githubusercontent.com/HubSpot/recruiting-agency-graphql-theme/main/src/data-queries/$f"
+    echo
+done
+
+Ran terminal command:  # The raw URLs aren't working - let's use the API to get file content
+for f in application.graphql applications.graphql featured_roles.graphql role.graphql role_listings.graphql; do
+    echo "=== $f ==="
+    curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/data-queries/$f" | python3 -c "
+import json, sys, base64
+d = json.load(sys.stdin)
+print(base64.b64decode(d.get('content','')).decode())
+"
+    echo
+done
+
+Ran terminal command:  # Get the module meta.json and module.html for a few key modules
+for mod in role-details application-listing application-details; do
+    echo "=== $mod - meta.json ==="
+    curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/modules/$mod.module/meta.json" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+    echo
+    echo "=== $mod - module.html ==="
+    curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/modules/$mod.module/module.html" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+    echo
+done
+
+Read [](file:///home/codespace/.vscode-remote/data/User/workspaceStorage/-755b0996/GitHub.copilot-chat/chat-session-resources/1c4b5c5d-2e30-4589-a83d-a20fce336910/toolu_bdrk_01Tf4FpqQjpS4cGySC9p5nb1__vscode-1775548074324/content.txt#1-1), lines 1 to 200
+
+Read [](file:///home/codespace/.vscode-remote/data/User/workspaceStorage/-755b0996/GitHub.copilot-chat/chat-session-resources/1c4b5c5d-2e30-4589-a83d-a20fce336910/toolu_bdrk_01Tf4FpqQjpS4cGySC9p5nb1__vscode-1775548074324/content.txt#200-200), lines 200 to 400
+
+Ran terminal command:  # Get the templates and theme.json
+echo "=== theme.json ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/theme.json" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+
+echo "=== application-listing template ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/templates/application-listing.html" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+
+echo "=== application-details template ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/templates/application-details.html" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+
+echo "=== role-details template ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/templates/role-details.html" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+
+echo "=== layout base ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/templates/layouts" | python3 -c "import json,sys;[print(f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+
+echo "=== base layout ===" && curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/src/templates/layouts/base.html" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+
+echo "=== schemas ==="
+for f in job_application.json role.json; do
+    echo "--- $f ---"
+    curl -sL "https://api.github.com/repos/HubSpot/recruiting-agency-graphql-theme/contents/schemas/$f" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+done
+
+Read [](file:///home/codespace/.vscode-remote/data/User/workspaceStorage/-755b0996/GitHub.copilot-chat/chat-session-resources/1c4b5c5d-2e30-4589-a83d-a20fce336910/toolu_bdrk_01EzntqLcXNontnKXDKJVTwW__vscode-1775548074327/content.txt#1-1), lines 1 to 300
+
+Now I have comprehensive reference material. Let me also get the `cms-elevate-theme-public` structure since it's HubSpot's latest official theme:
+
+Ran terminal command:  # Check elevate theme structure
+echo "=== elevate src ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+echo
+echo "=== elevate src/templates ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/templates" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+echo
+echo "=== elevate src/modules ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/modules" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+Completed with input:  # Check elevate theme structure
+echo "=== elevate src ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+echo
+echo "=== elevate src/templates ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/templates" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+echo
+echo "=== elevate src/modules ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/modules" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+
+Ran terminal command:  curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/unified-theme" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+
+Ran terminal command:  echo "=== templates ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/unified-theme/templates" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+echo
+echo "=== components ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/unified-theme/components" | python3 -c "import json,sys;[print(f['type'].ljust(6), f['name']) for f in json.load(sys.stdin)]" 2>/dev/null
+echo
+echo "=== theme.json ===" && curl -sL "https://api.github.com/repos/HubSpot/cms-elevate-theme-public/contents/src/unified-theme/theme.json" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode()[:2000])" 2>/dev/null
+
+Now I have enough to build the complete plan. Let me also quickly check the membership system templates from the boilerplate:
+
+Ran terminal command:  # Get membership templates from boilerplate
+for t in membership-login.html membership-register.html membership-reset-password.html membership-reset-password-request.html; do
+    echo "=== $t ==="
+    curl -sL "https://api.github.com/repos/HubSpot/cms-theme-boilerplate/contents/src/templates/system/$t" | python3 -c "import json,sys,base64;d=json.load(sys.stdin);print(base64.b64decode(d.get('content','')).decode())" 2>/dev/null
+    echo
+done
+
+Now I have everything I need. I've researched:
+- The official CMS theme boilerplate structure
+- The **recruiting-agency-graphql-theme** (exact reference for GraphQL + custom objects + membership)
+- Custom objects API schema definitions
+- Membership system templates (login, register, password reset)
+- GraphQL query patterns with `request.contact.contact_vid` and dynamic slugs
+- Module structure (meta.json, fields.json, module.html, module.css)
+- Template structure with `dataQueryPath` annotations
+- The Elevate theme (latest conventions)
+
+Here's the complete, detailed build plan for **Customer Portal 2.0**:
+
+---
+
+## Customer Portal 2.0 — HubSpot CMS Build Plan
+
+### Architecture Overview
+
+Based on the [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpot/recruiting-agency-graphql-theme) reference (which does *exactly* what you need — membership-gated pages showing per-contact CRM data via GraphQL), here's the full plan.
+
+### Phase 0: Prerequisites & Environment Setup
+
+| Step | Action |
+|---|---|
+| 0.1 | Install HubSpot CLI: `npm install -g @hubspot/cli` |
+| 0.2 | Run `hs init` → paste your PAK → connect your portal |
+| 0.3 | Set up a **sandbox account** for development (`hs sandbox create`) |
+| 0.4 | Connect a custom subdomain (e.g., `portal.hairsolutions.co`) — required for memberships |
+
+### Phase 1: CRM Custom Object Schemas
+
+Create these via API (`POST /crm/v3/schemas`) — JSON schema files in a `schemas/` directory, same pattern as the recruiting-agency-graphql-theme:
+
+**1.1 `schemas/hair_profile.json`** — Custom Object: Hair Profile
+```
+Properties: head_circumference (number), front_to_nape (number), ear_to_ear (number),
+temple_to_temple (number), preferred_style (text), density (enumeration: light/medium/heavy),
+hair_color (text), base_type (enumeration: lace/skin/mono), attachment_method (enumeration: tape/glue/clips),
+activity_level (text), sweating_level (enumeration: low/moderate/high),
+work_environment (text), sports_activities (text),
+photo_front (file), photo_side (file), photo_back (file), photo_top (file),
+notes (textarea), onboarding_completed (booleancheckbox)
+Associations: CONTACT
+Primary display: preferred_style
+```
+
+**1.2 `schemas/order.json`** — Custom Object: Order
+```
+Properties: order_number (text, hasUniqueValue), product_name (text),
+status (enumeration: pending/confirmed/in_production/quality_check/shipped/delivered/cancelled),
+production_stage (enumeration: awaiting_confirmation/materials_preparation/base_construction/
+  hair_ventilation/styling/quality_inspection/packaging/completed),
+subtotal (number), tax (number), shipping (number), total (number), currency (text),
+estimated_production_start (date), estimated_completion (date),
+actual_completion_date (date), shipped_at (date), delivered_at (date),
+customer_notes (textarea), configuration_snapshot (textarea)
+Associations: CONTACT
+Primary display: order_number
+```
+
+**1.3 `schemas/order_status_history.json`** — Custom Object: Order Status Update
+```
+Properties: status (enumeration: same as order), stage (enumeration: same as order),
+notes (textarea), created_by (text)
+Associations: order (custom object)
+Primary display: status
+```
+
+**1.4 `schemas/customization_template.json`** — Custom Object: Customization Template
+```
+Properties: template_name (text), base_type (enumeration: lace/skin/mono),
+hair_color (text), density (enumeration: light/medium/heavy),
+hair_length (text), style (text), attachment_method (enumeration: tape/glue/clips),
+additional_options (textarea), is_default (booleancheckbox), notes (textarea)
+Associations: CONTACT
+Primary display: template_name
+```
+
+**1.5 `schemas/invoice.json`** — Custom Object: Invoice
+```
+Properties: invoice_number (text, hasUniqueValue), amount (number), tax (number),
+total (number), currency (text), status (enumeration: pending/paid/overdue/cancelled),
+issue_date (date), due_date (date), paid_at (date), pdf_url (text), description (textarea)
+Associations: CONTACT, order (custom object)
+Primary display: invoice_number
+```
+
+**1.6 Contact property groups** — Add to native Contact object:
+```
+Group "Subscription Plan": current_plan (text), plan_price (number),
+  billing_interval (enumeration: month/year), period_start (date),
+  period_end (date), plan_status (enumeration: active/cancelled/past_due)
+Group "Notification Preferences": notify_order_updates (booleancheckbox),
+  notify_production_reminders (booleancheckbox), notify_marketing (booleancheckbox)
+```
+
+**1.7 HubDB Tables:**
+- `subscription_plans` — name, description, price, currency, interval, systems_per_year, features (rich text), is_active, display_order
+- `affiliated_locations` — name, country, state, city, address, postal_code, phone, email, website, services_offered, specialties, latitude, longitude, description, logo_url, is_featured, display_order
+- `products` — name, slug, description, short_description, price, compare_at_price, currency, category, primary_image (image), in_stock (boolean), featured (boolean), display_order
+
+### Phase 2: Theme Structure
+
+```
+hair-solutions-portal/
+├── schemas/                          # Custom object definitions (Phase 1)
+│   ├── hair_profile.json
+│   ├── order.json
+│   ├── order_status_history.json
+│   ├── customization_template.json
+│   └── invoice.json
+├── hubdb/                            # HubDB table seed data
+│   ├── subscription_plans.json
+│   ├── affiliated_locations.json
+│   └── products.json
+└── src/
+    ├── theme.json
+    ├── fields.json                   # Global theme fields (brand colors, fonts)
+    ├── css/
+    │   ├── main.css                  # Global styles + CSS variables
+    │   ├── portal-layout.css         # Sidebar + header layout
+    │   ├── components/
+    │   │   ├── cards.css
+    │   │   ├── tables.css
+    │   │   ├── badges.css
+    │   │   ├── forms.css
+    │   │   └── buttons.css
+    │   └── templates/
+    │       └── system.css            # Auth page styles
+    ├── js/
+    │   └── main.js                   # Sidebar toggle, lightweight interactions
+    ├── images/
+    │   ├── logo.svg
+    │   ├── module-icons/
+    │   └── template-previews/
+    ├── data-queries/                  # GraphQL queries (the core of the portal)
+    │   ├── dashboard.graphql
+    │   ├── hair_profile.graphql
+    │   ├── orders_list.graphql
+    │   ├── order_detail.graphql
+    │   ├── order_status_history.graphql
+    │   ├── customization_templates.graphql
+    │   ├── invoices.graphql
+    │   ├── billing.graphql
+    │   ├── locations.graphql
+    │   ├── products.graphql
+    │   └── settings.graphql
+    ├── modules/
+    │   ├── portal-sidebar.module/     # Global: sidebar navigation
+    │   ├── portal-header.module/      # Global: top header with user name
+    │   ├── dashboard-stats.module/    # Stats cards (orders, profile, plan)
+    │   ├── recent-orders.module/      # Recent orders table
+    │   ├── quick-actions.module/      # Action button grid
+    │   ├── production-alert.module/   # Next production date alert
+    │   ├── order-list.module/         # Full order table with filters
+    │   ├── order-detail.module/       # Single order detail + timeline
+    │   ├── hair-profile-display.module/  # Read-only profile view
+    │   ├── hair-profile-form.module/  # Form CTA → links to HubSpot form
+    │   ├── customization-grid.module/ # Template cards grid
+    │   ├── invoice-table.module/      # Invoice list with status
+    │   ├── billing-current.module/    # Current plan display
+    │   ├── billing-plans.module/      # Plan comparison grid
+    │   ├── product-grid.module/       # Shop product cards
+    │   ├── location-cards.module/     # Location directory
+    │   ├── settings-profile.module/   # Profile info + edit form
+    │   └── status-badge.module/       # Reusable status badge
+    ├── templates/
+    │   ├── layouts/
+    │   │   ├── base.html              # Full page skeleton (head, standard includes)
+    │   │   └── portal.html            # Extends base — adds sidebar + header + content area
+    │   ├── partials/
+    │   │   ├── header.html            # Site header (outside portal — marketing pages)
+    │   │   └── footer.html            # Site footer
+    │   ├── portal-dashboard.html
+    │   ├── portal-orders.html
+    │   ├── portal-order-detail.html   # Dynamic page template
+    │   ├── portal-profile.html
+    │   ├── portal-customization.html
+    │   ├── portal-shop.html
+    │   ├── portal-billing.html
+    │   ├── portal-invoices.html
+    │   ├── portal-locations.html
+    │   ├── portal-settings.html
+    │   └── system/                    # Membership auth pages
+    │       ├── membership-login.html
+    │       ├── membership-register.html
+    │       ├── membership-reset-password.html
+    │       ├── membership-reset-password-request.html
+    │       ├── 404.html
+    │       └── 500.html
+    └── sections/                      # Reusable DnD sections
+        └── portal-content-section.html
+```
+
+### Phase 3: GraphQL Queries
+
+**3.1 `data-queries/dashboard.graphql`**
+```graphql
+# label: "Portal Dashboard"
+# description: "Dashboard data for logged-in customer"
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query dashboard($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      current_plan
+      plan_status
+      period_end
+      associations {
+        p_hair_profile_collection__primary {
+          items { onboarding_completed }
+        }
+        p_order_collection__primary {
+          items {
+            order_number
+            product_name
+            status
+            total
+            estimated_completion
+            hs_createdate
+          }
+          total
+        }
+      }
+    }
+  }
+}
+```
+
+**3.2 `data-queries/orders_list.graphql`** — Contact → all associated orders
+
+**3.3 `data-queries/order_detail.graphql`** — Single order by `order_number` (dynamic slug) + status history
+
+**3.4 `data-queries/hair_profile.graphql`** — Contact → associated Hair Profile with all fields
+
+**3.5 `data-queries/customization_templates.graphql`** — Contact → associated templates
+
+**3.6 `data-queries/invoices.graphql`** — Contact → associated invoices with order links
+
+**3.7 `data-queries/billing.graphql`** — Contact plan properties + HubDB subscription_plans table
+
+**3.8 `data-queries/products.graphql`** — HubDB products table (no contact scoping needed)
+
+**3.9 `data-queries/locations.graphql`** — HubDB affiliated_locations table
+
+**3.10 `data-queries/settings.graphql`** — Contact properties for profile/notification editing
+
+### Phase 4: Templates & Modules Build
+
+**4.1 Portal Layout** (`templates/layouts/portal.html`)
+```
+Extends base.html. Adds:
+- Sidebar (global module: portal-sidebar.module)
+- Header bar showing {{ request.contact.firstname }} (global module: portal-header.module)
+- {% block portal_content %} for page-specific content
+All portal templates extend this layout.
+```
+
+**4.2 Build each page template** (dataQueryPath in annotation → corresponding .graphql file):
+Each template follows the pattern from the recruiting-agency theme:
+```html
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Dashboard
+  dataQueryPath: ../data-queries/dashboard
+-->
+{% extends './layouts/portal.html' %}
+{% block portal_content %}
+  {% dnd_area 'portal_content' %}
+    {% dnd_section %}
+      {% dnd_module path='../modules/dashboard-stats.module' %}{% end_dnd_module %}
+      {% dnd_module path='../modules/production-alert.module' %}{% end_dnd_module %}
+      {% dnd_module path='../modules/recent-orders.module' %}{% end_dnd_module %}
+      {% dnd_module path='../modules/quick-actions.module' %}{% end_dnd_module %}
+    {% end_dnd_section %}
+  {% end_dnd_area %}
+{% endblock %}
+```
+
+**4.3 Build each module** (each `.module/` directory contains):
+- `meta.json` — label, host_template_types, optional `data_query_path`
+- `fields.json` — editable fields (heading text, column count, button text, style options)
+- `module.html` — HubL template accessing `data_query.data.CRM.*` or `data_query.data.HUBDB.*`
+- `module.css` — Scoped styles
+
+**4.4 System templates** — Brand the membership login/register/reset pages with your styling
+
+### Phase 5: Forms (All Write Operations)
+
+| Form | Purpose | Creates/Updates |
+|---|---|---|
+| Hair Profile Form | Multi-step: measurements → preferences → lifestyle → photos | Creates/updates Hair Profile custom object + associates to contact |
+| New Customization Template | Base type, color, density, method, notes | Creates Customization Template custom object |
+| New Support Ticket | Subject, category, priority, description | Creates Service Hub Ticket |
+| Profile Update | Name, phone, shipping address | Updates Contact properties |
+| Plan Change Request | Plan selection + notes | Updates Contact plan properties (or triggers workflow) |
+| Notification Preferences | Checkbox toggles | Updates Contact notification properties |
+
+All forms are HubSpot forms created in the HubSpot UI, embedded in modules via `{% form form_to_use='...' %}`.
+
+### Phase 6: Memberships & Access Control
+
+| Step | Action |
+|---|---|
+| 6.1 | Create Access Group "Portal Customers" (Content → Memberships) — dynamic list based on contact property `is_portal_customer = true` |
+| 6.2 | Gate all `/portal/*` pages behind this access group |
+| 6.3 | Assign membership login/register/reset templates to the system pages |
+| 6.4 | Configure password requirements and admin email |
+
+### Phase 7: Support & Knowledge Base (Native)
+
+| Step | Action |
+|---|---|
+| 7.1 | Set up Knowledge Base (Service Hub) — create categories: Care Guides, How-To, Product Info, FAQ |
+| 7.2 | Migrate Notion articles → HubSpot KB articles |
+| 7.3 | Enable Customer Portal in Service Hub — native ticket view/creation for logged-in contacts |
+| 7.4 | Gate KB + Customer Portal behind the same membership access group |
+
+### Phase 8: Deployment & Page Creation
+
+| Step | Action |
+|---|---|
+| 8.1 | Upload theme: `hs upload src hair-solutions-portal` |
+| 8.2 | Create pages in HubSpot using your templates: |
+| | `/portal` → Portal Dashboard template |
+| | `/portal/orders` → Portal Orders template |
+| | `/portal/orders/[dynamic]` → Portal Order Detail template (dynamic page, data source: Order) |
+| | `/portal/profile` → Portal Profile template |
+| | `/portal/customization` → Portal Customization template |
+| | `/portal/shop` → Portal Shop template |
+| | `/portal/billing` → Portal Billing template |
+| | `/portal/invoices` → Portal Invoices template |
+| | `/portal/locations` → Portal Locations template |
+| | `/portal/settings` → Portal Settings template |
+| 8.3 | Gate each page behind the Portal Customers access group |
+| 8.4 | Publish all pages |
+
+### Build Order (Recommended Sequence)
+
+```
+Week 1: Phase 0 (setup) + Phase 1 (schemas + HubDB tables) + Phase 6 (memberships)
+Week 2: Phase 2 (theme scaffold) + Phase 3 (all GraphQL queries) + base layout
+Week 3: Phase 4 (templates + modules — dashboard, orders, order detail, profile)
+Week 4: Phase 4 cont'd (customization, shop, billing, invoices, locations, settings)
+Week 5: Phase 5 (forms) + Phase 7 (KB + support) + Phase 8 (deploy + QA)
+```
+
+### Key Working References
+
+| Resource | URL |
+|---|---|
+| **GraphQL Reference Theme** (closest to what you're building) | `github.com/HubSpot/recruiting-agency-graphql-theme` |
+| **CMS Theme Boilerplate** (structure/conventions) | `github.com/HubSpot/cms-theme-boilerplate` |
+| **Elevate Theme** (latest HubSpot conventions) | `github.com/HubSpot/cms-elevate-theme-public` |
+| **Custom Objects API** | `developers.hubspot.com/docs/guides/api/crm/objects/custom-objects` |
+| **GraphQL Queries** | `developers.hubspot.com/docs/cms/.../graphql/query-hubspot-data-using-graphql` |
+| **GraphQL in Pages** | `developers.hubspot.com/docs/cms/.../graphql/use-graphql-data-in-your-website-pages` |
+| **HubSpot CLI** | `github.com/HubSpot/hubspot-cli` |
+
+The **recruiting-agency-graphql-theme** is your exact blueprint — it does membership-gated pages, GraphQL queries scoped to `request.contact.contact_vid`, custom objects with associations, dynamic pages, and forms. Your portal follows the same pattern but with hair-industry data instead of job applications.
+
