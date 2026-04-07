@@ -4,7 +4,18 @@
 
 **Other tools / paste:** Copy this file into a new session when the tool has no project rules.
 
-Your job: run **§1 Next session** in order, **spawn only the subagents listed there** (parallel groups as indicated), then run the **task completion ritual** when a batch finishes. Deep specs live in linked docs — do not duplicate them here.
+### Mandatory: you must use subagents
+
+You are the **orchestrator**, not a solo implementer. **You must absolutely use subagents** (Task tool, Background Agents, Claude Code subagents, or your environment’s equivalent) to carry the work. **Do not** absorb the full scope of A0–A15, multi-file theme work, and HubSpot verification in a single thread when parallel delegation is possible.
+
+| Rule | Detail |
+|------|--------|
+| **Spawn** | For each row in **§1 Subagents to launch**, spawn **one dedicated subagent** with **§2 Subagent prompt** (filled placeholders). Same **Parallel group** = launch together. |
+| **Stay orchestrator** | You coordinate, merge results, run gates (`portal:verify`, `portal_task_complete.sh`), and fix cross-cutting blockers — you do **not** replace subagents for their scoped issues. |
+| **If the tool allows only one agent** | Still **structure** work as sequential subagent-sized tasks: finish one spawn’s scope, ritual, then the next — never “one giant unprompted refactor.” |
+| **Exception** | Tiny one-file fixes (e.g. typo in one module) may be direct; anything touching **GraphQL + HubL + upload**, **CRM/HubDB API**, or **≥2 concerns** → **subagent**. |
+
+Your job: run **§1 Next session** in order, **always** execute the subagent grid (per rules above), then run the **task completion ritual** when a batch finishes. Deep specs live in linked docs — do not duplicate them here.
 
 ---
 
@@ -21,7 +32,7 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 
 1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 (current wave) and §7 (gate for that wave).
 2. Run `npm run portal:issues` if the GitHub snapshot may be stale.
-3. Execute **§1 Subagents to launch** below: spawn **one subagent per row**, respecting **Parallel group** (same group = may run together; lower groups first if numbered).
+3. **Required — subagents:** Execute **§1 Subagents to launch** below: spawn **one subagent per row** (mandatory; see **Mandatory: you must use subagents** above), respecting **Parallel group** (same group = may run together; lower groups first if numbered). **Skipping subagents to “do it all yourself” is not allowed** for normal waves.
 4. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** (use `SKIP_HUBSPOT=1` only if you must skip upload). Upload uses **`hs`** with default account from **`~/.hscli/config.yml`**; local `hair-solutions-portal/hubspot.config.yml` is optional. See **§3 Task completion ritual**.
 
 ### Subagents to launch *(fill before paste — example row set for early Wave 0–1)*
@@ -54,7 +65,7 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 ## 2. Subagent prompt *(copy once per spawn; replace placeholders)*
 
 ```text
-You are Agent {{AGENT_ID}} ({{ROLE_NAME}}) for hairsolutionsco/customer-portal.
+You are Agent {{AGENT_ID}} ({{ROLE_NAME}}) for hairsolutionsco/customer-portal — a **dedicated subagent** spawned by the portal orchestrator (do not try to run the whole program alone).
 
 Orchestrator batch: {{BATCH_DESCRIPTION}}
 
@@ -141,7 +152,7 @@ Production portal: extra care for **published** `/portal/*`, HubDB, CRM test rec
 | Machine **stays awake**; Cursor / agent **allowed to run** | Sleep kills long jobs |
 | **§1** table trimmed to the **next waves** you want (e.g. A0→A1/A2) | Agent doesn’t wander |
 
-**Cursor (recommended):** Open this workspace (so the **orchestrator rule** loads). Start **one** chat or **Background Agent** with a single instruction, e.g. *“You are the portal orchestrator. Follow `HANDOFF_PROMPT.md` §1; after each wave run `portal_task_complete.sh`; if HubSpot blocks you, `SKIP_HUBSPOT=1` and continue repo work; don’t wait for me.”* Enable **auto-run / accept edits** for that session if your Cursor settings allow.
+**Cursor (recommended):** Open this workspace (so the **orchestrator rule** loads). Start **one** chat or **Background Agent** with a single instruction, e.g. *“You are the portal orchestrator. Follow `HANDOFF_PROMPT.md` §1; **you must use subagents** for each row in the §1 table (Task tool / parallel agents); after each wave run `portal_task_complete.sh`; if HubSpot blocks you, `SKIP_HUBSPOT=1` and continue repo work; don’t wait for me.”* Enable **auto-run / accept edits** for that session if your Cursor settings allow.
 
 **Claude Code / other CLIs:** Point the tool at this directory and give it the same instruction plus path to `HANDOFF_PROMPT.md`.
 
