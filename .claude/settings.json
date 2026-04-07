@@ -1,0 +1,71 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const f=process.env.CLAUDE_TOOL_INPUT_FILE_PATH||''; const forbidden=['.env','.env.local','.env.production','credentials','secrets']; const hit=forbidden.some(k=>f.includes(k)); if(hit){console.error('BLOCKED: Refusing to write to sensitive file: '+f); process.exit(2);}\"",
+            "description": "Block writes to .env / credentials files"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const cmd=process.env.CLAUDE_TOOL_INPUT_COMMAND||''; const danger=['git push --force','git reset --hard','rm -rf','drop table','DELETE FROM']; const hit=danger.find(d=>cmd.includes(d)); if(hit){console.error('BLOCKED: Dangerous command detected: '+hit); process.exit(2);}\"",
+            "description": "Block force-push, hard-reset, and destructive commands"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const f=process.env.CLAUDE_TOOL_INPUT_FILE_PATH||''; const hubspotFiles=['.hubl','.html','.graphql','.json']; const isHubSpot=hubspotFiles.some(ext=>f.endsWith(ext))&&f.includes('hair-solutions-portal'); if(isHubSpot&&f.endsWith('.json')){try{require('fs');const c=require('fs').readFileSync(f,'utf8');JSON.parse(c);console.log('JSON valid: '+f);}catch(e){console.error('INVALID JSON in HubSpot file: '+f+' — '+e.message); process.exit(1);}}\"",
+            "description": "Validate JSON files in hair-solutions-portal after write"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git fetch*)",
+      "Bash(git pull*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push -u origin claude/hubspot-plugin-creation-G0JUG)",
+      "Bash(hs*)",
+      "Bash(npm*)",
+      "Bash(node*)",
+      "Bash(ls*)",
+      "Bash(mkdir*)",
+      "Read(*)",
+      "Write(hair-solutions-portal/**)",
+      "Write(.claude/**)",
+      "Write(CLAUDE.md)",
+      "Edit(hair-solutions-portal/**)",
+      "Edit(.claude/**)",
+      "Edit(CLAUDE.md)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(rm -rf*)",
+      "Write(.env*)",
+      "Write(*credentials*)",
+      "Write(*secrets*)"
+    ]
+  }
+}
