@@ -3,7 +3,7 @@
 Pick a HubSpot Bearer token that succeeds on a lightweight API probe.
 
 Resolves a Bearer token by **probing** the HubSpot API: **env vars first** (Private
-App / PAT), then **HubSpot CLI** OAuth in ~/.hscli/config.yml`. Stale env values
+App / PAT), then **HubSpot CLI** OAuth in `~/.hscli/config.yml`. Stale env values
 that return 401 are skipped; CLI OAuth is used for HubDB when env is broken.
 
 Never prints token values.
