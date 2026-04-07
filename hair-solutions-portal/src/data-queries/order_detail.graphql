@@ -1,17 +1,35 @@
 # label: "Order Detail"
-# description: "Single order + status history (stub until order custom object exists in portal)"
-# $order_number: {{ request.path_param_dict.dynamic_slug }}
+# description: "Single deal by hs_object_id (dynamic slug). Verify association name in explorer if needed."
+# $order_number: {{ request.path_param_dict.dynamic_slug || '' }}
 # $contact_id: {{ request.contact.contact_vid || '' }}
-# Second contact() uses $order_number only to satisfy GraphQL variable usage + dynamic page binding; replace with p_order + associations per AGENT_PROMPT after #7–#8.
 query order_detail($order_number: String!, $contact_id: String!) {
   CRM {
+    p_order: deal(uniqueIdentifier: "hs_object_id", uniqueIdentifierValue: $order_number) {
+      hs_object_id
+      order_number: hs_object_id
+      product_name: dealname
+      status: dealstage
+      production_stage: dealstage
+      total: amount
+      currency: deal_currency_code
+      hs_createdate: createdate
+      estimated_completion: closedate
+      shipped_at: closedate
+      delivered_at: closedate
+      subtotal: amount
+      description
+    }
     contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
       firstname
       lastname
       email
-    }
-    order_slug_placeholder: contact(uniqueIdentifier: "id", uniqueIdentifierValue: $order_number) {
-      email
+      associations {
+        p_order_collection__primary: deal_collection__contact_to_deal {
+          items {
+            hs_object_id
+          }
+        }
+      }
     }
   }
 }

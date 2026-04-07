@@ -1,0 +1,62 @@
+# Hostinger VPS — Docker Manager → New Compose project
+#
+# Set these in the panel "Environment" (same idea as OpenClaw):
+#   TRAEFIK_HOST=srv1554656.hstgr.cloud          # your VPS hostname
+#   COMPOSE_PROJECT_NAME=customer-portal         # becomes customer-portal.<TRAEFIK_HOST>
+#   POSTGRES_PASSWORD=<strong random>
+#   NEXTAUTH_URL=https://customer-portal.<TRAEFIK_HOST>
+#   NEXTAUTH_SECRET=<openssl rand -base64 32>
+#
+# After first deploy, run migrations (Terminal on VPS or SSH):
+#   docker compose -f docker-compose.hostinger.yml exec web npx prisma migrate deploy
+#   # or if you have no migrations yet: prisma db push (dev only)
+#
+# Build options:
+#   A) Panel: point Compose at this repo with build context, or
+#   B) Build + push GHCR from CI, then replace `build:` with `image: ghcr.io/you/customer-portal:latest`
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: portal
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: customer_portal
+    volumes:
+      - portal_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portal -d customer_portal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: postgresql://portal:${POSTGRES_PASSWORD}@db:5432/customer_portal?schema=public
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Sao_Paulo}
+      DATABASE_URL: postgresql://portal:${POSTGRES_PASSWORD}@db:5432/customer_portal?schema=public
+      NODE_ENV: production
+      NEXTAUTH_URL: ${NEXTAUTH_URL:?set NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?set NEXTAUTH_SECRET}
+      PORT: "3000"
+    expose:
+      - "3000"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${COMPOSE_PROJECT_NAME}.${TRAEFIK_HOST}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt
+      - traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=3000
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.service=${COMPOSE_PROJECT_NAME}
+
+volumes:
+  portal_pgdata:

@@ -54,7 +54,7 @@ export default async function BillingPage() {
       ) : (
         <div className="bg-primary-50 border-l-4 border-primary-600 p-4 rounded-r-lg">
           <p className="text-sm text-primary-700">
-            You don't have an active subscription. Choose a plan below to get started.
+            You don&apos;t have an active subscription. Choose a plan below to get started.
           </p>
         </div>
       )}

@@ -1,11 +1,13 @@
 {% set c = data_query.data.CRM.contact %}
+{% set bill_raw = c.portal_billing_json if c else none %}
+{% set bill = bill_raw|fromjson if bill_raw else none %}
 <section class="billing-current hs-card" aria-label="Current plan">
   <h2 style="margin-top:0;">Your plan</h2>
   {% if c %}
-  <p><strong>{{ c.current_plan or 'No plan on file' }}</strong></p>
-  <p>Price: {% if c.plan_price is not none %}${{ c.plan_price }}{% else %}—{% endif %} / {{ c.billing_interval or '—' }}</p>
-  <p>Period: {{ c.period_start }} — {{ c.period_end }}</p>
-  <p>Status: {% if c.plan_status %}<span class="hs-badge hs-badge--{{ c.plan_status }}">{{ c.plan_status|replace('_',' ') }}</span>{% else %}—{% endif %}</p>
+  <p><strong>{{ bill.current_plan if bill and bill.current_plan else 'No plan on file' }}</strong></p>
+  <p>Price: {% if bill and bill.plan_price %}${{ bill.plan_price }}{% else %}—{% endif %} / {{ bill.billing_interval if bill and bill.billing_interval else '—' }}</p>
+  <p>Period: {{ bill.period_start if bill else '—' }} — {{ bill.period_end if bill else '—' }}</p>
+  <p>Status: {% if bill and bill.plan_status %}<span class="hs-badge hs-badge--{{ bill.plan_status }}">{{ bill.plan_status|replace('_',' ') }}</span>{% else %}—{% endif %}</p>
   <a class="hs-btn hs-btn--primary" href="#plans">Compare plans</a>
   {% else %}
   <p>Unable to load billing.</p>

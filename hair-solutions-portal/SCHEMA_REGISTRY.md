@@ -23,8 +23,8 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 |--------|----------------|------------------|
 | Hair measurements + profile | **Contact properties** | `CRM.contact` GraphQL / HubL |
 | Saved customization templates | **Contact properties** (one preset per property set, or JSON in a long text field if needed) | `CRM.contact` |
-| Orders | **Native HubSpot Commerce `order`** | GraphQL **if** type appears in explorer; else **Deal + line items** or mirrored contact fields |
-| Invoices | **Native HubSpot `invoices`** | Same as orders |
+| Orders (this theme) | **Deals** associated to contact | GraphQL: `deal_collection__contact_to_deal` aliased as `p_order_collection__primary` in `*.graphql` — **confirm name in explorer** |
+| Invoices (this theme) | **`portal_invoices_json`** on contact | Workflow/automation mirrors rows; native `invoices` in GraphQL when available |
 | Order timeline / history | Order properties, **Deal** stage history, **Tickets**, or **Notes** | Prefer objects listed for private pages |
 | Catalog (plans, locations, products) | **HubDB** | HubDB GraphQL |
 
@@ -34,14 +34,15 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 
 | Artifact | HubSpot ID / name | Notes |
 |----------|-------------------|--------|
-| Contact property group `hair_profile` | *(group internal name)* | Map fields from `schemas/hair_profile.json` vocabulary |
-| Contact property group `customization_template` / `saved_templates` | *(group internal name)* | Map from `schemas/customization_template.json` vocabulary |
+| Contact `portal_hair_profile_json` | `portal` group | JSON object; same keys as `schemas/hair_profile.json` · create via `npm run portal:hubspot-props` |
+| Contact `portal_saved_templates_json` | `portal` group | JSON **array** of template objects |
+| Contact `portal_invoices_json` | `portal` group | JSON **array** of `{ invoice_number, issue_date, total, currency, status, pdf_url }` |
 | Native object **orders** | `order` / FQN from schema API | Associations to **contact** |
 | Native object **invoices** | `invoices` | Associations to **contact** |
 | Optional **Deal** pipeline for portal order mirror | *(pipeline ID)* | If GraphQL cannot read `order` directly |
-| HubDB `subscription_plans` | *(table ID)* | |
-| HubDB `affiliated_locations` | *(table ID)* | |
-| HubDB `products` | *(table ID)* | |
+| HubDB `subscription_plans` | *(table ID)* | Create + seed via API: `npm run portal:hubdb-sync` (private app needs **hubdb** scope) |
+| HubDB `affiliated_locations` | *(table ID)* | same |
+| HubDB `products` | *(table ID)* | same |
 | Optional custom objects (`schemas/*.json`) | *(only if created)* | **Not required** for theme upload |
 
 ---

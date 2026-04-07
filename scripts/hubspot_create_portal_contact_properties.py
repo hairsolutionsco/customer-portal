@@ -4,6 +4,7 @@ Create Hair Solutions Portal 2.0 contact property groups + properties (issue #11
 
 Requires a Private App access token (often called "service key") with scope that
 includes contact property/schema write, e.g. crm.schemas.contacts.write.
+(HubDB uses the same env var but needs the **hubdb** scope — see hubspot_sync_hubdb.py.)
 
   export HUBSPOT_SERVICE_KEY="pat-na1-..."   # or HUBSPOT_PRIVATE_APP_ACCESS_TOKEN
   cd 00-engineering/apps/customer-portal
@@ -21,8 +22,10 @@ import urllib.error
 import urllib.request
 
 BASE = "https://api.hubapi.com/crm/v3/properties/contacts"
-TOKEN = os.environ.get("HUBSPOT_SERVICE_KEY") or os.environ.get(
-    "HUBSPOT_PRIVATE_APP_ACCESS_TOKEN"
+TOKEN = (
+    os.environ.get("HUBSPOT_SERVICE_KEY")
+    or os.environ.get("HUBSPOT_PRIVATE_APP_ACCESS_TOKEN")
+    or os.environ.get("HUBSPOT_PERSONAL_ACCESS_KEY")
 )
 
 # HubSpot requires two options for booleancheckbox (values must be "true" / "false").
@@ -63,7 +66,7 @@ def request_json(method: str, url: str, body: dict | None = None) -> tuple[int, 
 def main() -> int:
     if not TOKEN:
         print(
-            "error: set HUBSPOT_SERVICE_KEY or HUBSPOT_PRIVATE_APP_ACCESS_TOKEN",
+            "error: set HUBSPOT_SERVICE_KEY, HUBSPOT_PRIVATE_APP_ACCESS_TOKEN, or HUBSPOT_PERSONAL_ACCESS_KEY",
             file=sys.stderr,
         )
         return 1
@@ -166,6 +169,34 @@ def main() -> int:
             "label": "Is portal customer",
             "type": "bool",
             "fieldType": "booleancheckbox",
+            "groupName": "portal",
+        },
+        {
+            "name": "portal_hair_profile_json",
+            "label": "Portal hair profile (JSON)",
+            "type": "string",
+            "fieldType": "textarea",
+            "groupName": "portal",
+        },
+        {
+            "name": "portal_saved_templates_json",
+            "label": "Portal saved templates (JSON array)",
+            "type": "string",
+            "fieldType": "textarea",
+            "groupName": "portal",
+        },
+        {
+            "name": "portal_invoices_json",
+            "label": "Portal invoices mirror (JSON array)",
+            "type": "string",
+            "fieldType": "textarea",
+            "groupName": "portal",
+        },
+        {
+            "name": "portal_billing_json",
+            "label": "Portal billing snapshot (JSON)",
+            "type": "string",
+            "fieldType": "textarea",
             "groupName": "portal",
         },
     ]

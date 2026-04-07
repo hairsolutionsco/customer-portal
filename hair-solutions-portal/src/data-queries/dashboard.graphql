@@ -1,12 +1,32 @@
 # label: "Portal Dashboard"
-# description: "Dashboard data (stub until custom objects + contact subscription props exist)"
+# description: "Logged-in contact + deal mirror (orders). Re-add portal_* JSON fields when those properties exist in CMS GraphQL."
 # $contact_id: {{ request.contact.contact_vid || '' }}
+# Deal association label: verify in GraphQL explorer if upload fails — see SCHEMA_REGISTRY.md
 query dashboard($contact_id: String!) {
   CRM {
     contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      _metadata {
+        id
+      }
       firstname
       lastname
       email
+      associations {
+        p_order_collection__primary: deal_collection__contact_to_deal {
+          items {
+            hs_object_id
+            order_number: hs_object_id
+            product_name: dealname
+            status: dealstage
+            production_stage: dealstage
+            total: amount
+            currency: deal_currency_code
+            hs_createdate: createdate
+            estimated_completion: closedate
+          }
+          total
+        }
+      }
     }
   }
 }

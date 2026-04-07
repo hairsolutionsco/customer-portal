@@ -1,7 +1,6 @@
 # label: "Portal Billing"
-# description: "Current plan + plan catalog (stub until contact props + HubDB subscription_plans exist)"
+# description: "Contact core fields. Re-add `portal_billing_json` + HUBDB subscription_plans_collection after props sync and portal:hubdb-sync."
 # $contact_id: {{ request.contact.contact_vid || '' }}
-# Restore full query from AGENT_PROMPT after #11 + #12; validate in GraphQL explorer.
 query billing($contact_id: String!) {
   CRM {
     contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {

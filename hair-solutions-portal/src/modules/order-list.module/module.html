@@ -26,14 +26,15 @@
       </thead>
       <tbody>
         {% for o in orders %}
+        {% set st = o.status|lower %}
         <tr
           data-order-status="{{ o.status }}"
           data-order-row
-          {% if o.status == 'delivered' %}data-order-bucket="completed"{% elif o.status == 'cancelled' %}data-order-bucket="cancelled"{% else %}data-order-bucket="active"{% endif %}
+          {% if st == 'closedwon' %}data-order-bucket="completed"{% elif st == 'closedlost' %}data-order-bucket="cancelled"{% else %}data-order-bucket="active"{% endif %}
         >
           <td><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
           <td>{{ o.product_name }}</td>
-          <td><span class="hs-badge hs-badge--{{ o.status }}">{{ o.status|replace('_',' ') }}</span></td>
+          <td><span class="hs-badge hs-badge--pending">{{ o.status|replace('_',' ') }}</span></td>
           <td><span class="hs-badge">{{ o.production_stage|replace('_',' ') }}</span></td>
           <td>{% if o.total is not none %}${{ o.total }} {{ o.currency }}{% else %}—{% endif %}</td>
           <td>{{ o.hs_createdate }}</td>

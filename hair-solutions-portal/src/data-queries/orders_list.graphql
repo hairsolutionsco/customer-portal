@@ -1,5 +1,5 @@
 # label: "Portal Orders List"
-# description: "All orders for logged-in customer (stub until order custom object exists)"
+# description: "Deals associated to contact (portal order mirror)"
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query orders_list($contact_id: String!) {
   CRM {
@@ -7,6 +7,22 @@ query orders_list($contact_id: String!) {
       firstname
       lastname
       email
+      associations {
+        p_order_collection__primary: deal_collection__contact_to_deal {
+          items {
+            hs_object_id
+            order_number: hs_object_id
+            product_name: dealname
+            status: dealstage
+            production_stage: dealstage
+            total: amount
+            currency: deal_currency_code
+            hs_createdate: createdate
+            estimated_completion: closedate
+          }
+          total
+        }
+      }
     }
   }
 }

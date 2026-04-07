@@ -10,7 +10,7 @@ Based on the [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpo
 | Step | Action |
 |---|---|
 | 0.1 | Install HubSpot CLI: `npm install -g @hubspot/cli` |
-| 0.2 | Run `hs init` → paste your PAK → connect your portal |
+| 0.2 | Run **`hs account auth`** → paste your personal access key → default account (global **`~/.hscli/config.yml`**) — **`hs init` is not used** on current CLI |
 | 0.3 | Set up a **sandbox account** for development (`hs sandbox create`) |
 | 0.4 | Connect a custom subdomain (e.g., `portal.hairsolutions.co`) — required for memberships |
 
@@ -534,7 +534,7 @@ Based on the [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpo
 | Step | Action |
 |---|---|
 | 0.1 | Install HubSpot CLI: `npm install -g @hubspot/cli` |
-| 0.2 | Run `hs init` → paste your PAK → connect your portal |
+| 0.2 | Run **`hs account auth`** → paste your personal access key → default account (global **`~/.hscli/config.yml`**) — **`hs init` is not used** on current CLI |
 | 0.3 | Set up a **sandbox account** for development (`hs sandbox create`) |
 | 0.4 | Connect a custom subdomain (e.g., `portal.hairsolutions.co`) — required for memberships |
 

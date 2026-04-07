@@ -19,7 +19,7 @@
         <tr>
           <td><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
           <td>{{ o.product_name }}</td>
-          <td><span class="hs-badge hs-badge--{{ o.status }}">{{ o.status|replace('_',' ') }}</span></td>
+          <td><span class="hs-badge hs-badge--pending">{{ o.status|replace('_',' ') }}</span></td>
           <td>{% if o.total is not none %}${{ o.total }}{% else %}—{% endif %}</td>
           <td>{{ o.hs_createdate }}</td>
         </tr>

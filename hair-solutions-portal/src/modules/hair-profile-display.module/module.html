@@ -1,6 +1,6 @@
 {% set contact = data_query.data.CRM.contact %}
-{% set items = contact.associations.p_hair_profile_collection__primary.items if contact and contact.associations.p_hair_profile_collection__primary else [] %}
-{% set hp = items|first if items else none %}
+{% set raw = contact.portal_hair_profile_json if contact else none %}
+{% set hp = raw|fromjson if raw else none %}
 <section class="hair-profile-display" aria-label="Hair profile">
   <h1 class="hs-page-title">Hair profile</h1>
   {% if hp %}

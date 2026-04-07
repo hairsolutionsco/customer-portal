@@ -15,7 +15,7 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 - **Repo:** `00-engineering/apps/customer-portal` · theme: `hair-solutions-portal/`
 - **Issues:** #3–#57 · exports: `exports/github-issues.json` (run `npm run portal:issues` to refresh)
 - **Data model:** **Hair profile + saved templates → Contact properties.** **Orders → native Commerce `order`.** **Invoices → native `invoices`.** **Custom objects not required** for go-live (CMS custom objects = Enterprise per HubSpot docs). **GraphQL** on membership pages officially lists contact, company, deal, ticket, quote, line_item — **confirm** whether `order`/invoices appear in **your** explorer; if not, use **Deal/Contact mirror** via workflows.
-- **Baseline:** Theme + optional `schemas/*.json` (reference) + HubDB seed JSON + GraphQL files exist in repo; **SCHEMA_REGISTRY.md** must reflect **contact property names + HubDB IDs + native commerce** before trusting non-stub queries.
+- **Baseline:** GraphQL in repo targets **deals-as-orders** (`deal_collection__contact_to_deal` — verify in explorer), **HubDB** table names `products`, `affiliated_locations`, `subscription_plans`, and contact JSON fields `portal_hair_profile_json`, `portal_saved_templates_json`, `portal_invoices_json`. **API (required):** **`./scripts/op_env.sh npm run portal:hubspot-props`** (CRM scopes) and **`./scripts/op_env.sh npm run portal:hubdb-sync`** (**hubdb** scope on the private app). **Next gate:** upload theme; fix association labels + HubDB column names if validation errors.
 
 ### Lead agent — run in order
 
@@ -28,11 +28,11 @@ Your job: run **§1 Next session** in order, **spawn only the subagents listed t
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|--------|
-| 1 | **A0** | Platform bootstrap | #3, #4, #5 | `cd hair-solutions-portal && hs init`; portal choice per **§4**; no PAKs in git |
+| 1 | **A0** | Platform bootstrap | #3, #4, #5 | **`hs account auth`** (global **`~/.hscli/config.yml`**); **`hs accounts list`** OK; portal choice per **§4**; no PAKs in git — **do not use `hs init`** (removed / incompatible with global accounts) |
 | 2a | **A1** | CRM config (hair profile → contact props) | #6 | Parallel with 2b after group 1 if portal connected |
 | 2b | **A1** | CRM config (native orders + associations) | #7 | Not blocked on custom object; introspect GraphQL for `order` |
 | — | **A1** | Timeline / status (#8) | #8 | Deal stages, tickets, or native order — **not** strictly after custom order schema |
-| 2c | **A2** | HubDB | #12–#14 | Parallel with 2a/2b once portal ready; table names must match seeds |
+| 2c | **A2** | HubDB | #12–#14 | **`npm run portal:hubdb-sync`** from seed JSON (API); do not create tables manually unless API blocked |
 | *later* | **A3** | Membership & access | #49–#50 | After subdomain/plan clear |
 | *later* | **A5** + **A6** | GraphQL CRM + HubDB | #20–#29 | **Only after** `SCHEMA_REGISTRY.md` has real IDs/names |
 | *later* | **A7** | Global chrome | #30–#31 | **Before** wide A8–A12 page parallelization |
@@ -101,9 +101,9 @@ Refreshes issue exports, `hs upload` (if config present), git commit + push. Fla
 
 ### HubSpot CLI and portal choice (#3–#5)
 
-**Default (already working on many machines):** authenticate with **`hs account auth`** — credentials live in **`~/.hscli/config.yml`**. Theme upload from `hair-solutions-portal/`: **`hs cms upload src hair-solutions-portal`** on newer CLI, or **`hs upload src hair-solutions-portal`** on older CLI. **`portal_task_complete.sh`** detects which works (no local config file required).
+**Default:** credentials live in **`~/.hscli/config.yml`**. If **`hs accounts list`** already shows your portal and uploads work, **do nothing** — auth lasts until you revoke the key or use a new machine. Only run **`hs account auth`** when you need to (first setup, rotated personal access key, new account, or CLI says you are not logged in). Theme upload from `hair-solutions-portal/`: **`hs cms upload src hair-solutions-portal`** on newer CLI, or **`hs upload src hair-solutions-portal`** on older CLI. **`portal_task_complete.sh`** detects which works (no local config file required).
 
-**Optional:** `cd hair-solutions-portal && hs init` if you want a **gitignored** local `hubspot.config.yml` (HubSpot may refuse if you only use global config — that is OK).
+**Do not use `hs init`:** HubSpot’s current CLI uses **global account management**; `hs init` returns an error directing you to **`hs account auth`**. Optional gitignored **`hubspot.config.yml`** is only relevant if your CLI version documents it; default path is global config + `hs accounts list` / default account.
 
 | Situation | Approach |
 |-----------|----------|
@@ -136,7 +136,7 @@ Production portal: extra care for **published** `/portal/*`, HubDB, CRM test rec
 
 | Prerequisite | Why |
 |--------------|-----|
-| `cd hair-solutions-portal && hs init` done; `hs upload` works once manually | Unblocks ritual uploads |
+| **`hs account auth`** done; **`hs accounts list`** shows default; **`hs upload`** / **`hs cms upload`** works once manually from `hair-solutions-portal/` | Unblocks ritual uploads |
 | `gh auth status` OK | `npm run portal:issues` and ritual push |
 | Machine **stays awake**; Cursor / agent **allowed to run** | Sleep kills long jobs |
 | **§1** table trimmed to the **next waves** you want (e.g. A0→A1/A2) | Agent doesn’t wander |

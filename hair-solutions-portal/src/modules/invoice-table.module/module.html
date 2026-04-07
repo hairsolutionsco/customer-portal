@@ -1,8 +1,9 @@
 {% set contact = data_query.data.CRM.contact %}
-{% set rows = contact.associations.p_invoice_collection__primary.items if contact and contact.associations.p_invoice_collection__primary else [] %}
+{% set raw = contact.portal_invoices_json if contact else none %}
+{% set rows = raw|fromjson if raw else [] %}
 <section class="invoice-table" aria-label="Invoices">
   <h1 class="hs-page-title">Invoices</h1>
-  {% if rows %}
+  {% if rows and rows|length > 0 %}
   <div class="hs-table-wrap">
     <table class="hs-table">
       <thead>

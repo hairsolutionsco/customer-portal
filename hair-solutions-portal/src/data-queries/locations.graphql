@@ -1,8 +1,11 @@
 # label: "Portal Locations"
-# description: "Affiliated locations from HubDB (stub until HubDB affiliated_locations table exists)"
-query locations {
+# description: "CRM stub until HubDB `affiliated_locations` table exists — run portal:hubdb-sync then restore HUBDB block."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query locations($contact_id: String!) {
   CRM {
-    contact(uniqueIdentifier: "id", uniqueIdentifierValue: "0") {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
       email
     }
   }

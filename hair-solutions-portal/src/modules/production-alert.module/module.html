@@ -2,7 +2,7 @@
 {% set orders = contact.associations.p_order_collection__primary.items if contact and contact.associations.p_order_collection__primary else [] %}
 {% set ns = namespace(pick=none) %}
 {% for o in orders %}
-  {% if o.status != 'delivered' and o.status != 'cancelled' and o.estimated_completion %}
+  {% if not o.estimated_completion and o.product_name %}
     {% if ns.pick is none %}
       {% set ns.pick = o %}
     {% endif %}
@@ -10,9 +10,9 @@
 {% endfor %}
 <div class="production-alert" data-alert {% if ns.pick is none %}hidden{% endif %}>
   <div>
-    <strong>Upcoming production</strong>
+    <strong>Open order</strong>
     {% if ns.pick %}
-    <p style="margin:0.35rem 0 0;">Your next system — {{ ns.pick.product_name }} — estimated completion: {{ ns.pick.estimated_completion }}.</p>
+    <p style="margin:0.35rem 0 0;">{{ ns.pick.product_name }} — last update: {{ ns.pick.hs_createdate }}.</p>
     {% endif %}
   </div>
   <button type="button" class="hs-btn hs-btn--ghost" data-dismiss-alert aria-label="Dismiss">×</button>

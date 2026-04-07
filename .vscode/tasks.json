@@ -1,0 +1,110 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Customer Portal: HubSpot contact props (1Password)",
+      "detail": "Injects HUBSPOT_* from 00-engineering/.env via op run — no keys stored in this file.",
+      "type": "shell",
+      "command": "./scripts/op_env.sh npm run portal:hubspot-props",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Customer Portal: HubDB sync (1Password)",
+      "detail": "Creates/publishes HubDB tables + seed rows via CMS API (hubdb scope).",
+      "type": "shell",
+      "command": "./scripts/op_env.sh npm run portal:hubdb-sync",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Customer Portal: theme build (local)",
+      "detail": "No secrets. Validates HubSpot theme files only.",
+      "type": "shell",
+      "command": "npm run portal:build",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Customer Portal: ship ritual (1Password)",
+      "detail": "op inject → issues export, hs upload, git push. Requires gh + hs + op signed in.",
+      "type": "shell",
+      "command": "./scripts/op_env.sh ./scripts/portal_task_complete.sh --build-first \"${input:portalCommitMsg}\"",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Customer Portal: full pipeline (verify + props + ship)",
+      "detail": "npm ci → portal:verify → portal:hubspot-props (op) → issues + hs upload + git. Stops on first error.",
+      "type": "shell",
+      "command": "./scripts/op_env.sh bash ./scripts/portal_automation_full.sh \"${input:portalCommitMsg}\"",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Customer Portal: full pipeline — continue on error",
+      "detail": "Same as full pipeline but runs all steps; exit 1 if any step failed.",
+      "type": "shell",
+      "command": "./scripts/op_env.sh bash ./scripts/portal_automation_full.sh --continue-on-error \"${input:portalCommitMsg}\"",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Customer Portal: ship ritual — no git (1Password)",
+      "detail": "Same as ship but SKIP_GIT=1 (upload + issues only).",
+      "type": "shell",
+      "command": "SKIP_GIT=1 ./scripts/op_env.sh ./scripts/portal_task_complete.sh --skip-git",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "portalCommitMsg",
+      "type": "promptString",
+      "description": "Git commit message (portal_task_complete)",
+      "default": "chore(portal): ship theme"
+    }
+  ]
+}

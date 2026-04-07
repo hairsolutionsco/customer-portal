@@ -1,14 +1,14 @@
 {% set contact = data_query.data.CRM.contact %}
-{% set orders_assoc = contact.associations.p_order_collection__primary if contact %}
+{% set orders_assoc = contact.associations.p_order_collection__primary if contact else none %}
 {% set orders = orders_assoc.items if orders_assoc else [] %}
 {% set order_total = orders_assoc.total if orders_assoc else 0 %}
-{% set hp = none %}
-{% if contact and contact.associations.p_hair_profile_collection__primary.items %}
-  {% set hp = contact.associations.p_hair_profile_collection__primary.items|first %}
-{% endif %}
+{% set hp_raw = contact.portal_hair_profile_json if contact else none %}
+{% set hp = hp_raw|fromjson if hp_raw else none %}
+{% set bill_raw = contact.portal_billing_json if contact else none %}
+{% set bill = bill_raw|fromjson if bill_raw else none %}
 {% set ns = namespace(active=0) %}
 {% for o in orders %}
-  {% if o.status != 'delivered' and o.status != 'cancelled' %}
+  {% if not o.estimated_completion %}
     {% set ns.active = ns.active + 1 %}
   {% endif %}
 {% endfor %}
@@ -18,17 +18,17 @@
     <p class="hs-stat-card__value">{{ order_total }}</p>
   </div>
   <div class="hs-stat-card">
-    <p class="hs-stat-card__label">Active orders</p>
+    <p class="hs-stat-card__label">Open deals</p>
     <p class="hs-stat-card__value">{{ ns.active }}</p>
   </div>
   <div class="hs-stat-card">
     <p class="hs-stat-card__label">Profile</p>
     <p class="hs-stat-card__value">
-      {% if hp and hp.onboarding_completed == 'true' %}Complete{% else %}Needs setup{% endif %}
+      {% if hp and (hp.onboarding_completed == true or hp.onboarding_completed == 'true') %}Complete{% else %}Needs setup{% endif %}
     </p>
   </div>
   <div class="hs-stat-card">
     <p class="hs-stat-card__label">Current plan</p>
-    <p class="hs-stat-card__value">{% if contact.current_plan %}{{ contact.current_plan }}{% else %}—{% endif %}</p>
+    <p class="hs-stat-card__value">{% if bill and bill.current_plan %}{{ bill.current_plan }}{% else %}—{% endif %}</p>
   </div>
 </section>

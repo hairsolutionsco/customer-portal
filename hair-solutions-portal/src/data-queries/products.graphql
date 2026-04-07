@@ -1,9 +1,11 @@
 # label: "Portal Shop"
-# description: "Product catalog from HubDB (stub until HubDB products table exists)"
-# Runtime: replace with products_collection query from AGENT_PROMPT after #14.
-query products {
+# description: "CRM stub until HubDB `products` table exists — run portal:hubdb-sync then restore HUBDB products_collection block."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query products($contact_id: String!) {
   CRM {
-    contact(uniqueIdentifier: "id", uniqueIdentifierValue: "0") {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
       email
     }
   }

@@ -1,0 +1,18 @@
+---
+description: Prefer HubSpot APIs (private app / PAT) over manual UI for repeatable portal setup
+alwaysApply: true
+---
+
+## API-first for HubSpot configuration
+
+When automating Portal 2.0 setup, **use the HubSpot APIs** for anything the API supports. Do **not** ask humans to click through Settings for steps we can script.
+
+| Area | Automation in this repo |
+|------|-------------------------|
+| Contact property groups + properties | `scripts/hubspot_create_portal_contact_properties.py` → `npm run portal:hubspot-props` (CRM scopes, e.g. `crm.schemas.contacts.write`) |
+| HubDB tables + seed rows | `scripts/hubspot_sync_hubdb.py` → `npm run portal:hubdb-sync` (**requires `hubdb` scope** on the same or another private app token) |
+| Theme upload | `hs` CLI + `portal_task_complete.sh` |
+
+**Token:** Prefer one private app with **both** CRM property and **HubDB** scopes, or document two env vars if HubSpot forces split apps.
+
+UI remains acceptable only for: DNS, membership access groups where no stable API path exists, or one-off approvals — and those should be called out explicitly as exceptions.

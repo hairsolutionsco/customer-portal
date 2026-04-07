@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+*.md
+exports
+hair-solutions-portal
+.cursor
+coverage
+.turbo
+npm-debug.log*
+.DS_Store

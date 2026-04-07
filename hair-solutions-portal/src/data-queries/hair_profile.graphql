@@ -1,5 +1,5 @@
 # label: "Hair Profile"
-# description: "Hair profile for logged-in customer (stub until hair_profile custom object + association names exist)"
+# description: "Contact core fields. Re-add `portal_hair_profile_json` after `portal:hubspot-props` and GraphQL explorer shows it on crm_contact."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query hair_profile($contact_id: String!) {
   CRM {

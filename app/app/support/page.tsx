@@ -49,7 +49,7 @@ export default async function SupportPage() {
         <div className="bg-white shadow rounded-lg p-12 text-center">
           <h3 className="text-lg font-medium text-gray-900 mb-2">No support tickets</h3>
           <p className="text-gray-500 mb-6">
-            Need help? Create a support ticket and we'll get back to you soon.
+            Need help? Create a support ticket and we&apos;ll get back to you soon.
           </p>
           <Link
             href="/app/support/new"

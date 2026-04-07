@@ -76,7 +76,7 @@ Each role is a **stable persona** you assign to a subagent. Give each agent: rep
 |-------|--------|----------------|---------------------|
 | **A0 — Platform bootstrap** | CLI, portal target (#3–#4), subdomain (#5), gitignore for optional local `hubspot.config.yml` | #3, #4, #5 | `hs` working (`hs accounts list`); auth via **`~/.hscli/config.yml`** and/or local gitignored config; portal chosen (sandbox **or** production per handoff); DNS/subdomain plan for memberships documented |
 | **A1 — CRM configuration** | Contact property groups (hair profile, templates, billing flags), native **order** / **invoices** setup + associations; optional `schemas/*.json` only if needed outside CMS | #6–#11 | `SCHEMA_REGISTRY.md` filled: property internal names, HubDB IDs, native object FQNs; GraphQL notes for order/invoice vs mirror strategy |
-| **A2 — HubDB** | Table definitions + seed JSON under `hubdb/` | #12–#14 | Three tables; published rows or import-ready seed |
+| **A2 — HubDB** | Table definitions + seed JSON under `hubdb/`; **sync to portal via API** `npm run portal:hubdb-sync` | #12–#14 | Three tables published via HubDB API (private app **hubdb** scope); seed JSON is source of truth |
 | **A3 — Membership & access** | Access group, page gates, registration workflow | #49, #50 | `is_portal_customer` (or agreed flag), gated `/portal/*`, workflows documented |
 | **A4 — Theme scaffold** | `theme.json`, `fields.json`, folder skeleton, `base.html` / `portal.html`, CSS variables | #15–#19 | Compilable empty theme uploaded once for smoke test |
 | **A5 — GraphQL (CRM)** | Contact-scoped queries | #20–#26, #29 | Valid `.graphql` files; variables documented in comments |

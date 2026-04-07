@@ -1,0 +1,23 @@
+# Validates the HubSpot CMS theme locally on every PR/push (no HubSpot auth required).
+name: Portal theme build
+
+on:
+  push:
+    paths:
+      - "hair-solutions-portal/**"
+      - "scripts/portal_build.sh"
+      - ".github/workflows/portal-theme-build.yml"
+  pull_request:
+    paths:
+      - "hair-solutions-portal/**"
+      - "scripts/portal_build.sh"
+      - ".github/workflows/portal-theme-build.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate theme (structure + JSON + GraphQL presence)
+        run: bash scripts/portal_build.sh

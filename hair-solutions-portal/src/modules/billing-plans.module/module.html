@@ -4,6 +4,7 @@
   {% if plans %}
   <div class="billing-plans__grid">
     {% for p in plans %}
+    {% if p.is_active %}
     <div class="hs-card">
       <h3 style="margin-top:0;">{{ p.name }}</h3>
       <p style="font-size:1.5rem;font-weight:700;">${{ p.price }}<span style="font-size:0.875rem;font-weight:400;">/{{ p.interval }}</span></p>
@@ -12,6 +13,7 @@
       <div style="margin-top:1rem;">{{ p.features }}</div>
       <a class="hs-btn hs-btn--outline" style="margin-top:1rem;display:inline-flex;" href="/portal/support">Talk to us</a>
     </div>
+    {% endif %}
     {% endfor %}
   </div>
   {% else %}

@@ -6,6 +6,8 @@
 #
 # Usage:
 #   ./scripts/portal_task_complete.sh "chore(portal): describe the task"   # full ritual incl. git
+#   ./scripts/portal_task_complete.sh --build-first "chore(portal): msg"   # run portal_build.sh first
+#   PORTAL_BUILD_FIRST=1 ./scripts/portal_task_complete.sh "msg"            # same as --build-first
 #   ./scripts/portal_task_complete.sh   # issues + HubSpot only; git skipped (IDE-friendly)
 #   SKIP_HUBSPOT=1 ./scripts/portal_task_complete.sh "docs: ..."
 #   SKIP_GIT=1 ./scripts/portal_task_complete.sh "wip"   # issues + HubSpot only (explicit)
@@ -13,9 +15,10 @@
 # HubSpot: runs theme upload from hair-solutions-portal/ using the CLI default account
 # (~/.hscli/config.yml). Optional local hair-solutions-portal/hubspot.config.yml (gitignored)
 # is not required when global auth is configured.
-# Run via 1Password injection when your workflow uses it:
+# Run via 1Password injection (secrets live in 00-engineering/.env — do not cat/commit):
+#   ./scripts/op_env.sh ./scripts/portal_task_complete.sh "msg"
+# Manual equivalent from this directory:
 #   op run --env-file ../../.env.op --env-file ../../.env -- ./scripts/portal_task_complete.sh "msg"
-# (adjust paths to monorepo root .env.op / .env if needed.)
 set -euo pipefail
 
 # HubSpot CLI: newer releases use `hs cms upload`; older use top-level `hs upload`.
@@ -49,6 +52,7 @@ cd "$ROOT"
 SKIP_ISSUES="${SKIP_ISSUES:-0}"
 SKIP_GIT="${SKIP_GIT:-0}"
 SKIP_HUBSPOT="${SKIP_HUBSPOT:-0}"
+BUILD_FIRST="${PORTAL_BUILD_FIRST:-0}"
 COMMIT_MSG=""
 
 for arg in "$@"; do
@@ -57,7 +61,12 @@ for arg in "$@"; do
     --skip-git) SKIP_GIT=1 ;;
     --skip-hubspot) SKIP_HUBSPOT=1 ;;
     --issues-only) SKIP_GIT=1; SKIP_HUBSPOT=1 ;;
+    --build-first) BUILD_FIRST=1 ;;
     *)
+      if [[ "$arg" == --* ]]; then
+        echo "portal_task_complete: unknown flag: $arg" >&2
+        exit 1
+      fi
       if [[ -z "$COMMIT_MSG" ]]; then
         COMMIT_MSG="$arg"
       else
@@ -66,6 +75,11 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+if [[ "$BUILD_FIRST" == "1" ]]; then
+  echo "portal_task_complete: running portal_build.sh ..."
+  bash "$ROOT/scripts/portal_build.sh"
+fi
 
 if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$ROOT/scripts/sync-github-exports.sh"
