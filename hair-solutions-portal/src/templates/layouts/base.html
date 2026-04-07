@@ -13,7 +13,7 @@
   {% endif %}
   {% block head %}{% endblock %}
 </head>
-<body>
+<body{% if theme.portal_layout.enable_serverless_ping and theme.portal_layout.hub_id %} data-portal-serverless-ping="/_hcms/api/{{ theme.portal_layout.hub_id }}/portal-api/ping"{% endif %}>
   {% block body %}{% endblock %}
   {{ standard_footer_includes }}
   {% block scripts %}{% endblock %}

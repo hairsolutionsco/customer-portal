@@ -1,18 +1,20 @@
-{% set items = data_query.data.HUBDB.products_collection.items if data_query.data.HUBDB and data_query.data.HUBDB.products_collection else [] %}
+{% set hubdb_tid = theme.hubdb.products_table_id %}
+{% set items = hubdb_table_rows(hubdb_tid) if hubdb_tid else [] %}
 <section class="product-grid" aria-label="Shop" data-product-root>
   <h1 class="hs-page-title">Shop</h1>
   <div class="product-grid__tabs" role="tablist">
     <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" data-cat="all" aria-selected="true">All</button>
-    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="maintenance">Maintenance</button>
-    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="styling">Styling</button>
-    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="accessories">Accessories</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Hair Systems">Hair systems</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Adhesives">Adhesives</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Maintenance">Maintenance</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Accessories">Accessories</button>
   </div>
   {% if items %}
   <div class="product-grid__cards">
     {% for p in items %}
-    <article class="hs-card" data-product-cat="{{ p.category }}">
+    <article class="hs-card" data-product-cat="{{ p.category.name|default(p.category.label)|default(p.category) }}">
       <h3 style="margin-top:0;">{{ p.name }}</h3>
-      <span class="hs-badge">{{ p.category }}</span>
+      <span class="hs-badge">{{ p.category.name|default(p.category.label)|default(p.category) }}</span>
       <p style="font-size:0.875rem;">{{ p.short_description }}</p>
       <p>
         <strong>${{ p.price }}</strong>

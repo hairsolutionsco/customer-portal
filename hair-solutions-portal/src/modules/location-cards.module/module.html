@@ -1,4 +1,5 @@
-{% set items = data_query.data.HUBDB.affiliated_locations_collection.items if data_query.data.HUBDB and data_query.data.HUBDB.affiliated_locations_collection else [] %}
+{% set hubdb_lid = theme.hubdb.locations_table_id %}
+{% set items = hubdb_table_rows(hubdb_lid) if hubdb_lid else [] %}
 <section class="location-cards" aria-label="Locations">
   <h1 class="hs-page-title">Partner locations</h1>
   {% if items %}

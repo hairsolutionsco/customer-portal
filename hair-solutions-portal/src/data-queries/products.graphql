@@ -1,5 +1,5 @@
 # label: "Portal Shop"
-# description: "CRM stub until HubDB `products` table exists — run portal:hubdb-sync then restore HUBDB products_collection block."
+# description: "Logged-in contact. Product rows load via HubL `hubdb_table_rows(theme.hubdb.products_table_id)` (membership GraphQL has no HUBDB.table on many portals)."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query products($contact_id: String!) {
   CRM {

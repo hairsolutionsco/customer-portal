@@ -1,5 +1,5 @@
 # label: "Portal Billing"
-# description: "Contact core fields. Re-add `portal_billing_json` + HUBDB subscription_plans_collection after props sync and portal:hubdb-sync."
+# description: "Contact subscription fields + HubL HubDB plans via theme.hubdb.subscription_plans_table_id. JSON snapshot optional."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query billing($contact_id: String!) {
   CRM {
@@ -7,6 +7,12 @@ query billing($contact_id: String!) {
       firstname
       lastname
       email
+      current_plan
+      plan_price
+      billing_interval
+      period_start
+      period_end
+      plan_status
     }
   }
 }

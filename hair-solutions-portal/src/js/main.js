@@ -9,6 +9,18 @@
     return Array.prototype.slice.call((root || document).querySelectorAll(sel));
   }
 
+  // Optional: CMS serverless smoke (GET). Path is account-specific; set after first successful deploy.
+  // Example pattern: /_hcms/api/<HUB_ID>/portal-api/ping — see Design Manager → portal-api.functions
+  var ping = document.body.getAttribute('data-portal-serverless-ping');
+  if (ping) {
+    fetch(ping, { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && j.ok) document.body.setAttribute('data-portal-api-ok', '1');
+      })
+      .catch(function () {});
+  }
+
   var sidebar = qs('[data-portal-sidebar]');
   var toggle = qs('[data-sidebar-toggle]');
   var overlay = qs('[data-portal-overlay]');

@@ -12,8 +12,12 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 | **Native Commerce `order` object** | Commerce / orders feature on account | CRM API: orders exist; **CMS GraphQL exposure** must be **introspected**. |
 | **Native `invoices` object** | Commerce / invoicing on account | Native CRM object + API; **confirm** your SKU includes invoicing; **CMS GraphQL** same caveat as orders. |
 | **Service Hub** | Service Professional | **Tickets** on private pages — useful for support + timeline patterns. |
+| **CMS serverless functions** (`*.functions` under theme `src/`) | **CMS Hub Enterprise** (typical) — *not* granted on all accounts | Upload error *“does not have access to serverless functions”* means use **GraphQL + HubL + external APIs** (e.g. Hostinger Worker) until tier/sandbox allows it. Sample code: `serverless-samples/portal-api.functions/` → copy into `src/` when entitled. **Local:** HubSpot’s `@hubspot/serverless-dev-runtime` / CLI `hs function` tooling is **beta** and may require a compatible account. |
+| **Sandbox vs production** | **Not strictly required** for serverless *in principle* — **subscription / test-account entitlements** matter more | A **CMS developer sandbox** or **Enterprise trial** can expose features your **production Professional** portal lacks. Use a sandbox when you want isolation; use **configurable test accounts** (HubSpot developer docs) to mimic tiers in automation. |
 
 **Automation rule:** Anything not queryable on membership GraphQL → sync via workflow to **Contact** (preferred), **Deal**, or **Company** properties the portal *can* read.
+
+**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). Shop / locations / plan grid use **`hubdb_table_rows(theme.hubdb.*_table_id)`** in modules; defaults are set in `src/fields.json` (update after re-sync if table IDs change).
 
 ---
 

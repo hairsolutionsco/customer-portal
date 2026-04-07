@@ -1,4 +1,5 @@
-{% set plans = data_query.data.HUBDB.subscription_plans_collection.items if data_query.data.HUBDB and data_query.data.HUBDB.subscription_plans_collection else [] %}
+{% set hubdb_pid = theme.hubdb.subscription_plans_table_id %}
+{% set plans = hubdb_table_rows(hubdb_pid) if hubdb_pid else [] %}
 <section id="plans" class="billing-plans" aria-label="Available plans">
   <h2 class="hs-page-title">Plans</h2>
   {% if plans %}
