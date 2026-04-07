@@ -154,3 +154,23 @@ Do **not** commit tokens. Use `HUBSPOT_PRIVATE_APP_TOKEN` env var from shell or 
 - Develop on branch: `claude/hubspot-plugin-creation-G0JUG`
 - Push: `git push -u origin claude/hubspot-plugin-creation-G0JUG`
 - Do not open a PR without explicit user instruction.
+
+---
+
+## Always-Active Skills
+
+The following skill references are automatically loaded as background context for every session. You do not need to invoke them manually — their rules, patterns, and reference material apply at all times.
+
+### CRM & Business Skills
+@.claude/commands/hubspot-crm-model.md
+@.claude/commands/hubspot-business-ops.md
+@.claude/commands/hubspot-how-to.md
+@.claude/commands/hubspot-ai-expert.md
+@.claude/commands/hubspot-customer-sitrep.md
+
+### CMS Developer Skills
+@.claude/commands/hubspot-developer.md
+@.claude/commands/hubspot-cms-fundamentals.md
+@.claude/commands/hubspot-cms-templating.md
+@.claude/commands/hubspot-cms-data-apis.md
+@.claude/commands/hubspot-cms-advanced-patterns.md
