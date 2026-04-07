@@ -165,7 +165,7 @@
     {
       "name": "onboarding_completed",
       "label": "Onboarding completed",
-      "type": "enumeration",
+      "type": "bool",
       "fieldType": "booleancheckbox",
       "groupName": "hair_profile_information",
       "options": [

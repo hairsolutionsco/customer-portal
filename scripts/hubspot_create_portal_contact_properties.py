@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-Create Hair Solutions Portal 2.0 contact property groups + properties (issue #11).
+Create Hair Solutions Portal 2.0 contact property groups + properties (issues #6, #11).
+
+Issue #6 (hair profile): implemented as Contact property `portal_hair_profile_json` (group `portal`)
+holding a JSON object whose keys match `hair-solutions-portal/schemas/hair_profile.json` property
+`name` values — not a posted custom object (see AGENT_PROMPT.md §1, IMPLEMENTATION_PLAN_SUBAGENTS.md).
 
 Requires a Private App access token (often called "service key") with scope that
 includes contact property/schema write, e.g. crm.schemas.contacts.write.
