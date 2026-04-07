@@ -310,7 +310,7 @@ All forms are HubSpot forms created in the HubSpot UI, embedded in modules via `
 
 | Step | Action |
 |---|---|
-| 8.1 | Upload theme: `hs upload src hair-solutions-portal` |
+| 8.1 | Upload theme: `hs cms upload src hair-solutions-portal` (or legacy `hs upload` — see `scripts/portal_task_complete.sh`) |
 | 8.2 | Create pages in HubSpot using your templates: |
 | | `/portal` → Portal Dashboard template |
 | | `/portal/orders` → Portal Orders template |
@@ -834,7 +834,7 @@ All forms are HubSpot forms created in the HubSpot UI, embedded in modules via `
 
 | Step | Action |
 |---|---|
-| 8.1 | Upload theme: `hs upload src hair-solutions-portal` |
+| 8.1 | Upload theme: `hs cms upload src hair-solutions-portal` (or legacy `hs upload` — see `scripts/portal_task_complete.sh`) |
 | 8.2 | Create pages in HubSpot using your templates: |
 | | `/portal` → Portal Dashboard template |
 | | `/portal/orders` → Portal Orders template |

@@ -16,6 +16,65 @@ Build every file in the theme directory structure below. The output is a complet
 
 ---
 
+## Execution model: use the subagent plan + GitHub Issues
+
+**Before writing code**, read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** end-to-end. It defines dependency order, parallel **waves**, **quality gates**, and **16 agent roles (A0–A15)** mapped to GitHub Issues **[#3–#57](https://github.com/hairsolutionsco/customer-portal/issues)**.
+
+| If you are… | You must… |
+|-------------|-----------|
+| **Orchestrator (human or lead agent)** | Run one wave at a time; enforce handoffs (especially `SCHEMA_REGISTRY.md` before GraphQL); merge **global chrome (#30–#31)** before most page work. **After every task or wave that changes code, config, or issue state, run the task-completion ritual below** (or equivalent commands). |
+| **A subagent** | Take **one role** from the table below; only implement files in scope for that role; use **`exports/github-issues.json`** (or the live issue on GitHub) for acceptance criteria and checklists. **Before handing off, ask the orchestrator to run the task-completion ritual** so git, HubSpot, and exports stay current. |
+| **A single agent building solo** | Follow the **same wave order** in `IMPLEMENTATION_PLAN_SUBAGENTS.md` §4; this document (`AGENT_PROMPT.md`) remains the **technical spec** for file contents. **Run the task-completion ritual yourself after each logical task.** |
+
+### Task completion ritual (mandatory after each task / wave)
+
+Do **not** mark work done until all three are satisfied:
+
+| Step | Action |
+|------|--------|
+| **1. Git** | Commit and **push** this repo (`customer-portal`) with a clear message. |
+| **2. HubSpot Design Manager** | Upload the CMS theme from `hair-solutions-portal/`: **`hs cms upload src hair-solutions-portal`** (current CLI) or legacy **`hs upload src hair-solutions-portal`** — `portal_task_complete.sh` picks the right one. Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`hair-solutions-portal/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **`HANDOFF_PROMPT.md`**. |
+| **3. GitHub issues snapshot** | Refresh `exports/github-issues.json` (and milestones) so agents and CI use current issue text — e.g. run `npm run portal:issues` or `./scripts/sync-github-exports.sh`. Close/update issues on GitHub when AC are met (`gh issue close`, edit checklists, etc.) **before** or **as part of** the sync. |
+
+**One-shot automation (recommended):** from `00-engineering/apps/customer-portal`:
+
+```bash
+./scripts/portal_task_complete.sh "type(scope): what you completed"
+```
+
+This runs **issues sync → HubSpot upload → git add / commit / push** (use `SKIP_HUBSPOT=1` if CLI config is not on this machine). If you use 1Password env injection for tools, wrap the whole command in `op run ...` per monorepo `AGENTS.md`.
+
+### Map: this prompt’s sections → subagent role → GitHub Issues
+
+| This file (`AGENT_PROMPT.md`) | Agent role | Issues (primary) |
+|-------------------------------|------------|------------------|
+| §1 Custom Object Schemas | **A1** — CRM schema | #6–#11 |
+| §2 HubDB Table Seed Data | **A2** — HubDB | #12–#14 |
+| §3 Theme Configuration, §4 CSS, §5 JS, §9 Partials, §10 Sections | **A4** — Theme scaffold | #15–#19 |
+| §6 GraphQL Data Queries | **A5** (CRM) + **A6** (HubDB) | #20–#29 |
+| §7 Templates (portal + system) | **A7–A12** (split by page/system) | #30–#42 |
+| §8 Modules | **A7–A12** (same split as templates) | #30–#42 |
+| Memberships, access, forms, KB, deploy | Not fully specified in sections below — follow **`master-plan`** + issues | #49–#57 |
+
+**Platform / HubSpot UI steps** (CLI, portal target, subdomain, access groups, workflows, forms in UI, KB, email, upload, pages, QA): **A0, A3, A13, A14, A15** per `IMPLEMENTATION_PLAN_SUBAGENTS.md` §3.
+
+### Subagent spawn template
+
+```text
+You are Agent {{AGENT_ID}} for hairsolutionsco/customer-portal.
+
+1. Read IMPLEMENTATION_PLAN_SUBAGENTS.md — your role, wave, and issues: {{ISSUE_NUMBERS}}.
+2. Read AGENT_PROMPT.md — only the sections listed in the map above for your role (technical spec).
+3. Read master-plan for architecture alignment.
+4. Implement only your scope; do not duplicate another agent’s files. Hand off SCHEMA_REGISTRY.md updates if you change CRM/HubDB IDs.
+
+Done when: issue acceptance criteria + relevant quality gate in IMPLEMENTATION_PLAN_SUBAGENTS.md §7.
+```
+
+**Secrets:** Never print PAKs or tokens; keep **`hair-solutions-portal/hubspot.config.yml`** gitignored if you create it (#3). Global CLI config lives under **`~/.hscli/`** — never commit that either.
+
+---
+
 ## Directory Structure
 
 ```
@@ -599,7 +658,7 @@ Each system template must include the proper `templateType` annotation:
 -->
 ```
 
-Template types: `membership_login_page`, `membership_register_page`, `membership_reset_password_page`, `membership_reset_password_request_page`, `error_page` (404), `error_page` (500).
+Template types: `membership_login_page`, `membership_register_page`, `membership_reset_page`, `membership_reset_request_page`, `error_page` (404), `error_page` (500).
 
 ---
 
@@ -930,5 +989,7 @@ query applications($contact_id: String!) {
 ## Summary
 
 Build **every single file** listed in the directory structure. No stubs. No placeholders. Production-ready HubL, GraphQL, CSS, and JS. The theme should be uploadable via `hs upload src hair-solutions-portal` and immediately functional once pages are created and access groups configured in HubSpot.
+
+**Execution:** Follow **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** for waves, agent splits, and GitHub Issues **#3–#57**; use **this document** as the build spec for each file you touch.
 
 The current Next.js portal's data model is defined in `prisma/schema.prisma` — use it as the source of truth for what data exists and how it relates. The Prisma models map 1:1 to the HubSpot custom objects defined above.

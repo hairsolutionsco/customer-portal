@@ -11,7 +11,9 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "portal:issues": "bash scripts/sync-github-exports.sh",
+    "portal:ship": "bash scripts/portal_task_complete.sh"
   },
   "dependencies": {
     "@prisma/client": "^5.9.1",

@@ -1,0 +1,80 @@
+{% set order = data_query.data.CRM.p_order %}
+{% set owners = order.associations.contact_collection__primary.items if order and order.associations.contact_collection__primary else [] %}
+{% set stages = [
+  'awaiting_confirmation','materials_preparation','base_construction','hair_ventilation',
+  'styling','quality_inspection','packaging','completed'
+] %}
+{% if order and owners|length > 0 %}
+<article class="order-detail">
+  <header class="order-detail__header">
+    <div>
+      <h1 class="hs-page-title" style="margin-bottom:0.25rem;">Order {{ order.order_number }}</h1>
+      <p style="margin:0;color:var(--hs-color-muted);">{{ order.product_name }}</p>
+    </div>
+    <span class="hs-badge hs-badge--{{ order.status }}">{{ order.status|replace('_',' ') }}</span>
+  </header>
+
+  <div class="order-detail__grid">
+    <div class="hs-card">
+      <h3 style="margin-top:0;">Totals</h3>
+      <p>Subtotal: ${{ order.subtotal }}</p>
+      <p>Tax: ${{ order.tax }}</p>
+      <p>Shipping: ${{ order.shipping }}</p>
+      <p><strong>Total: ${{ order.total }} {{ order.currency }}</strong></p>
+    </div>
+    <div class="hs-card">
+      <h3 style="margin-top:0;">Dates</h3>
+      <p>Ordered: {{ order.hs_createdate }}</p>
+      <p>Est. completion: {{ order.estimated_completion }}</p>
+      <p>Shipped: {{ order.shipped_at }}</p>
+      <p>Delivered: {{ order.delivered_at }}</p>
+    </div>
+  </div>
+
+  <section class="hs-card" style="margin-top:1rem;">
+    <h3 style="margin-top:0;">Production timeline</h3>
+    <div class="order-detail__timeline" role="list">
+      {% for s in stages %}
+      <div role="listitem" class="order-detail__stage{% if order.production_stage == s %} is-current{% endif %}">{{ s|replace('_',' ') }}</div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% set history = order.associations.p_order_status_history_collection__primary.items if order.associations.p_order_status_history_collection__primary else [] %}
+  <section class="hs-card" style="margin-top:1rem;">
+    <h3 style="margin-top:0;">Status history</h3>
+    {% if history %}
+    <ul style="margin:0;padding-left:1.25rem;">
+      {% for h in history %}
+      <li style="margin-bottom:0.5rem;">
+        <strong>{{ h.status }}</strong> — {{ h.stage }}{% if h.notes %}: {{ h.notes }}{% endif %}
+        <div style="font-size:0.8125rem;color:var(--hs-color-muted);">{{ h.hs_createdate }}{% if h.created_by %} · {{ h.created_by }}{% endif %}</div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No status history yet.</p>
+    {% endif %}
+  </section>
+
+  {% if order.configuration_snapshot %}
+  <section class="hs-card" style="margin-top:1rem;">
+    <h3 style="margin-top:0;">Configuration</h3>
+    <pre style="white-space:pre-wrap;font-size:0.875rem;">{{ order.configuration_snapshot }}</pre>
+  </section>
+  {% endif %}
+
+  {% if order.customer_notes %}
+  <section class="hs-card" style="margin-top:1rem;">
+    <h3 style="margin-top:0;">Your notes</h3>
+    <p>{{ order.customer_notes }}</p>
+  </section>
+  {% endif %}
+</article>
+{% else %}
+<div class="hs-card">
+  <h1 class="hs-page-title">Order not found</h1>
+  <p>We could not find this order for your account.</p>
+  <a class="hs-btn hs-btn--primary" href="/portal/orders">Back to orders</a>
+</div>
+{% endif %}

@@ -1,0 +1,50 @@
+{
+  "tableName": "subscription_plans",
+  "description": "Seed rows for HubDB table subscription_plans (create columns in HubSpot to match keys).",
+  "columns": [
+    { "name": "name", "type": "TEXT" },
+    { "name": "description", "type": "RICHTEXT" },
+    { "name": "price", "type": "NUMBER" },
+    { "name": "currency", "type": "TEXT" },
+    { "name": "interval", "type": "SELECT", "options": ["month", "year"] },
+    { "name": "systems_per_year", "type": "NUMBER" },
+    { "name": "features", "type": "RICHTEXT" },
+    { "name": "is_active", "type": "BOOLEAN" },
+    { "name": "display_order", "type": "NUMBER" }
+  ],
+  "rows": [
+    {
+      "name": "Essential",
+      "description": "<p>Foundational care for one active wearer — maintenance visits and email support.</p>",
+      "price": 199,
+      "currency": "USD",
+      "interval": "month",
+      "systems_per_year": 2,
+      "features": "<ul><li>Basic maintenance</li><li>Email support</li><li>Standard turnaround</li></ul>",
+      "is_active": true,
+      "display_order": 1
+    },
+    {
+      "name": "Professional",
+      "description": "<p>Priority support with quarterly refresh planning and style consults.</p>",
+      "price": 349,
+      "currency": "USD",
+      "interval": "month",
+      "systems_per_year": 4,
+      "features": "<ul><li>Priority support</li><li>Quarterly refresh</li><li>Style consultations</li></ul>",
+      "is_active": true,
+      "display_order": 2
+    },
+    {
+      "name": "Premium",
+      "description": "<p>VIP scheduling, emergency replacements, and unlimited consults.</p>",
+      "price": 549,
+      "currency": "USD",
+      "interval": "month",
+      "systems_per_year": 6,
+      "features": "<ul><li>Unlimited consultations</li><li>Emergency replacements</li><li>VIP scheduling</li></ul>",
+      "is_active": true,
+      "display_order": 3
+    }
+  ]
+}

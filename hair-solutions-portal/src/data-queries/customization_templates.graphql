@@ -1,0 +1,16 @@
+# label: "Customization Templates"
+# description: "Saved customization templates for contact"
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# Placeholder: HubSpot validates queries at upload. The association block below must match
+# the name from the GraphQL explorer after custom object `customization_template` exists (#10).
+# SCHEMA_REGISTRY.md — replace `associations { ... }` with the real `p_*_collection__*` path.
+query customization_templates($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+    }
+  }
+}

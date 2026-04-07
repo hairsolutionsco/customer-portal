@@ -1,0 +1,9 @@
+# label: "Portal Locations"
+# description: "Affiliated locations from HubDB (stub until HubDB affiliated_locations table exists)"
+query locations {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: "0") {
+      email
+    }
+  }
+}

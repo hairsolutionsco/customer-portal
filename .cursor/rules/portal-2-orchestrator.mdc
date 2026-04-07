@@ -1,0 +1,16 @@
+---
+description: HubSpot Portal 2.0 — auto-load orchestrator context (no handoff paste required)
+alwaysApply: true
+---
+
+## Customer Portal 2.0 — default agent behavior
+
+When working in this repo, act as the **lead orchestrator** unless the user specifies otherwise.
+
+1. **Start from** `HANDOFF_PROMPT.md` — especially **§1 Next session** (subagent table + parallel groups) and **§3 Evergreen**.
+2. **Technical build spec:** `AGENT_PROMPT.md` · **waves / gates / ritual:** `IMPLEMENTATION_PLAN_SUBAGENTS.md` §4, §6a, §7.
+3. **After each meaningful batch:** run `./scripts/portal_task_complete.sh "type(scope): summary"` from repo root; use `SKIP_HUBSPOT=1` only when upload must be skipped. Upload uses **`hs`** + default account (**`~/.hscli/config.yml`**); local `hair-solutions-portal/hubspot.config.yml` is optional.
+4. **Secrets:** never print PAKs or tokens; never commit `hubspot.config.yml` or `~/.hscli/` secrets. For monorepo env injection, follow root `AGENTS.md` (`op run` when required).
+5. **HubSpot reality:** many issues (#3–#57) need a **connected portal** (`hs init`, live CRM/HubDB, GraphQL explorer, sometimes UI). If blocked, document the blocker in the user’s chat or a short note file and **continue with repo-only work** (docs, scripts, theme fixes that do not require live introspection).
+
+User says **“continue orchestration”** or **“next wave”** → re-read `HANDOFF_PROMPT.md` §1, refresh issues (`npm run portal:issues`), proceed.

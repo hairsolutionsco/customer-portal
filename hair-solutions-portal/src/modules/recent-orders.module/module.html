@@ -1,0 +1,33 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set orders = contact.associations.p_order_collection__primary.items if contact and contact.associations.p_order_collection__primary else [] %}
+<section class="recent-orders hs-card" aria-label="Recent orders">
+  <h2>Recent orders</h2>
+  {% if orders %}
+  <div class="hs-table-wrap">
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th scope="col">Order</th>
+          <th scope="col">Product</th>
+          <th scope="col">Status</th>
+          <th scope="col">Total</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
+          <td>{{ o.product_name }}</td>
+          <td><span class="hs-badge hs-badge--{{ o.status }}">{{ o.status|replace('_',' ') }}</span></td>
+          <td>{% if o.total is not none %}${{ o.total }}{% else %}—{% endif %}</td>
+          <td>{{ o.hs_createdate }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No orders yet.</p>
+  {% endif %}
+</section>

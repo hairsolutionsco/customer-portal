@@ -43,3 +43,8 @@ prisma/migrations
 .railway
 .env.production
 .env.railway
+
+# HubSpot CLI (Portal 2.0 theme — issue #3)
+hubspot.config.yml
+hubspot.config.yaml
+.hsaccount
