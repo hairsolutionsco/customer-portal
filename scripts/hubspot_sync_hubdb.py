@@ -2,10 +2,14 @@
 """
 Sync HubDB tables from hair-solutions-portal/hubdb/*.json via HubSpot CMS HubDB API (issues #12–#14).
 
-Requires a Private App token with HubDB scope (commonly named **hubdb** in the developer UI), e.g.:
-  HUBSPOT_SERVICE_KEY or HUBSPOT_PRIVATE_APP_ACCESS_TOKEN
+Uses the same token resolution as hubspot_create_portal_contact_properties.py
+(hubspot_resolve_token.py): prefers a working **HubSpot CLI** OAuth token, then env
+vars. HubDB scope must be allowed for the chosen token (CLI session usually includes it).
 
   ./scripts/op_env.sh python3 scripts/hubspot_sync_hubdb.py
+  python3 scripts/hubspot_sync_hubdb.py --recreate-table=products   # drop + recreate one table
+
+Env **HUBDB_RECREATE_TABLES** (comma-separated names) matches `--recreate-table=`.
 
 Idempotent:
   - Creates each table if missing (POST /cms/v3/hubdb/tables).
@@ -26,11 +30,12 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-TOKEN = (
-    os.environ.get("HUBSPOT_SERVICE_KEY")
-    or os.environ.get("HUBSPOT_PRIVATE_APP_ACCESS_TOKEN")
-    or os.environ.get("HUBSPOT_PERSONAL_ACCESS_KEY")
-)
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+from hubspot_resolve_token import resolve_hubspot_token_or_exit
+
+_HUBSPOT_TOKEN = ""
 HUBDB_ROOT = "https://api.hubapi.com/cms/v3/hubdb"
 BATCH = 100
 
@@ -44,7 +49,7 @@ def request_json(
         data=data,
         method=method,
         headers={
-            "Authorization": f"Bearer {TOKEN}",
+            "Authorization": f"Bearer {_HUBSPOT_TOKEN}",
             "Content-Type": "application/json",
         },
     )
@@ -187,12 +192,54 @@ def row_values_from_seed(row: dict, column_names: set[str]) -> dict:
     return out
 
 
-def batch_create_draft_rows(table_name: str, rows: list[dict], column_names: set[str]) -> None:
+def coerce_cell_value(col_type: str, value: object) -> object:
+    """HubDB row API expects MAP-shaped values for SELECT/MULTISELECT."""
+    t = (col_type or "TEXT").upper()
+    if t == "SELECT" and isinstance(value, str):
+        return {"name": value, "type": "option"}
+    if t == "MULTISELECT" and isinstance(value, list):
+        return [{"name": str(x), "type": "option"} for x in value]
+    return value
+
+
+def fetch_column_types(table_name: str) -> dict[str, str]:
+    code, body = request_json("GET", table_url(table_name))
+    if code != 200 or not isinstance(body, dict):
+        print(
+            f"error: cannot read column types for {table_name} HTTP {code}: {body}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    cols = body.get("columns") or []
+    return {str(c["name"]): str(c.get("type") or "TEXT") for c in cols if c.get("name")}
+
+
+def delete_table(table_name: str) -> None:
+    code, body = request_json("DELETE", table_url(table_name))
+    if code not in (200, 204):
+        print(
+            f"error: DELETE table {table_name} HTTP {code}: {body}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    print(f"table deleted: {table_name}")
+
+
+def batch_create_draft_rows(
+    table_name: str,
+    rows: list[dict],
+    column_names: set[str],
+    column_types: dict[str, str],
+) -> None:
     for i in range(0, len(rows), BATCH):
         chunk = rows[i : i + BATCH]
         inputs = []
         for idx, row in enumerate(chunk):
-            values = row_values_from_seed(row, column_names)
+            raw = row_values_from_seed(row, column_names)
+            values = {
+                k: coerce_cell_value(column_types.get(k, "TEXT"), v)
+                for k, v in raw.items()
+            }
             inputs.append({"values": values, "displayIndex": i + idx})
         code, body = request_json(
             "POST",
@@ -218,12 +265,19 @@ def publish_table(table_name: str) -> None:
     print(f"published: {table_name}")
 
 
-def sync_one_seed(path: Path, *, skip_rows: bool) -> None:
+def sync_one_seed(
+    path: Path, *, skip_rows: bool, recreate_tables: set[str]
+) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     table_name = data["tableName"]
     columns = data["columns"]
     rows = data.get("rows") or []
     column_names = {c["name"] for c in columns}
+
+    if table_name in recreate_tables:
+        code, _ = request_json("GET", table_url(table_name))
+        if code == 200:
+            delete_table(table_name)
 
     ensure_table(table_name, columns)
     if skip_rows:
@@ -240,21 +294,25 @@ def sync_one_seed(path: Path, *, skip_rows: bool) -> None:
     if not rows:
         print(f"no seed rows in JSON for {table_name}; publishing anyway")
     else:
+        col_types = fetch_column_types(table_name)
         print(f"creating {len(rows)} row(s) on draft: {table_name} ...")
-        batch_create_draft_rows(table_name, rows, column_names)
+        batch_create_draft_rows(table_name, rows, column_names, col_types)
 
     publish_table(table_name)
 
 
 def main() -> int:
-    if not TOKEN:
-        print(
-            "error: set HUBSPOT_SERVICE_KEY, HUBSPOT_PRIVATE_APP_ACCESS_TOKEN, or HUBSPOT_PERSONAL_ACCESS_KEY",
-            file=sys.stderr,
-        )
-        return 1
+    global _HUBSPOT_TOKEN
+    _HUBSPOT_TOKEN = resolve_hubspot_token_or_exit("hubdb")
 
     skip_rows = "--tables-only" in sys.argv
+    recreate: set[str] = set()
+    for arg in sys.argv[1:]:
+        if arg.startswith("--recreate-table="):
+            recreate.add(arg.split("=", 1)[1].strip())
+    env_re = os.environ.get("HUBDB_RECREATE_TABLES", "")
+    if env_re.strip():
+        recreate.update(x.strip() for x in env_re.split(",") if x.strip())
 
     portal_root = Path(__file__).resolve().parent.parent
     hubdb_dir = portal_root / "hair-solutions-portal" / "hubdb"
@@ -269,7 +327,7 @@ def main() -> int:
 
     for f in files:
         print(f"--- {f.name} ---")
-        sync_one_seed(f, skip_rows=skip_rows)
+        sync_one_seed(f, skip_rows=skip_rows, recreate_tables=recreate)
 
     print("hubspot_sync_hubdb: done.")
     return 0

@@ -77,15 +77,19 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 
 **Reference grouping in `schemas/hair_profile.json`:** properties use `groupName` `hair_profile_information` for documentation alignment with the old custom-object plan; on **Contact**, the live storage for the portal is the single field above in group **`portal`**.
 
-**GraphQL:** `hair_profile.graphql` currently requests **firstname / lastname / email** only so theme upload validates before `portal_hair_profile_json` exists in CRM. After `portal:hubspot-props` succeeds, **add** `portal_hair_profile_json` to the query and re-upload once the **CMS GraphQL explorer** shows the field on `crm_contact`.
+**GraphQL:** `hair_profile.graphql` uses core contact fields until the explorer shows **`portal_hair_profile_json`** on `crm_contact` (upload validation rejects undefined fields even when the CRM property exists).
+
+| Artifact | HubSpot ID / name | Notes |
+|----------|-------------------|--------|
 | Contact `portal_saved_templates_json` | `portal` group | JSON **array** of template objects |
 | Contact `portal_invoices_json` | `portal` group | JSON **array** of `{ invoice_number, issue_date, total, currency, status, pdf_url }` |
+| Contact `portal_billing_json` | `portal` group | **Optional until Private App has `crm.schemas.contacts.write`:** create in HubSpot or re-run `portal:hubspot-props` after rotating PAT in 1Password. |
 | Native object **orders** | `order` (Commerce) — FQN / type ID via CRM schema API | **CRM:** associate order ↔ **contact** (Commerce + Associations API). **Not** a custom object. |
 | Native object **invoices** | `invoices` | Associations to **contact** |
 | **Deal** pipeline used for portal “order” list/detail | *(pipeline ID + stage labels)* | **GraphQL path** for orders UI; keep deal naming/stages aligned with production stages or sync from native orders via workflow |
-| HubDB `subscription_plans` | *(pending — sync blocked; see HubDB gate below)* | Create + seed via API: `./scripts/op_env.sh npm run portal:hubdb-sync` (private app needs **hubdb** scope) |
-| HubDB `affiliated_locations` | *(pending)* | same |
-| HubDB `products` | *(pending)* | same |
+| HubDB `subscription_plans` | **241666864** | Sync: `python3 scripts/hubspot_sync_hubdb.py` (uses HubSpot CLI OAuth from `~/.hscli/config.yml` when env token is stale). |
+| HubDB `affiliated_locations` | **241636157** | same |
+| HubDB `products` | **241666863** | Recreated when seed `category` type changes: `--recreate-table=products` |
 
 ### HubDB columns (repo seed = master-plan + `AGENT_PROMPT.md` §2)
 
@@ -95,11 +99,10 @@ Table **names** in HubSpot: `subscription_plans`, `affiliated_locations`, `produ
 |-------|-------------------------|
 | `subscription_plans` | `name`, `description`, `price`, `currency`, `interval`, `systems_per_year`, `features`, `is_active`, `display_order` |
 | `affiliated_locations` | `name`, `country`, `state`, `city`, `address`, `postal_code`, `phone`, `email`, `website`, `services_offered`, `specialties`, `latitude`, `longitude`, `description`, `logo_url`, `is_featured`, `display_order` |
-| `products` | `name`, `slug`, `description`, `short_description`, `price`, `compare_at_price`, `currency`, `category`, `primary_image`, `in_stock`, `featured`, `display_order` |
+| `products` | `category` = **SELECT** (options: Hair Systems, Adhesives, Maintenance, Accessories); other columns as listed in `hubdb/products.json` |
 
-**Gate G2 (HubDB):** blocked until live sync succeeds — rows must be queryable in the target portal with columns matching this table.
+**Gate G2 (HubDB):** **passing** for portal **50966981** — tables published with seed rows (2026-04-07). Token resolution: `scripts/hubspot_resolve_token.py` (env first, then HubSpot CLI OAuth).
 
-**Last sync attempt (Agent A2):** `GET …/hubdb/tables/affiliated_locations` returned **HTTP 401** with `EXPIRED_AUTHENTICATION` and context `expire time: 1970-01-01T00:00:00Z` (revoked/placeholder token). **Vincent:** In HubSpot → **Settings → Integrations → Private Apps**, open the app used for `HUBSPOT_PRIVATE_APP_ACCESS_TOKEN` / `HUBSPOT_SERVICE_KEY`, ensure scope **`hubdb`** (HubDB) is enabled, **create a new access token** (rotate), and store it in **1Password** for `00-engineering/.env` injection. Re-run `./scripts/op_env.sh npm run portal:hubdb-sync` from `apps/customer-portal`, then paste the three numeric table IDs into this registry.
 | Optional custom objects (`schemas/*.json`) | *(only if created)* | **Not required** for theme upload |
 
 ---

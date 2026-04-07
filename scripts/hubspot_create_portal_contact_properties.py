@@ -6,31 +6,38 @@ Issue #6 (hair profile): implemented as Contact property `portal_hair_profile_js
 holding a JSON object whose keys match `hair-solutions-portal/schemas/hair_profile.json` property
 `name` values — not a posted custom object (see AGENT_PROMPT.md §1, IMPLEMENTATION_PLAN_SUBAGENTS.md).
 
-Requires a Private App access token (often called "service key") with scope that
-includes contact property/schema write, e.g. crm.schemas.contacts.write.
-(HubDB uses the same env var but needs the **hubdb** scope — see hubspot_sync_hubdb.py.)
+Uses a working Bearer token: **env first** (`HUBSPOT_PRIVATE_APP_ACCESS_TOKEN`,
+`HUBSPOT_SERVICE_KEY`, `HUBSPOT_PERSONAL_ACCESS_KEY`) when the probe succeeds, then
+**HubSpot CLI** OAuth in `~/.hscli/config.yml`. Env is preferred so private apps
+with `crm.schemas.contacts.write` win over CLI tokens that may be read-biased.
+On property-create **403** / missing scopes, the script retries with the next
+candidate token automatically.
 
-  export HUBSPOT_SERVICE_KEY="pat-na1-..."   # or HUBSPOT_PRIVATE_APP_ACCESS_TOKEN
-  cd 00-engineering/apps/customer-portal
-  python3 scripts/hubspot_create_portal_contact_properties.py
+Scopes: contact property read/write (e.g. crm.schemas.contacts.write). HubDB
+sync is a separate script — see hubspot_sync_hubdb.py.
 
 Idempotent: skips groups/properties that already exist.
 """
 from __future__ import annotations
 
+import hashlib
 import json
-import os
 import ssl
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 BASE = "https://api.hubapi.com/crm/v3/properties/contacts"
-TOKEN = (
-    os.environ.get("HUBSPOT_SERVICE_KEY")
-    or os.environ.get("HUBSPOT_PRIVATE_APP_ACCESS_TOKEN")
-    or os.environ.get("HUBSPOT_PERSONAL_ACCESS_KEY")
-)
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+from hubspot_resolve_token import resolve_hubspot_token, resolve_hubspot_token_or_exit
+
+# If no token can create a property (403), skip these and continue — add in HubSpot
+# later with a Private App that has crm.schemas.contacts.write, or fix 1Password PAT.
+_OPTIONAL_IF_403: frozenset[str] = frozenset({"portal_billing_json"})
 
 # HubSpot requires two options for booleancheckbox (values must be "true" / "false").
 BOOL_CHECKBOX_OPTIONS = [
@@ -39,14 +46,16 @@ BOOL_CHECKBOX_OPTIONS = [
 ]
 
 
-def request_json(method: str, url: str, body: dict | None = None) -> tuple[int, dict | list | None]:
+def request_json(
+    token: str, method: str, url: str, body: dict | None = None
+) -> tuple[int, dict | list | None]:
     data = None if body is None else json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
         url,
         data=data,
         method=method,
         headers={
-            "Authorization": f"Bearer {TOKEN}",
+            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         },
     )
@@ -68,12 +77,8 @@ def request_json(method: str, url: str, body: dict | None = None) -> tuple[int, 
 
 
 def main() -> int:
-    if not TOKEN:
-        print(
-            "error: set HUBSPOT_SERVICE_KEY, HUBSPOT_PRIVATE_APP_ACCESS_TOKEN, or HUBSPOT_PERSONAL_ACCESS_KEY",
-            file=sys.stderr,
-        )
-        return 1
+    skip_hashes: set[str] = set()
+    token = resolve_hubspot_token_or_exit("crm", skip_hashes=frozenset(skip_hashes))
 
     groups = [
         {"name": "subscription_plan", "label": "Subscription plan", "displayOrder": 1},
@@ -85,7 +90,7 @@ def main() -> int:
         {"name": "portal", "label": "Portal", "displayOrder": 3},
     ]
 
-    code, existing_groups = request_json("GET", f"{BASE}/groups")
+    code, existing_groups = request_json(token, "GET", f"{BASE}/groups")
     if code != 200:
         print(f"error: list groups HTTP {code}: {existing_groups}", file=sys.stderr)
         return 1
@@ -94,7 +99,7 @@ def main() -> int:
         if g["name"] in existing_names:
             print(f"group ok (exists): {g['name']}")
             continue
-        code, body = request_json("POST", f"{BASE}/groups", g)
+        code, body = request_json(token, "POST", f"{BASE}/groups", g)
         if code in (200, 201):
             print(f"group created: {g['name']}")
         else:
@@ -207,7 +212,7 @@ def main() -> int:
 
     for prop in properties:
         name = prop["name"]
-        code, _ = request_json("GET", f"{BASE}/{name}")
+        code, _ = request_json(token, "GET", f"{BASE}/{name}")
         if code == 200:
             print(f"property ok (exists): {name}")
             continue
@@ -222,12 +227,45 @@ def main() -> int:
         }
         if prop.get("type") == "bool" and prop.get("fieldType") == "booleancheckbox":
             payload["options"] = BOOL_CHECKBOX_OPTIONS
-        code, body = request_json("POST", BASE, payload)
-        if code in (200, 201):
-            print(f"property created: {name}")
-        elif code == 409:
-            print(f"property ok (exists): {name}")
-        else:
+        while True:
+            code, body = request_json(token, "POST", BASE, payload)
+            if code in (200, 201):
+                print(f"property created: {name}")
+                break
+            if code == 409:
+                print(f"property ok (exists): {name}")
+                break
+            if code == 403 and isinstance(body, dict) and body.get(
+                "category"
+            ) == "MISSING_SCOPES":
+                skip_hashes.add(
+                    hashlib.sha256(token.encode("utf-8")).hexdigest()
+                )
+                nxt = resolve_hubspot_token(
+                    "crm", skip_hashes=frozenset(skip_hashes)
+                )
+                if not nxt:
+                    if name in _OPTIONAL_IF_403:
+                        print(
+                            f"warn: skipped optional property {name} (403, no token with "
+                            "crm.schemas.contacts.write). Create it in HubSpot or set a valid "
+                            "HUBSPOT_PRIVATE_APP_ACCESS_TOKEN in 1Password, then re-run.",
+                            file=sys.stderr,
+                        )
+                        break
+                    print(
+                        f"error: create property {name} HTTP 403 (missing scopes). "
+                        "Add crm.schemas.contacts.write to a Private App and set "
+                        "HUBSPOT_PRIVATE_APP_ACCESS_TOKEN or HUBSPOT_SERVICE_KEY in 1Password.",
+                        file=sys.stderr,
+                    )
+                    return 1
+                print(
+                    f"warn: retried contact-property create with alternate token ({name})",
+                    file=sys.stderr,
+                )
+                token = nxt
+                continue
             print(
                 f"error: create property {name} HTTP {code}: {body}",
                 file=sys.stderr,

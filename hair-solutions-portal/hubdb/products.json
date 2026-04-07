@@ -9,7 +9,16 @@
     { "name": "price", "type": "NUMBER" },
     { "name": "compare_at_price", "type": "NUMBER" },
     { "name": "currency", "type": "TEXT" },
-    { "name": "category", "type": "TEXT" },
+    {
+      "name": "category",
+      "type": "SELECT",
+      "options": [
+        "Hair Systems",
+        "Adhesives",
+        "Maintenance",
+        "Accessories"
+      ]
+    },
     { "name": "primary_image", "type": "IMAGE" },
     { "name": "in_stock", "type": "BOOLEAN" },
     { "name": "featured", "type": "BOOLEAN" },
