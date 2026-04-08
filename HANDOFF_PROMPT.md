@@ -23,7 +23,7 @@ Your job: run **§1 Next session** in order, **always** execute the subagent gri
 
 ### Snapshot
 
-- **Repo:** `00-engineering/apps/customer-portal` · theme: `hair-solutions-portal/`
+- **Repo:** `00-engineering/repos/customer-portal` · theme: `hair-solutions-portal/`
 - **Issues:** #3–#57 · exports: `exports/github-issues.json` (run `npm run portal:issues` to refresh)
 - **Data model:** **Hair profile + saved templates → Contact properties.** **Orders → native Commerce `order`.** **Invoices → native `invoices`.** **Custom objects not required** for go-live (CMS custom objects = Enterprise per HubSpot docs). **GraphQL** on membership pages officially lists contact, company, deal, ticket, quote, line_item — **confirm** whether `order`/invoices appear in **your** explorer; if not, use **Deal/Contact mirror** via workflows.
 - **Baseline:** GraphQL in repo targets **deals-as-orders** (`deal_collection__contact_to_deal` — verify in explorer), **HubDB** table names `products`, `affiliated_locations`, `subscription_plans`, and contact JSON fields `portal_hair_profile_json`, `portal_saved_templates_json`, `portal_invoices_json`. **API (required):** **`./scripts/op_env.sh npm run portal:hubspot-props`** (CRM scopes) and **`./scripts/op_env.sh npm run portal:hubdb-sync`** (**hubdb** scope on the private app). **Next gate:** upload theme; fix association labels + HubDB column names if validation errors.
@@ -100,7 +100,7 @@ Deliver **Portal 2.0** on **HubSpot CMS** under `hair-solutions-portal/`. The Ne
 
 ### Task completion ritual
 
-From `00-engineering/apps/customer-portal`:
+From `00-engineering/repos/customer-portal`:
 
 ```bash
 ./scripts/portal_task_complete.sh "type(scope): what completed"
@@ -108,7 +108,7 @@ From `00-engineering/apps/customer-portal`:
 
 Refreshes issue exports, `hs upload` (if config present), git commit + push. Flags: `SKIP_HUBSPOT=1`, etc. — see **`IMPLEMENTATION_PLAN_SUBAGENTS.md` §6a**.
 
-**Secrets:** Never print PAKs; never commit `hair-solutions-portal/hubspot.config.yml` or `.env` (`.env` is gitignored). Optional local **`HUBSPOT_PERSONAL_ACCESS_KEY`** and **`HUBSPOT_SERVICE_KEY`** live in `.env` only — see **`.env.example`**; paste values yourself; do not commit them.
+**Secrets:** Never print PAKs; never commit `hair-solutions-portal/hubspot.config.yml` or `.env` (`.env` is gitignored). Optional local private-app tokens live in `.env` only — use **`HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN`**, **`HUBSPOT_PRIVATE_APP__HUBDB__ACCESS_TOKEN`**, or shared **`HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN`**.
 
 ### HubSpot CLI and portal choice (#3–#5)
 

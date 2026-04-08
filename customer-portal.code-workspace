@@ -1,0 +1,44 @@
+{
+  "folders": [
+    {
+      "name": "Customer Portal",
+      "path": "."
+    },
+    {
+      "name": "HubSpot Control Plane",
+      "path": "../../../../../"
+    }
+  ],
+  "settings": {
+    "git.openRepositoryInParentFolders": "never",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 800,
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/coverage": true,
+      "**/.DS_Store": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/*/**": true,
+      "**/.next/**": true
+    },
+    "workbench.editor.enablePreview": false,
+    "workbench.startupEditor": "none",
+    "terminal.integrated.defaultProfile.osx": "zsh"
+  },
+  "extensions": {
+    "recommendations": [
+      "1password.op-vscode",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-python.python",
+      "github.copilot-chat",
+      "hubspot.hubl"
+    ]
+  }
+}

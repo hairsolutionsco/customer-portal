@@ -6,8 +6,8 @@ Issue #6 (hair profile): implemented as Contact property `portal_hair_profile_js
 holding a JSON object whose keys match `hair-solutions-portal/schemas/hair_profile.json` property
 `name` values — not a posted custom object (see AGENT_PROMPT.md §1, IMPLEMENTATION_PLAN_SUBAGENTS.md).
 
-Uses a working Bearer token: **env first** (`HUBSPOT_PRIVATE_APP_ACCESS_TOKEN`,
-`HUBSPOT_SERVICE_KEY`, `HUBSPOT_PERSONAL_ACCESS_KEY`) when the probe succeeds, then
+Uses a working Bearer token: **env first** (`HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN`,
+`HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN`) when the probe succeeds, then
 **HubSpot CLI** OAuth in `~/.hscli/config.yml`. Env is preferred so private apps
 with `crm.schemas.contacts.write` win over CLI tokens that may be read-biased.
 On property-create **403** / missing scopes, the script retries with the next
@@ -249,14 +249,14 @@ def main() -> int:
                         print(
                             f"warn: skipped optional property {name} (403, no token with "
                             "crm.schemas.contacts.write). Create it in HubSpot or set a valid "
-                            "HUBSPOT_PRIVATE_APP_ACCESS_TOKEN in 1Password, then re-run.",
+                            "HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN in 1Password, then re-run.",
                             file=sys.stderr,
                         )
                         break
                     print(
                         f"error: create property {name} HTTP 403 (missing scopes). "
                         "Add crm.schemas.contacts.write to a Private App and set "
-                        "HUBSPOT_PRIVATE_APP_ACCESS_TOKEN or HUBSPOT_SERVICE_KEY in 1Password.",
+                        "HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN or HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN in 1Password.",
                         file=sys.stderr,
                     )
                     return 1

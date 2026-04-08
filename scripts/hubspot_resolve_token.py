@@ -2,8 +2,8 @@
 """
 Pick a HubSpot Bearer token that succeeds on a lightweight API probe.
 
-Resolves a Bearer token by **probing** the HubSpot API: **env vars first** (Private
-App / PAT), then **HubSpot CLI** OAuth in `~/.hscli/config.yml`. Stale env values
+Resolves a Bearer token by **probing** the HubSpot API: **env vars first** (use-case
+scoped private-app tokens), then **HubSpot CLI** OAuth in `~/.hscli/config.yml`. Stale env values
 that return 401 are skipped; CLI OAuth is used for HubDB when env is broken.
 
 Never prints token values.
@@ -61,16 +61,22 @@ def _parse_hscli_config() -> dict | None:
         return None
 
 
-def _env_tokens() -> list[tuple[str, str, int]]:
-    """Lower priority number = tried earlier (after sort). Prefer env over CLI for CRM writes."""
+def _env_tokens(kind: ProbeKind) -> list[tuple[str, str, int]]:
+    """Lower priority number = tried earlier (after sort). Prefer scoped private-app tokens first."""
     out: list[tuple[str, str, int]] = []
-    for i, name in enumerate(
+    names = (
         (
-            "HUBSPOT_PRIVATE_APP_ACCESS_TOKEN",
-            "HUBSPOT_SERVICE_KEY",
-            "HUBSPOT_PERSONAL_ACCESS_KEY",
+            "HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN",
+            "HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN",
         )
-    ):
+        if kind == "crm"
+        else (
+            "HUBSPOT_PRIVATE_APP__HUBDB__ACCESS_TOKEN",
+            "HUBSPOT_PRIVATE_APP__CMS__ACCESS_TOKEN",
+            "HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN",
+        )
+    )
+    for i, name in enumerate(names):
         v = os.environ.get(name)
         if v and isinstance(v, str) and len(v.strip()) > 8:
             out.append((f"env:{name}", v.strip(), i))
@@ -132,7 +138,7 @@ def resolve_hubspot_token(
     """
     skip = skip_hashes or frozenset()
     ranked: list[tuple[int, str, str]] = []
-    for label, tok, prio in _env_tokens() + _hscli_tokens():
+    for label, tok, prio in _env_tokens(kind) + _hscli_tokens():
         ranked.append((prio, label, tok))
 
     ranked.sort(key=lambda x: (x[0], x[1]))
@@ -157,7 +163,8 @@ def resolve_hubspot_token_or_exit(
         return t
     print(
         "error: no working HubSpot token found. Fix 1Password env "
-        "(HUBSPOT_SERVICE_KEY / HUBSPOT_PRIVATE_APP_ACCESS_TOKEN) or run "
+        "(for CRM: HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN; for HubDB: "
+        "HUBSPOT_PRIVATE_APP__HUBDB__ACCESS_TOKEN; HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN also works) or run "
         "`hs account auth` so ~/.hscli/config.yml has a valid token, then retry.",
         flush=True,
     )

@@ -38,7 +38,7 @@ Do **not** mark work done until all three are satisfied:
 | **2. HubSpot Design Manager** | Upload the CMS theme from `hair-solutions-portal/`: **`hs cms upload src hair-solutions-portal`** (current CLI) or legacy **`hs upload src hair-solutions-portal`** — `portal_task_complete.sh` picks the right one. Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`hair-solutions-portal/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **`HANDOFF_PROMPT.md`**. |
 | **3. GitHub issues snapshot** | Refresh `exports/github-issues.json` (and milestones) so agents and CI use current issue text — e.g. run `npm run portal:issues` or `./scripts/sync-github-exports.sh`. Close/update issues on GitHub when AC are met (`gh issue close`, edit checklists, etc.) **before** or **as part of** the sync. |
 
-**One-shot automation (recommended):** from `00-engineering/apps/customer-portal`:
+**One-shot automation (recommended):** from `00-engineering/repos/customer-portal`:
 
 ```bash
 ./scripts/portal_task_complete.sh "type(scope): what you completed"

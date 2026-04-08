@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Customer Portal: HubSpot contact props (1Password)",
+      "label": "[HubSpot Ops] Customer Portal: HubSpot contact props",
       "detail": "Injects HUBSPOT_* from 00-engineering/.env via op run — no keys stored in this file.",
       "type": "shell",
       "command": "./scripts/op_env.sh npm run portal:hubspot-props",
@@ -16,7 +16,7 @@
       "presentation": { "reveal": "always", "panel": "shared", "focus": true }
     },
     {
-      "label": "Customer Portal: HubDB sync (1Password)",
+      "label": "[HubSpot Ops] Customer Portal: HubDB sync",
       "detail": "Creates/publishes HubDB tables + seed rows via CMS API (hubdb scope).",
       "type": "shell",
       "command": "./scripts/op_env.sh npm run portal:hubdb-sync",
@@ -30,7 +30,7 @@
       "presentation": { "reveal": "always", "panel": "shared", "focus": true }
     },
     {
-      "label": "Customer Portal: theme build (local)",
+      "label": "[Content Studio] Customer Portal: theme build",
       "detail": "No secrets. Validates HubSpot theme files only.",
       "type": "shell",
       "command": "npm run portal:build",
@@ -43,7 +43,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Customer Portal: ship ritual (1Password)",
+      "label": "[HubSpot Ops] Customer Portal: ship ritual",
       "detail": "op inject → issues export, hs upload, git push. Requires gh + hs + op signed in.",
       "type": "shell",
       "command": "./scripts/op_env.sh ./scripts/portal_task_complete.sh --build-first \"${input:portalCommitMsg}\"",
@@ -57,7 +57,7 @@
       "presentation": { "reveal": "always", "panel": "shared", "focus": true }
     },
     {
-      "label": "Customer Portal: full pipeline (verify + props + ship)",
+      "label": "[HubSpot Ops] Customer Portal: full pipeline",
       "detail": "npm ci → portal:verify → portal:hubspot-props (op) → issues + hs upload + git. Stops on first error.",
       "type": "shell",
       "command": "./scripts/op_env.sh bash ./scripts/portal_automation_full.sh \"${input:portalCommitMsg}\"",
@@ -71,7 +71,7 @@
       "presentation": { "reveal": "always", "panel": "shared", "focus": true }
     },
     {
-      "label": "Customer Portal: full pipeline — continue on error",
+      "label": "[HubSpot Ops] Customer Portal: full pipeline — continue on error",
       "detail": "Same as full pipeline but runs all steps; exit 1 if any step failed.",
       "type": "shell",
       "command": "./scripts/op_env.sh bash ./scripts/portal_automation_full.sh --continue-on-error \"${input:portalCommitMsg}\"",
@@ -85,7 +85,7 @@
       "presentation": { "reveal": "always", "panel": "shared", "focus": true }
     },
     {
-      "label": "Customer Portal: ship ritual — no git (1Password)",
+      "label": "[HubSpot Ops] Customer Portal: ship ritual — no git",
       "detail": "Same as ship but SKIP_GIT=1 (upload + issues only).",
       "type": "shell",
       "command": "SKIP_GIT=1 ./scripts/op_env.sh ./scripts/portal_task_complete.sh --skip-git",
@@ -97,6 +97,100 @@
       },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "[Build & Coding] Customer Portal: dev server",
+      "detail": "Runs the Next.js development server for the portal app.",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true },
+      "isBackground": true
+    },
+    {
+      "label": "[Build & Coding] Customer Portal: lint",
+      "detail": "Runs Next.js lint for the portal repo.",
+      "type": "shell",
+      "command": "npm run lint",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "[Build & Coding] Customer Portal: typecheck",
+      "detail": "Runs TypeScript without emitting build artifacts.",
+      "type": "shell",
+      "command": "npx tsc --noEmit",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "[Build & Coding] Customer Portal: verify",
+      "detail": "Runs the local verification suite used before shipping.",
+      "type": "shell",
+      "command": "npm run portal:verify",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "[Build & Coding] Customer Portal: db push",
+      "detail": "Pushes the Prisma schema to the connected database.",
+      "type": "shell",
+      "command": "npm run db:push",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "[Build & Coding] Customer Portal: db studio",
+      "detail": "Opens Prisma Studio for local data inspection.",
+      "type": "shell",
+      "command": "npm run db:studio",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true }
+    },
+    {
+      "label": "[Content Studio] Customer Portal: issues export",
+      "detail": "Refreshes the GitHub issue export used in the portal workflow.",
+      "type": "shell",
+      "command": "npm run portal:issues",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/opt/homebrew/bin:/usr/local/bin:${env:PATH}"
+        }
+      },
+      "problemMatcher": []
     }
   ],
   "inputs": [

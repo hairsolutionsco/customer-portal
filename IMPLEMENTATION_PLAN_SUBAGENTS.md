@@ -172,7 +172,7 @@ Use this verbatim shell for each subagent; replace placeholders.
 You are Agent {{AGENT_ID}} ({{ROLE_NAME}}) for hairsolutionsco/customer-portal.
 
 Read-only context:
-- Repository: 00-engineering/apps/customer-portal (HubSpot CMS theme + schemas)
+- Repository: 00-engineering/repos/customer-portal (HubSpot CMS theme + schemas)
 - Architecture: file `master-plan` (sections for Phase {{PHASE}})
 - GitHub Issues (acceptance criteria + steps): {{ISSUE_LIST}} — close by matching AC in issue body.
 

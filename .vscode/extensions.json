@@ -1,3 +1,11 @@
 {
-  "recommendations": ["1Password.op-vscode"]
+  "recommendations": [
+    "1password.op-vscode",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-python.python",
+    "github.copilot-chat",
+    "hubspot.hubl"
+  ]
 }

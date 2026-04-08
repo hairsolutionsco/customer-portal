@@ -1,0 +1,7 @@
+# Customer Portal
+User-agent: *
+Disallow: /api/
+Disallow: /app/
+Allow: /login
+Allow: /signup
+Allow: /forgot-password

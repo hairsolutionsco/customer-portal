@@ -3,38 +3,49 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { UserRole } from '@prisma/client'
+import { z } from 'zod'
+
+const signupSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  email: z.string().email('Invalid email address'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+})
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, password } = body
 
-    // Validation
-    if (!email || !password || !name) {
-      return errorResponse('Missing required fields', 400)
+    const parsed = signupSchema.safeParse(body)
+    if (!parsed.success) {
+      return errorResponse(parsed.error.errors[0].message, 400)
     }
 
-    if (password.length < 8) {
-      return errorResponse('Password must be at least 8 characters', 400)
-    }
+    const { name, email, password } = parsed.data
+    const normalizedEmail = email.toLowerCase()
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     })
 
     if (existingUser) {
-      return errorResponse('Email already in use', 400)
+      // Generic message to reduce enumeration risk
+      return errorResponse('Unable to create account. Please try again or use a different email.', 400)
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10)
+    // Hash password (12 rounds per OWASP recommendation)
+    const hashedPassword = await bcrypt.hash(password, 12)
 
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role: UserRole.CUSTOMER,
       },

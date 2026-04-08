@@ -149,7 +149,7 @@ Paste **real** names from your portal after introspection. Examples only — you
 
 Create via **Settings → Properties → Contact**, CRM Properties API, or:
 
-`npm run portal:hubspot-props` (requires `HUBSPOT_SERVICE_KEY` or `HUBSPOT_PRIVATE_APP_ACCESS_TOKEN` — scope **crm.schemas.contacts.write**).
+`npm run portal:hubspot-props` (uses `HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN` or `HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN` — scope **crm.schemas.contacts.write**).
 
 **Group: subscription_plan** — `current_plan`, `plan_price`, `billing_interval`, `period_start`, `period_end`, `plan_status`
 

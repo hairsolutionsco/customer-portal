@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Double-click to: sync issues → HubSpot upload → git (with secrets from 00-engineering/.env via op).
+# Double-click to: sync issues → HubSpot upload → git (with secrets from hubspot/.env via op).
 # First run: if macOS blocks it, right-click → Open.
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"

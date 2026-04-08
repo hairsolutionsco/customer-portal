@@ -3,8 +3,9 @@
 Sync HubDB tables from hair-solutions-portal/hubdb/*.json via HubSpot CMS HubDB API (issues #12–#14).
 
 Uses the same token resolution as hubspot_create_portal_contact_properties.py
-(hubspot_resolve_token.py): prefers a working **HubSpot CLI** OAuth token, then env
-vars. HubDB scope must be allowed for the chosen token (CLI session usually includes it).
+(hubspot_resolve_token.py): prefers scoped env tokens first (`HUBSPOT_PRIVATE_APP__HUBDB__ACCESS_TOKEN`,
+`HUBSPOT_PRIVATE_APP__CMS__ACCESS_TOKEN`, `HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN`), then HubSpot CLI OAuth.
+HubDB scope must be allowed for the chosen token.
 
   ./scripts/op_env.sh python3 scripts/hubspot_sync_hubdb.py
   python3 scripts/hubspot_sync_hubdb.py --recreate-table=products   # drop + recreate one table

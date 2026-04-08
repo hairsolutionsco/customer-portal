@@ -4,11 +4,11 @@
 # Order:
 #   1) npm ci (if package-lock.json) else npm install
 #   2) npm run portal:verify   (theme build + eslint + tsc)
-#   3) ./scripts/op_env.sh npm run portal:hubspot-props   (needs 00-engineering/.env via 1Password)
+#   3) ./scripts/op_env.sh npm run portal:hubspot-props   (needs hubspot/.env via 1Password)
 #   4) ./scripts/op_env.sh npm run portal:hubdb-sync      (same token; private app needs **hubdb** scope)
 #   5) ./scripts/portal_task_complete.sh   (GitHub exports + hs upload; git only if commit message given)
 #
-# Usage (from apps/customer-portal):
+# Usage (from repos/customer-portal):
 #   ./scripts/op_env.sh ./scripts/portal_automation_full.sh "chore(portal): nightly automation"
 #   ./scripts/portal_automation_full.sh --continue-on-error "chore(portal): msg"
 #   SKIP_CONTACT_PROPS=1 ./scripts/portal_automation_full.sh "docs: skip props"

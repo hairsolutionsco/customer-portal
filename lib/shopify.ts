@@ -58,10 +58,12 @@ interface ShopifyProduct {
   }>
 }
 
+import crypto from 'crypto'
+
 class ShopifyClient {
   private storeDomain: string
   private accessToken: string
-  private apiVersion = '2024-01'
+  private apiVersion = '2025-01'
 
   constructor() {
     this.storeDomain = process.env.SHOPIFY_STORE_DOMAIN || ''
@@ -163,7 +165,6 @@ class ShopifyClient {
    * Verify webhook signature
    */
   verifyWebhook(body: string, hmacHeader: string): boolean {
-    const crypto = require('crypto')
     const secret = process.env.SHOPIFY_WEBHOOK_SECRET || ''
 
     if (!secret) {
@@ -176,7 +177,14 @@ class ShopifyClient {
       .update(body, 'utf8')
       .digest('base64')
 
-    return hash === hmacHeader
+    try {
+      return crypto.timingSafeEqual(
+        Buffer.from(hash, 'utf8'),
+        Buffer.from(hmacHeader, 'utf8')
+      )
+    } catch {
+      return false
+    }
   }
 }
 

@@ -10,8 +10,8 @@ interface CustomizationTemplatesProps {
 
 export function CustomizationTemplates({ templates, hairProfile }: CustomizationTemplatesProps) {
   const handleQuickOrder = (templateId: string) => {
-    // TODO: Implement quick order functionality
-    alert(`Quick order with template ${templateId} - TODO: Implement`)
+    // Navigate to order creation with pre-selected template
+    window.location.href = `/app/orders/new?template=${encodeURIComponent(templateId)}`
   }
 
   return (

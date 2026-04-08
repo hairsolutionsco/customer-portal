@@ -15,7 +15,7 @@
 # HubSpot: runs theme upload from hair-solutions-portal/ using the CLI default account
 # (~/.hscli/config.yml). Optional local hair-solutions-portal/hubspot.config.yml (gitignored)
 # is not required when global auth is configured.
-# Run via 1Password injection (secrets live in 00-engineering/.env — do not cat/commit):
+# Run via 1Password injection (secrets live in hubspot/.env — do not cat/commit):
 #   ./scripts/op_env.sh ./scripts/portal_task_complete.sh "msg"
 # Manual equivalent from this directory:
 #   op run --env-file ../../.env.op --env-file ../../.env -- ./scripts/portal_task_complete.sh "msg"

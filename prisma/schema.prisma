@@ -289,6 +289,7 @@ model Order {
   invoices                  Invoice[]
   productionSchedule        OrderProductionSchedule?
 
+  @@index([userId])
   @@map("orders")
 }
 
@@ -335,6 +336,7 @@ model OrderProductionSchedule {
 
   order                           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("order_production_schedules")
 }
 
@@ -373,6 +375,7 @@ model Invoice {
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   order             Order?          @relation(fields: [orderId], references: [id], onDelete: SetNull)
 
+  @@index([userId])
   @@map("invoices")
 }
 
@@ -503,6 +506,7 @@ model SupportTicket {
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages    SupportMessage[]
 
+  @@index([userId])
   @@map("support_tickets")
 }
 

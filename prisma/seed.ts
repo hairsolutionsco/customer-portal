@@ -1,13 +1,19 @@
 import { PrismaClient, UserRole } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
+
+function generatePassword(): string {
+  return process.env.SEED_DEFAULT_PASSWORD || crypto.randomBytes(16).toString('hex')
+}
 
 async function main() {
   console.log('🌱 Starting seed...')
 
   // Create admin user
-  const adminPassword = await bcrypt.hash('admin123', 10)
+  const adminPw = generatePassword()
+  const adminPassword = await bcrypt.hash(adminPw, 12)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@hairsolutions.co' },
     update: {},
@@ -19,10 +25,11 @@ async function main() {
       emailVerified: new Date(),
     },
   })
-  console.log('✅ Admin user created:', admin.email)
+  console.log('✅ Admin user created:', admin.email, '| password:', adminPw)
 
   // Create support user
-  const supportPassword = await bcrypt.hash('support123', 10)
+  const supportPw = generatePassword()
+  const supportPassword = await bcrypt.hash(supportPw, 12)
   const support = await prisma.user.upsert({
     where: { email: 'support@hairsolutions.co' },
     update: {},
@@ -34,10 +41,11 @@ async function main() {
       emailVerified: new Date(),
     },
   })
-  console.log('✅ Support user created:', support.email)
+  console.log('✅ Support user created:', support.email, '| password:', supportPw)
 
   // Create demo customer
-  const customerPassword = await bcrypt.hash('demo123', 10)
+  const customerPw = generatePassword()
+  const customerPassword = await bcrypt.hash(customerPw, 12)
   const customer = await prisma.user.upsert({
     where: { email: 'demo@example.com' },
     update: {},
@@ -57,7 +65,7 @@ async function main() {
       },
     },
   })
-  console.log('✅ Demo customer created:', customer.email)
+  console.log('✅ Demo customer created:', customer.email, '| password:', customerPw)
 
   // Create hair profile for demo customer
   const hairProfile = await prisma.hairProfile.upsert({

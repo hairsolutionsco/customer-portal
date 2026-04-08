@@ -18,6 +18,15 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  headers: async () => [
+    {
+      source: '/(.*)',
+      headers: [
+        { key: 'X-DNS-Prefetch-Control', value: 'on' },
+      ],
+    },
+  ],
+  poweredByHeader: false,
 }
 
 module.exports = nextConfig
