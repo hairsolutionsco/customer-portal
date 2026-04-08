@@ -1,0 +1,105 @@
+{% set brand = theme.portal.brand_color.color %}
+{% set accent = theme.portal.accent_color.color %}
+{% set success = theme.portal.success_color.color %}
+{% set warning = theme.portal.warning_color.color %}
+{% set error = theme.portal.error_color.color %}
+
+:root {
+  --hs-color-brand: {{ brand }};
+  --hs-color-accent: {{ accent }};
+  --hs-color-success: {{ success }};
+  --hs-color-warning: {{ warning }};
+  --hs-color-error: {{ error }};
+  --hs-color-bg: #f4f5f7;
+  --hs-color-surface: #ffffff;
+  --hs-color-text: #1a1a2e;
+  --hs-color-muted: #64748b;
+  --hs-radius: 10px;
+  --hs-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --hs-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+  --hs-space-1: 0.25rem;
+  --hs-space-2: 0.5rem;
+  --hs-space-3: 0.75rem;
+  --hs-space-4: 1rem;
+  --hs-space-6: 1.5rem;
+  --hs-space-8: 2rem;
+  --hs-font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--hs-font-sans);
+  color: var(--hs-color-text);
+  background: var(--hs-color-bg);
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--hs-color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 var(--hs-space-4);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.125rem; }
+
+p {
+  margin: 0 0 var(--hs-space-4);
+}
+
+.hs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.hs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hs-space-4);
+}
+
+.hs-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hs-space-3);
+  align-items: center;
+}
+
+.hs-page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 var(--hs-space-6);
+}

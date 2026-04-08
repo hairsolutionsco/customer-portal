@@ -1,0 +1,39 @@
+name: Deploy CMS Theme to HubSpot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cms/**'
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install HubSpot CLI
+        run: npm install -g @hubspot/cli
+
+      - name: Upload theme
+        env:
+          HUBSPOT_PERSONAL_ACCESS_KEY: ${{ secrets.HUBSPOT_PERSONAL_ACCESS_KEY }}
+          HUBSPOT_PORTAL_ID: ${{ secrets.HUBSPOT_PORTAL_ID }}
+        run: |
+          # Write config from secrets (no hubspot.config.yml committed)
+          mkdir -p ~/.config/hubspot
+          cat > ~/.config/hubspot/hubspot.config.yml <<EOF
+          defaultPortal: production
+          portals:
+            - name: production
+              portalId: ${HUBSPOT_PORTAL_ID}
+              authType: personalaccesskey
+              personalAccessKey: ${HUBSPOT_PERSONAL_ACCESS_KEY}
+          EOF
+          hs theme upload cms hair-solutions-portal

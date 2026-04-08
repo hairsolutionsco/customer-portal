@@ -1,0 +1,12 @@
+# label: "Portal Shop"
+# description: "Logged-in contact. Product rows load via HubL `hubdb_table_rows(theme.hubdb.products_table_id)` (membership GraphQL has no HUBDB.table on many portals)."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query products($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+    }
+  }
+}

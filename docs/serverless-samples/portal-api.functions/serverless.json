@@ -1,0 +1,12 @@
+{
+  "runtime": "nodejs18.x",
+  "version": 2.0,
+  "environment": {},
+  "secrets": [],
+  "endpoints": {
+    "ping": {
+      "method": "GET",
+      "file": "ping.js"
+    }
+  }
+}

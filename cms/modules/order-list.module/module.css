@@ -1,0 +1,2 @@
+.order-list__toolbar { margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.order-list__toolbar label { font-size: 0.875rem; font-weight: 500; }

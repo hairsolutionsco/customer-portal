@@ -1,0 +1,12 @@
+# label: "Portal Invoices"
+# description: "Contact core fields. Re-add `portal_invoices_json` once property exists in CMS GraphQL schema."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query invoices($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+    }
+  }
+}

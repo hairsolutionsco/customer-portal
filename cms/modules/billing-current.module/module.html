@@ -1,0 +1,13 @@
+{% set c = data_query.data.CRM.contact %}
+<section class="billing-current hs-card" aria-label="Current plan">
+  <h2 style="margin-top:0;">Your plan</h2>
+  {% if c %}
+  <p><strong>{% if c.current_plan %}{{ c.current_plan }}{% else %}No plan on file{% endif %}</strong></p>
+  <p>Price: {% if c.plan_price %}${{ c.plan_price }}{% else %}—{% endif %} / {{ c.billing_interval if c.billing_interval else '—' }}</p>
+  <p>Period: {{ c.period_start if c.period_start else '—' }} — {{ c.period_end if c.period_end else '—' }}</p>
+  <p>Status: {% if c.plan_status %}<span class="hs-badge hs-badge--{{ c.plan_status }}">{{ c.plan_status|replace('_',' ') }}</span>{% else %}—{% endif %}</p>
+  <a class="hs-btn hs-btn--primary" href="#plans">Compare plans</a>
+  {% else %}
+  <p>Unable to load billing.</p>
+  {% endif %}
+</section>
