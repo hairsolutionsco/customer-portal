@@ -15,7 +15,7 @@ The program **pivoted to Portal 2.0**: a **full HubSpot CMS** membership experie
 | **`theme/`** | **Canonical** HubSpot CMS theme (modules, templates, `data-queries/`, CSS, JS). Upload via `portal_task_complete.sh` → Design Manager folder **`customer-portal`** (default; override with `HUBSPOT_THEME_DEST`). |
 | **`hair-solutions-portal/`** | Older theme scaffold; do **not** treat as the primary upload surface. |
 | **`data/`** | `SCHEMA_REGISTRY.md`, HubDB seed JSON, optional schema reference — synced via API, not theme upload. |
-| **`scripts/`** · **`ops/`** | Ship ritual, GitHub issue export, HubSpot props/HubDB Python, `op_env.sh`. |
+| **`scripts/`** · **`ops/scripts/`** | **Canonical automation** lives under **`scripts/`** (build, ship, exports, HubSpot props/HubDB, `op_env.sh`). **`ops/scripts/*.sh`** are thin wrappers that **`exec`** the same files under **`scripts/`** so callers from **`design-manager/`** (or similar parents) can use a stable `ops/` path. |
 | **`app/` · `components/` · `lib/` · `prisma/`** | Archived Next.js + next-auth app. Available only through explicit **`legacy:*`** commands. |
 | **`.hubspot-theme-fetch/`** | Optional mirror of fetched theme assets (if used in your workflow). |
 | **`docs/`** | Agent prompts, plans, skills, layout references, **`docs/cms-legacy-context/`** (IA/copy from the old app). |
@@ -33,7 +33,7 @@ These **root `.md` files are different**: they describe the **current Portal 2.0
 | **`KNOWN_ISSUES.md`** | Running log of HubSpot CLI, GraphQL, HubDB, and `op_env` fixes for **today’s** automation. |
 | **`master-plan`** | Program-level requirements / north star (no extension by convention in this repo). |
 
-**Practical reasons:** agents and contributors open the repo and need **stable, shallow paths** for plans and specs. **`.cursor/rules/portal-2-orchestrator.mdc`** loads orchestration from **`docs/AGENT_PROMPT.md`** so a separate root handoff file is not required.
+**Practical reasons:** agents and contributors open the repo and need **stable, shallow paths** for plans and specs. **`.cursor/rules/portal-2-orchestrator.mdc`** loads orchestration from **`docs/AGENT_PROMPT.md`** so a separate root handoff file is not required. **Orchestrator handoff block** in that file: search **`ORCHESTRATOR_HANDOFF`**, **`Next session`**, or **`do this now`** (heading **Next session - do this now** under *Portal orchestration*).
 
 ### Commands (CMS + automation)
 
