@@ -19,6 +19,22 @@ The program **pivoted to Portal 2.0**: a **full HubSpot CMS** membership experie
 | **`.hubspot-theme-fetch/`** | Optional mirror of fetched theme assets (if used in your workflow). |
 | **`docs/`** | Agent prompts, plans, skills, layout references, **`docs/cms-legacy-context/`** (IA/copy from the old app). |
 
+### Why these markdown files stay at repo root
+
+We **archived** the old **app deploy / Postgres / Railway–Vercel–Hostinger** guides under **`docs/archive/…`** because they belong to the **pre-pivot** stack and confuse the CMS story.
+
+These **root `.md` files are different**: they describe the **current Portal 2.0 program** (how agents and humans build and ship the **CMS** portal). They were left at the repository root on purpose:
+
+| File | Why it stays here |
+|------|-------------------|
+| **`HANDOFF_PROMPT.md`** | Single orchestrator entry point for each session; **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4/§7 and the subagent grid point here. |
+| **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** | Waves, gates, and agent roles for the live build — not legacy app ops. |
+| **`AGENT_PROMPT.md`** | File-level technical spec; still referenced from Cursor rules and handoff text as a **short path** at repo root. A longer / monorepo-tuned copy also lives at **`docs/AGENT_PROMPT.md`**; both are **current** spec, not old deploy docs. |
+| **`KNOWN_ISSUES.md`** | Running log of HubSpot CLI, GraphQL, HubDB, and `op_env` fixes for **today’s** automation. |
+| **`master-plan`** | Program-level requirements / north star (no extension by convention in this repo). |
+
+**Practical reasons:** agents and contributors open the repo and need **stable, shallow paths** (`HANDOFF_PROMPT.md` vs deep `docs/…` only). **`.cursor/rules/portal-2-orchestrator.mdc`** and similar tooling already assume those names at the root. Moving them would force a sweep of rules, prompts, and muscle memory for little CMS benefit — unlike the legacy app runbooks, which were safe to quarantine in **`docs/archive/`**.
+
 ### Commands (CMS + automation)
 
 - **Theme build / verify:** `npm run portal:build`, `npm run portal:verify` (see `package.json` — may still typecheck legacy Next code).
