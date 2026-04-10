@@ -34,14 +34,14 @@
     {% else %}
     <span class="hs-btn hs-btn--secondary" aria-disabled="true">Edit profile</span>
     {% endif %}
-    <p class="settings-profile__hint">Profile edits submit through the HubSpot form below when a form is attached in the module fields (issue #47).</p>
+    <p class="settings-profile__hint">Profile edits submit through the HubSpot form below when attached (issue #46). Map fields to contact properties: <code>firstname</code>, <code>lastname</code>, <code>phone</code>, <code>address</code>, <code>city</code>, <code>state</code>, <code>zip</code>. Enable known-contact prefill in the form settings.</p>
   </div>
   <div class="hs-form-wrap" id="settings-profile-form" style="margin-top:1.5rem;">
     <h3 style="font-size:1rem;margin-bottom:0.75rem;">Update profile</h3>
     {% if module.profile_form.form_id %}
     {% form form_to_use="{{ module.profile_form.form_id }}" %}
     {% else %}
-    <p>Attach a HubSpot form in the module fields (issue #47).</p>
+    <p>Attach a HubSpot form in the module fields (issue #46).</p>
     {% endif %}
   </div>
   {% else %}

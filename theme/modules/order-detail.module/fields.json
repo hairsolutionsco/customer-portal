@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "order_help_form",
+    "label": "Order help / support ticket form (optional)",
+    "type": "form",
+    "default": { "response_type": "inline", "message": "" }
+  }
+]

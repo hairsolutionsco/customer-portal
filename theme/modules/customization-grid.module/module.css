@@ -19,4 +19,17 @@
 .customization-grid__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid var(--hs-color-border, #e5e7eb); }
 .customization-grid__empty-title { margin-top: 0; }
 .customization-grid__empty-copy { color: var(--hs-color-muted, #6b7280); margin-bottom: 1rem; }
+.customization-grid__form {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+}
+.customization-grid__form-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+.customization-grid__form-desc {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  color: var(--hs-color-muted, #6b7280);
+}
 .hs-btn--sm { font-size: 0.8125rem; padding: 0.35rem 0.65rem; }

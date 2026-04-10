@@ -38,3 +38,18 @@
   flex-wrap: wrap;
   gap: 0.75rem;
 }
+
+.billing-current__plan-change {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hs-color-border, #e2e8f0);
+}
+
+.billing-current__plan-change-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.billing-current__plan-change-desc {
+  margin: 0 0 1rem;
+}

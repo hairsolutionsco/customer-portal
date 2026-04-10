@@ -36,8 +36,20 @@
   </div>
   <p class="billing-current__actions">
     <a class="hs-btn hs-btn--primary" href="#plans">Compare plans</a>
+    {% if module.plan_change_form.form_id %}
+    <a class="hs-btn hs-btn--outline" href="#plan-change-request">Request plan change</a>
+    {% endif %}
     <a class="hs-btn hs-btn--outline" href="{{ support_href }}">Billing help</a>
   </p>
+  <div id="plan-change-request" class="billing-current__plan-change hs-form-wrap">
+    <h2 class="billing-current__plan-change-title">Request a plan change</h2>
+    <p class="billing-current__muted billing-current__plan-change-desc">Tell us which plan you want. Staff confirms after review — native plan changes stay manual or integration-driven (issue #47).</p>
+    {% if module.plan_change_form.form_id %}
+    {% form form_to_use="{{ module.plan_change_form.form_id }}" %}
+    {% else %}
+    <p class="billing-current__muted">Attach a HubSpot "plan change request" form in the module fields (#47). Include hidden or read-only <code>current_plan</code> and a dropdown or text field for the requested plan.</p>
+    {% endif %}
+  </div>
   {% else %}
   <p>Unable to load billing.</p>
   {% endif %}

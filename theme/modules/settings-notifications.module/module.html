@@ -13,7 +13,7 @@
   {% set on_order = c.notify_order_updates == true or c.notify_order_updates == 'true' %}
   {% set on_prod = c.notify_production_reminders == true or c.notify_production_reminders == 'true' %}
   {% set on_mkt = c.notify_marketing == true or c.notify_marketing == 'true' %}
-  <p class="settings-notifications__desc" style="margin:0 0 1rem;font-size:0.9375rem;color:var(--hs-color-muted,#64748b);">Current values come from contact properties in group <strong>notification_preferences</strong> (<code>notify_order_updates</code>, <code>notify_production_reminders</code>, <code>notify_marketing</code>). Changes submit through the HubSpot form below when configured (issue #48).</p>
+  <p class="settings-notifications__desc" style="margin:0 0 1rem;font-size:0.9375rem;color:var(--hs-color-muted,#64748b);">Current values come from contact properties in group <strong>notification_preferences</strong>: <code>notify_order_updates</code> (order/shipping email), <code>notify_production_reminders</code> (production milestones), <code>notify_marketing</code> (promotional opt-in). Map your HubSpot form checkboxes to these internal names (issue #48); enable prefill for known contacts.</p>
   <ul class="settings-notifications__list">
     <li class="settings-notifications__row">
       <div>
@@ -42,10 +42,10 @@
     {% if module.notification_form.form_id %}
     {% form form_to_use="{{ module.notification_form.form_id }}" %}
     {% else %}
-    <p>Attach a HubSpot form in the module fields (issue #48).</p>
+    <p>Attach a HubSpot form in the module fields (issue #48). Use boolean fields mapped to <code>notify_order_updates</code>, <code>notify_production_reminders</code>, and <code>notify_marketing</code>.</p>
     {% endif %}
   </div>
-  <p class="settings-notifications__footnote">SMS and additional channels are not modeled on the contact in this portal slice; extend properties and forms when ops require them.</p>
+  <p class="settings-notifications__footnote">SMS is not modeled on the contact in this portal slice; add properties and form fields when ops require them. Keep marketing opt-in workflows compliant with CAN-SPAM / GDPR.</p>
   {% else %}
   <p class="portal-empty-state__message">We could not load your notification preferences.</p>
   {% endif %}

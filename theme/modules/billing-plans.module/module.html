@@ -5,6 +5,7 @@
 {% set support_href = module.support_portal_url if module.support_portal_url else '/customer-portal' %}
 <section id="plans" class="billing-plans" aria-label="Available plans">
   <h2 class="billing-plans__title">Plans</h2>
+  <p class="billing-plans__intro" style="margin:-0.5rem 0 1rem;font-size:0.9375rem;color:var(--hs-color-muted,#64748b);">Plan changes below go to the request form on this page. For other billing questions, <a href="{{ support_href }}">open the support portal</a>.</p>
   {% if plans %}
   <div class="billing-plans__grid">
     {% for p in plans %}
@@ -23,9 +24,9 @@
       <div class="billing-plans__description">{{ p.description }}</div>
       <div class="billing-plans__features">{{ p.features }}</div>
       {% if is_current %}
-      <a class="hs-btn hs-btn--outline billing-plans__cta" href="{{ support_href }}">Change plan</a>
+      <a class="hs-btn hs-btn--outline billing-plans__cta" href="#plan-change-request">Change plan</a>
       {% else %}
-      <a class="hs-btn hs-btn--primary billing-plans__cta" href="{{ support_href }}">Upgrade or downgrade</a>
+      <a class="hs-btn hs-btn--primary billing-plans__cta" href="#plan-change-request">Upgrade or downgrade</a>
       {% endif %}
     </div>
     {% endif %}

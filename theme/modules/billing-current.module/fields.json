@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "plan_change_form",
+    "label": "Plan change request form",
+    "type": "form",
+    "default": { "response_type": "inline", "message": "" }
+  }
+]

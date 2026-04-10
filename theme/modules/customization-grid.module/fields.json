@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "new_template_form",
+    "label": "New customization template form",
+    "type": "form",
+    "default": { "response_type": "inline", "message": "" }
+  }
+]

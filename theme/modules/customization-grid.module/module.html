@@ -6,7 +6,11 @@
   <div class="customization-grid__toolbar">
     <h1 class="hs-page-title customization-grid__title">Customization</h1>
     <div class="customization-grid__toolbar-actions">
-      <button type="button" class="hs-btn hs-btn--primary" disabled title="Form wiring is tracked in issues #43–#48">Create new template</button>
+      {% if module.new_template_form.form_id %}
+      <a class="hs-btn hs-btn--primary" href="#customization-new-template-form">Create new template</a>
+      {% else %}
+      <button type="button" class="hs-btn hs-btn--primary" disabled title="Attach a HubSpot form in the module fields (issue #44)">Create new template</button>
+      {% endif %}
       <a class="hs-btn hs-btn--secondary" href="/portal/shop">Browse shop</a>
     </div>
   </div>
@@ -23,14 +27,14 @@
         {% if t.created_at or t.created_date or t.date_created %}
         <div><dt>Created</dt><dd>{% if t.created_at %}{{ t.created_at }}{% elif t.created_date %}{{ t.created_date }}{% else %}{{ t.date_created }}{% endif %}</dd></div>
         {% endif %}
-        <div><dt>Style · density · color</dt><dd>{{ t.style|default('—') }} · {{ t.density|default('—') }} · {{ t.hair_color|default('—') }}</dd></div>
+        <div><dt>Style · density · color</dt><dd>{{ t.style|default('—') }} · {{ t.density|default('—') }} · {{ t.hair_color|default(t.color|default('—')) }}</dd></div>
         <div><dt>Base · attachment</dt><dd>{{ t.base_type|default('—') }} · {{ t.attachment_method|default('—') }}</dd></div>
       </dl>
       {% if t.notes %}<p class="customization-grid__notes">{{ t.notes }}</p>{% endif %}
       <div class="customization-grid__actions" role="group" aria-label="Template actions">
-        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Server-side actions ship after forms (#43–#48)">Set as default</button>
-        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Server-side actions ship after forms (#43–#48)">Edit</button>
-        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Server-side actions ship after forms (#43–#48)">Delete</button>
+        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Default/edit/delete via CRM or future automation">Set as default</button>
+        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Default/edit/delete via CRM or future automation">Edit</button>
+        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Default/edit/delete via CRM or future automation">Delete</button>
       </div>
     </article>
     {% endfor %}
@@ -38,8 +42,22 @@
   {% else %}
   <div class="hs-card customization-grid__empty">
     <h2 class="customization-grid__empty-title">No saved templates yet</h2>
-    <p class="customization-grid__empty-copy">Save a customization preset to see it here. Template creation will use the HubSpot form once your team connects it (issues #43–#48).</p>
-    <button type="button" class="hs-btn hs-btn--primary" disabled title="Form wiring is tracked in issues #43–#48">Create your first template</button>
+    <p class="customization-grid__empty-copy">Save a customization preset to see it here. Use the HubSpot form below to add a template; workflows should merge into contact <code>portal_saved_templates_json</code> per <code>data/SCHEMA_REGISTRY.md</code> (issue #44).</p>
+    {% if module.new_template_form.form_id %}
+    <a class="hs-btn hs-btn--primary" href="#customization-new-template-form">Create your first template</a>
+    {% else %}
+    <button type="button" class="hs-btn hs-btn--primary" disabled title="Attach a HubSpot form in the module fields (issue #44)">Create your first template</button>
+    {% endif %}
   </div>
   {% endif %}
+
+  <div id="customization-new-template-form" class="customization-grid__form hs-form-wrap hs-card">
+    <h2 class="customization-grid__form-title">Save a new template</h2>
+    <p class="customization-grid__form-desc">HubSpot Forms submit to CRM; use workflows to append or update the contact's <code>portal_saved_templates_json</code> array (template_name, style, density, hair_color, color_blend_percentage, base_type, base_size, attachment_method, notes, is_default, etc.).</p>
+    {% if module.new_template_form.form_id %}
+    {% form form_to_use="{{ module.new_template_form.form_id }}" %}
+    {% else %}
+    <p>Attach the "new customization template" form in the module fields (#44).</p>
+    {% endif %}
+  </div>
 </section>

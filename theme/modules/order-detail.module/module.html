@@ -96,6 +96,16 @@
     <pre class="order-detail__notes">{{ order.description }}</pre>
   </section>
   {% endif %}
+
+  {% if module.order_help_form.form_id %}
+  <section class="hs-card order-detail__section order-detail__help" id="order-help-form" aria-label="Order help">
+    <h3 class="order-detail__card-title">Questions about this order?</h3>
+    <p class="order-detail__hint">Use your support ticket form here if configured (#45). Map fields to the native ticket object and associate to the contact; optional <code>related_order_number</code> can mirror <strong>{{ order.order_number }}</strong> via a hidden field or workflow.</p>
+    <div class="hs-form-wrap">
+    {% form form_to_use="{{ module.order_help_form.form_id }}" %}
+    </div>
+  </section>
+  {% endif %}
 </article>
 {% else %}
 <div class="hs-card order-detail__empty">
