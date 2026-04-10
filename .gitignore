@@ -76,3 +76,6 @@ hubspot.config.yaml
 # Legacy Next.js App Router tree (archived — CMS-native portal is canonical; keep locally, do not commit)
 /app/
 customer-portal/app/
+
+# Canonical plan A0a: nested duplicate `customer-portal/` checkout under design-manager (never `git add` inner tree)
+customer-portal/

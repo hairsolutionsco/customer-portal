@@ -2,6 +2,13 @@
 
 Living log of problems that tend to recur. Update when a new failure mode appears.
 
+## Orchestration (canonical CMS portal plan)
+
+- **Single build plan:** **`docs/cms-customer-portal-plan.md`** is the **only** orchestration plan for the CMS theme. Cursor agents: **portal-cms-orchestrator** (lead) and **portal-cms-build-subagent** (per-row implementer) in `.cursor/agents/`.
+- **Roster vocabulary:** Theme work uses **A0a–A11** (+ splits A5a/A5b, A7a/A7b, A9a/A9b, A10a/A10b) as in `docs/cms-customer-portal-plan.md` and `docs/PORTAL_THEME_MULTI_AGENT_BUILD_PROMPT.md`. Root **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** **A0–A15** is a **different** roster (CRM/HubDB/forms/ops); do not merge the two numbering schemes.
+- **Nested `customer-portal/` directory (A0a):** If a duplicate portal checkout exists inside `design-manager/`, keep it **untracked** and **gitignored** via root `.gitignore` entry `customer-portal/`. Do not archive into this repo unless product asks for a `reference-themes/` snapshot.
+- **Tracked `.DS_Store`:** If macOS re-introduces tracked `.DS_Store` under `cms/`, run `git rm --cached -r -- '**/.DS_Store'` and commit. (Wave 0 baseline: none were tracked in git at hygiene time.)
+
 | Symptom | Cause | Fix |
 |--------|--------|-----|
 | `error: no working HubSpot token found` when running props/HubDB | `op run` did not inject a scoped private-app token | Ensure 1Password Environment exposes `HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN` for props, `HUBSPOT_PRIVATE_APP__HUBDB__ACCESS_TOKEN` for HubDB, or `HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN` for shared ops. From **hubspot** repo root: `bash scripts/op_run.sh npm run portal:hubspot-props`. From **design-manager** root: `bash customer-portal/ops/scripts/op_env.sh npm run portal:hubspot-props`. |
@@ -40,6 +47,6 @@ Once properties exist in GraphQL and HubDB tables are published, re-add to queri
 
 - `portal_hair_profile_json`, `portal_invoices_json`, `portal_saved_templates_json`, `portal_billing_json`
 - `notify_order_updates`, `notify_production_reminders`, `notify_marketing`
-- HUBDB blocks in `billing.graphql`, `products.graphql`, `locations.graphql` as in git history or `SCHEMA_REGISTRY.md`
+- HUBDB blocks in `billing.graphql`, `products.graphql` as in git history or `SCHEMA_REGISTRY.md` (locations HubDB page removed per `docs/cms-customer-portal-plan.md` A0b)
 
 Then upload again via `portal_task_complete.sh` or `hs cms upload` (see `AGENT_PROMPT.md` — theme may use `.` or `src` as upload path; `portal_task_complete.sh` picks the correct one).

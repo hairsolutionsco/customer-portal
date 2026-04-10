@@ -93,13 +93,6 @@
         "default": 241666863
       },
       {
-        "label": "Affiliated locations table ID",
-        "name": "locations_table_id",
-        "type": "number",
-        "display": "text",
-        "default": 241636157
-      },
-      {
         "label": "Subscription plans table ID",
         "name": "subscription_plans_table_id",
         "type": "number",
