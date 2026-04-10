@@ -43,33 +43,29 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 #### Snapshot
 
-- **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`)
-- **CLI:** Default account **50966981** (`hs accounts list` OK). **`portal_task_complete.sh`** picks **`hs cms upload`** when the installed CLI advertises it, else **`hs upload`** (local **`@hubspot/cli` ^8** may use either path).
-- **`main` tip (Wave 4 subagent batch):** **`1aaeccb`** (A8 dashboard/orders + layout fix) on **`23124ac`** (A10 commerce/billing) on **`c5d3f70`** (A9 profile/customization) on **`93c262b`** (merge **PR #58** / `feature/next-auth-types`). **A9** uploaded **draft** successfully; **A8** reported **draft + publish** OK; **A10** did not run upload from their session — run a **consolidated ritual** so DM matches **`main`**.
-- **Layout:** All **`portal-*.html`** extend **`layouts/portal-shell.html`**; **`theme/templates/layouts/portal.html`** removed locally. **Orphan risk:** **`portal.html` may still exist in Design Manager** until deleted there or overwritten by a clean upload — pages no longer reference it.
-- **Theme field reconciliation:** **A10** had added **`portal.support_portal_url`** in **`theme/fields.json`**; **A8** removed it as invalid for theme upload and pointed sidebar/support CTAs at **module URLs** or **`/customer-portal`**. Current repo matches the **module-level URL** rule already documented for A7 — do **not** reintroduce that theme text field without re-validating upload.
-- **Legacy mirror:** **A10** updated **`hair-solutions-portal/src/`** to match commerce modules; **A9** left legacy tree **out of scope**. Follow up only if you want **strict parity** between **`theme/`** and **`hair-solutions-portal/src/`**.
-- **Issues (exports refreshed):** **`exports/github-issues.json`** still lists **#30–#42 OPEN** until GitHub is updated — close **#35–#36** (A9), **#37 / #40 / #41** (A10), **#32–#34** (A8) **after** UAT when AC match. **#43–#48** placeholders (forms/serverless). **#38 (locations):** live IA **pruned** `portal-locations` / `location-cards` per **`docs/cms-customer-portal-plan.md`** — decide **close / defer / re-scope** before spawning location work. **#39–#42** remain for later subagents.
-- **Special agent (operational):** **`docs/SPECIAL_AGENT_REPORT.md`** — CMS/legacy decoupling (**`npm run build` → `portal:build`**, **`legacy:*`**, **`tsconfig` split**, scripts/CI watch **`theme/**`**). Those edits are **still uncommitted** in the working tree alongside this handoff — **commit as a dedicated ops commit** (no mixed theme feature blobs).
+- **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`) · account **50966981**
+- **CLI:** **`portal_task_complete.sh`** uses **`hs cms upload`** when available (**`@hubspot/cli` 8.3.0**). **`HUBSPOT_CMS_PUBLISH_MODE=draft`** succeeded for the latest batch; **`publish`** hit a HubSpot **internal error** on one run — **retry publish** later or stay on **draft** for UAT.
+- **`main` tip:** **`69b1667`** (A11 settings #39) on **`3d6b7c9`** (A12 system templates #42) on **`b76d0ff`** (exports sync) on **`e463938`** (Special Agent / CMS–legacy ops: **`package.json`**, **`tsconfig`/`tsconfig.legacy.json`**, scripts, CI **`theme/**`**, **`docs/SPECIAL_AGENT_REPORT.md`**, handoff here) — then Wave 4 A8/A10/A9 stack below.
+- **Orchestrator session (2026-04-10):** Pushed **`e463938`** + **`b76d0ff`**. Posted **UAT reminder comments** on **#32–#37, #39–#41** (not auto-closed). **Closed #38** as **not planned** (pruned `portal-locations` / `location-cards` IA). Ran **`portal_task_complete.sh --skip-git`**: full **publish** OK for ops baseline; after **A11/A12**, **publish** flaked — **draft** upload **OK** for current theme.
+- **Layout:** **`portal-*.html`** → **`layouts/portal-shell.html`**. Orphan **`portal.html`** in DM may still need manual cleanup if present.
+- **Theme URLs:** No **`portal.support_portal_url`** in **`theme/fields.json`** — module-level URLs only (A7/A8 rule).
+- **Open issues:** **#30–#37, #39–#42** remain **OPEN** until **human UAT** closes them; **#38 CLOSED**. **#43–#48** forms / serverless. **`npm run portal:issues`** to refresh **`exports/`** after GitHub changes.
 
 #### Lead agent — run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
-1. **Commit + push** the **Special Agent** operational batch (and **`docs/SPECIAL_AGENT_REPORT.md`** if keeping it tracked) with a **`chore(portal): …`** message; keep **unrelated theme dirt** out of that commit.
-2. Run **`npm run portal:issues`**; on GitHub, **close or comment** **#32–#34, #35–#36, #37, #40, #41** when UAT satisfies AC.
-3. Run **`./scripts/op_env.sh ./scripts/portal_task_complete.sh "chore(portal): sync DM after Wave 4 batch (A8–A10)"`** (or equivalent message) so **issues sync + upload + git** align — use **`SKIP_HUBSPOT=1`** only if CLI/auth blocks after retry.
-4. **Remaining Wave 4 / system UI** (per **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** and open issues in **`#38–#42`** range if any): spawn **A11–A12** (or plan-named successors) **after** #30–#31 UAT or explicit waiver.
-5. **`package.json`:** optional cleanup — **`portal:cms-upload-*`** still invoke **`hs cms upload`**; **`portal_task_complete.sh`** is authoritative for CLI detection. Align npm script wording with **`scripts/portal_task_complete.sh`** header if contributors get confused.
+1. **Human UAT** on **draft** (or published when stable): **#30–#31**, **#32–#37, #39–#41**, **#42** — close on GitHub when AC match; refresh **`exports/`**.
+2. **`HUBSPOT_CMS_PUBLISH_MODE=publish`** retry **`bash scripts/portal_task_complete.sh --skip-git`** (or full ritual with commit message) if you need **published** theme after HubSpot transient errors.
+3. **Next build wave:** **A13** forms **#43–#48** (attach HubSpot forms to modules per **`settings-*`**, profile, etc.); then **A14** / **A15** per plan.
+4. Optional: align **`package.json`** **`portal:cms-upload-*`** script comments with **`scripts/portal_task_complete.sh`** (probe behavior).
 
 #### Subagents to launch *(trim rows per session)*
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|-------|
-| — | **Human** | Chrome UAT + issue hygiene | **#30–#31**, **#32–#41** | Draft theme; nav, orders, invoices, billing, profile CTAs; close when AC met |
-| — | **Orchestrator / shell** | Ops commit + ritual | — | Land Special Agent diff; **`portal_task_complete.sh`** upload |
-| 1 | **A11–A12** | Remaining portal pages / system UI | **#38–#42** (if open per exports) | Only after UAT or waived |
+| — | **Human** | UAT + issue hygiene | **#30–#37, #39–#42** | Close when AC met; **#38** done (not planned) |
+| — | **A13** | Forms / writes | **#43–#48** | After UAT or in parallel where safe |
 | 2 | **A3** | Membership UI (human-heavy) | **#49–#50** | HubSpot UI per **`data/SCHEMA_REGISTRY.md`** Phase 6 |
-| *later* | **A13** | Forms | **#43–#48** | |
 | *later* | **A14** | Service / KB | **#51–#53** | |
 | *later* | **A15** | Release | **#54–#57** | |
 
@@ -77,10 +73,9 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 #### Blockers / do not launch until
 
-- **Uncommitted ops layer:** Special Agent **`package.json` / `tsconfig*` / scripts / CI / docs** should land **before** the next large theme wave so agents do not fight mixed working trees.
-- **Design Manager parity:** Run upload ritual after ops commit so **A10** + **A8** + **orphan `portal.html`** state matches git.
-- **`theme/fields.json`:** Do not add **theme-level portal/KB URL** fields without HubSpot upload validation — **module** fields remain the safe pattern (**`portal-sidebar.module`**, CTAs).
-- **Wide A11–A12:** Prefer **#30–#31** verified or explicitly waived.
+- **HubSpot publish:** If **internal error** persists, use **`draft`** for UAT and contact Support or retry off-peak.
+- **`theme/fields.json`:** Do not add **theme-level portal/KB URL** fields without upload validation — **module** fields remain the safe pattern.
+- **Forms:** **#39** / profile modules expect **#47–#48** before “done” in production.
 
 ### Subagent prompt *(copy once per spawn; replace placeholders)*
 
