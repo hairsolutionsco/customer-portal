@@ -79,7 +79,7 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 #### Blockers / do not launch until
 
-- **Design Manager full upload:** HubSpot occasionally returns **HTTP internal error** on the **final** `hs cms upload` post after per-file OK — retry **draft** publish mode, later retry, or Support ticket.
+- **Design Manager full upload:** HubSpot may return **HTTP internal error** on the **final** `hs cms upload` post after per-file OK (**`-m publish` and `-m draft` both observed** on account **50966981**) — wait and retry, try smaller batches, or open a **HubSpot Support** ticket if it persists.
 - **A5/A6:** **`data/SCHEMA_REGISTRY.md`** + live GraphQL explorer names aligned (G3).
 - **Parallel A8–A12:** **A7** (#30–#31) merged first.
 
