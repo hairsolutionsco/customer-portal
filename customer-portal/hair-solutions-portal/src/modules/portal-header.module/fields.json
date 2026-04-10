@@ -1,8 +1,0 @@
-[
-  {
-    "name": "page_title",
-    "label": "Page title",
-    "type": "text",
-    "default": ""
-  }
-]

@@ -1,8 +1,0 @@
-[
-  {
-    "name": "notification_form",
-    "label": "Notification preferences form",
-    "type": "form",
-    "default": { "response_type": "inline", "message": "" }
-  }
-]
