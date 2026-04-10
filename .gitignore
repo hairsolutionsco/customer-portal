@@ -31,6 +31,10 @@ prisma/migrations
 Thumbs.db
 *.pem
 
+# Python (agent skill scripts)
+__pycache__/
+*.pyc
+
 # IDE / editor
 .cursor/
 .idea/

@@ -7,7 +7,7 @@ Everything for this product lives under **`customer-portal/`** inside Design Man
 | **`cms/`** | HubSpot **CMS theme** (HubL, GraphQL, modules, CSS). Upload target name stays **`hair-solutions-portal`** in HubSpot unless you rename it in CLI. |
 | **`app/`** | **Legacy Next.js** App Router tree (optional local checkout). **Not committed** — use `docs/app/` for deploy/runbooks. |
 | **`data/`** | **HubDB seeds**, optional **schema JSON**, **`SCHEMA_REGISTRY.md`** — synced via API/scripts, not uploaded as theme files. |
-| **`docs/`** | Program specs, handoff, agent prompts; **`docs/app/`** = deploy/runbooks for legacy **`app/`**; **`docs/cms-legacy-context/`** = IA, copy, and vocabulary extracted from the old Next app for CMS builders. |
+| **`docs/`** | Program specs, handoff, agent prompts; **`docs/app/`** = deploy/runbooks for legacy **`app/`**; **`docs/cms-legacy-context/`** = IA, copy, and vocabulary from the old Next app; **`docs/skills/`** = Cursor/Claude agent skills (HubSpot CMS + developer) and install notes. |
 | **`ops/`** | Ship ritual, GitHub exports, HubSpot props/HubDB Python, `op_env`. |
 | **`infra/`** | Docker (`Dockerfile`), Hostinger/Vercel/Railway shell helpers, env templates. Build context for Docker is **this** `customer-portal/` directory. |
 | **`docker-compose.hostinger.yml`** | At this root; pairs with **`infra/Dockerfile`**. |
