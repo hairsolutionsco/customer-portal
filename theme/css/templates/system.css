@@ -1,4 +1,27 @@
+/* Skip link: matches portal chrome pattern; system templates do not load portal-layout.css */
+.membership-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--hs-color-surface, #fff);
+  color: var(--hs-color-text, #0f172a);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--hs-radius, 8px);
+  box-shadow: var(--hs-shadow, 0 1px 3px rgba(0, 0, 0, 0.12));
+}
+
+.membership-skip-link:focus {
+  left: 0.75rem;
+  top: 0.75rem;
+  outline: 2px solid var(--hs-color-accent, #326edc);
+  outline-offset: 2px;
+}
+
 .membership-page {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -24,7 +47,35 @@
 
 .membership-card h1 {
   text-align: center;
-  margin-bottom: var(--hs-space-6);
+  margin-bottom: var(--hs-space-4);
+}
+
+.membership-subtitle {
+  text-align: center;
+  color: var(--hs-color-muted);
+  font-size: 0.9375rem;
+  margin: 0 0 var(--hs-space-6);
+  line-height: 1.5;
+}
+
+.membership-intro {
+  text-align: center;
+  color: var(--hs-color-muted);
+  font-size: 0.9375rem;
+  margin: 0 0 var(--hs-space-6);
+  line-height: 1.5;
+}
+
+.membership-legal {
+  margin-top: var(--hs-space-6);
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--hs-color-muted);
+  line-height: 1.5;
+}
+
+.membership-legal a {
+  font-weight: 500;
 }
 
 .membership-links {
@@ -39,16 +90,54 @@
 }
 
 .error-page {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--hs-space-6);
   text-align: center;
+  background: linear-gradient(160deg, var(--hs-color-brand) 0%, #0f172a 100%);
 }
 
-.error-page h1 {
-  font-size: 4rem;
-  margin-bottom: var(--hs-space-2);
+.error-page__inner {
+  width: 100%;
+  max-width: 28rem;
+  background: var(--hs-color-surface);
+  border-radius: var(--hs-radius);
+  padding: var(--hs-space-8);
+  box-shadow: var(--hs-shadow-lg);
+  color: var(--hs-color-text);
+}
+
+.error-page__inner h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0 0 var(--hs-space-2);
+  line-height: 1.1;
   color: var(--hs-color-brand);
+}
+
+.error-page__inner p {
+  margin: 0 0 var(--hs-space-4);
+  color: var(--hs-color-muted);
+  font-size: 0.9375rem;
+}
+
+.error-page__inner p:last-of-type {
+  margin-bottom: 0;
+}
+
+.error-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hs-space-3);
+  justify-content: center;
+  margin-top: var(--hs-space-6);
+}
+
+.error-page__logo {
+  max-height: 48px;
+  width: auto;
+  margin: 0 auto var(--hs-space-6);
 }

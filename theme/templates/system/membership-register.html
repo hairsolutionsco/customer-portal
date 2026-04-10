@@ -5,20 +5,31 @@
 -->
 {% set template_css = "../../css/templates/system.css" %}
 {% set pageTitle = "Portal | Register" %}
+{% set logo_src = theme.portal.logo.src || membership_logo_src %}
+{% set logo_alt = theme.portal.logo.alt || membership_logo_alt || "Hair Solutions" %}
 {% extends "../layouts/base.html" %}
+{% block head %}
+  {{ require_css(get_asset_url("../../css/components/forms.css")) }}
+{% endblock %}
 {% block body %}
+<a class="membership-skip-link" href="#membership-main">Skip to main content</a>
 <div class="membership-page">
-  <div class="membership-card">
-    {% if theme.portal.logo.src %}
-    <img src="{{ theme.portal.logo.src }}" alt="Hair Solutions" class="membership-logo">
+  <main class="membership-card" id="membership-main" aria-labelledby="membership-page-title">
+    {% if logo_src %}
+    <img src="{{ logo_src }}" alt="{{ logo_alt }}" class="membership-logo" decoding="async">
     {% endif %}
-    <h1>Create your account</h1>
+    <h1 id="membership-page-title">Create your account</h1>
+    <p class="membership-subtitle">Set a password to access your customer portal.</p>
     {% member_register "portal_register"
       email_label="Email",
       password_label="Password",
       password_confirm_label="Confirm password",
       submit_button_text="Create account"
     %}
-  </div>
+    <p class="membership-legal">By creating an account, you agree to our <a href="https://www.hairsolutions.co/policies/terms-of-service" rel="noopener noreferrer">Terms of Service</a>.</p>
+    <nav class="membership-links" aria-label="Account sign-in">
+      <a href="/_hcms/mem/login">Already have an account? Log in</a>
+    </nav>
+  </main>
 </div>
 {% endblock %}

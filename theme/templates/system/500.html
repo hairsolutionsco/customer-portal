@@ -3,17 +3,28 @@
   isAvailableForNewContent: true
   label: "Portal - 500"
 -->
+{% set logo_src = theme.portal.logo.src || membership_logo_src %}
+{% set logo_alt = theme.portal.logo.alt || membership_logo_alt || "Hair Solutions" %}
 {% extends "../layouts/base.html" %}
 {% block head %}
   {{ require_css(get_asset_url("../../css/templates/system.css")) }}
   {{ require_css(get_asset_url("../../css/components/buttons.css")) }}
 {% endblock %}
 {% block body %}
+<a class="membership-skip-link" href="#error-main">Skip to main content</a>
 <div class="error-page">
-  <div>
-    <h1>500</h1>
-    <p>Something went wrong. Please try again later.</p>
-    <p><a class="hs-btn hs-btn--primary" href="/portal">Go to dashboard</a></p>
-  </div>
+  <main class="error-page__inner" id="error-main" aria-labelledby="error-page-title">
+    {% if logo_src %}
+    <img src="{{ logo_src }}" alt="{{ logo_alt }}" class="error-page__logo" decoding="async">
+    {% endif %}
+    <h1 id="error-page-title">500</h1>
+    <p>Something went wrong on our side. Please try again in a moment.</p>
+    <div class="error-page__actions">
+      <a class="hs-btn hs-btn--primary" href="/portal">Go to dashboard</a>
+      {% if content.absolute_url %}
+      <a class="hs-btn hs-btn--secondary" href="{{ content.absolute_url }}">Try again</a>
+      {% endif %}
+    </div>
+  </main>
 </div>
 {% endblock %}

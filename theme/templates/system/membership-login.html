@@ -5,14 +5,21 @@
 -->
 {% set template_css = "../../css/templates/system.css" %}
 {% set pageTitle = "Portal | Log in" %}
+{% set logo_src = theme.portal.logo.src || membership_logo_src %}
+{% set logo_alt = theme.portal.logo.alt || membership_logo_alt || "Hair Solutions" %}
 {% extends "../layouts/base.html" %}
+{% block head %}
+  {{ require_css(get_asset_url("../../css/components/forms.css")) }}
+{% endblock %}
 {% block body %}
+<a class="membership-skip-link" href="#membership-main">Skip to main content</a>
 <div class="membership-page">
-  <div class="membership-card">
-    {% if theme.portal.logo.src %}
-    <img src="{{ theme.portal.logo.src }}" alt="Hair Solutions" class="membership-logo">
+  <main class="membership-card" id="membership-main" aria-labelledby="membership-page-title">
+    {% if logo_src %}
+    <img src="{{ logo_src }}" alt="{{ logo_alt }}" class="membership-logo" decoding="async">
     {% endif %}
-    <h1>Welcome back</h1>
+    <h1 id="membership-page-title">Welcome back</h1>
+    <p class="membership-subtitle">Sign in to view orders, billing, and your hair profile.</p>
     {% member_login "portal_login"
       email_label="Email",
       password_label="Password",
@@ -20,6 +27,11 @@
       reset_password_text="Forgot your password?",
       submit_button_text="Log in"
     %}
-  </div>
+    {% if membership_registration_link %}
+    <nav class="membership-links" aria-label="Account options">
+      <a href="{{ membership_registration_link }}">Create an account</a>
+    </nav>
+    {% endif %}
+  </main>
 </div>
 {% endblock %}
