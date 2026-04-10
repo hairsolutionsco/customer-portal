@@ -56,7 +56,7 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 **Wave 1** (CRM + HubDB) and §7 **G1/G2**.
 2. Run **`npm run portal:issues`** if the GitHub snapshot may be stale.
 3. **Subagents:** Execute **Subagents to launch** — **one subagent per row**, respecting **Parallel group**.
-4. **HubSpot upload:** If **`hs cms upload … -m publish`** returns **internal error** after many successful file posts, retry once with **`HUBSPOT_CMS_PUBLISH_MODE=draft`**, retry later, or open HubSpot Support — **do not** treat partial per-file success as a full publish until the CLI exits 0.
+4. **HubSpot upload:** If **`hs cms upload`** returns **internal error** after many successful file posts, retry later (both **publish** and **draft** have hit this on **50966981**), try HubSpot Support, or proceed repo-only with **`SKIP_HUBSPOT=1`** until the API succeeds — **do not** treat partial per-file success as a full publish until the CLI exits 0.
 5. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** (or **`./scripts/op_env.sh ./scripts/portal_task_complete.sh …`** per **`1password-op-env.mdc`**). Use **`SKIP_HUBSPOT=1`** only after documented retry/support path or if the user asked to skip.
 
 #### Subagents to launch *(trim rows per session)*
