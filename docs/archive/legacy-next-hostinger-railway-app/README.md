@@ -11,6 +11,7 @@ The live program is a **HubSpot CMS–hosted** membership portal: theme and Grap
 | Path | Contents |
 |------|----------|
 | **`runbooks/`** | Former `docs/app/`: Vercel/Railway/local Postgres setup, testing, deployment checklists. |
+| **`deploy-artifacts/`** | `Dockerfile`, `docker-compose.hostinger.yml`, Railway/Vercel configs, `setup-local.sh`, and the former **`infra/`** tree (see `deploy-artifacts/README.md`). |
 
 Duplicate copies of those runbooks that used to sit at the **repository root** were removed; this archive is the single location for that material.
 
@@ -20,7 +21,7 @@ Archived markdown previously contained example Railway token values. Those lines
 
 ## Legacy code and config still at repo root
 
-The repository still contains **Next.js app code and deploy configs** at the root (`app/`, `package.json`, `prisma/`, `Dockerfile`, `railway.toml`, `vercel.json`, `docker-compose.hostinger.yml`, etc.) so existing `npm run portal:*` automation and optional local Next dev keep working. Those artifacts are **not** required for the CMS-only workflow. See **`REPO_ROOT_APP_ARTIFACTS.md`** in this folder for a checklist.
+The repository still contains **Next.js app code** at the root (`app/`, `package.json`, `prisma/`, etc.) so existing `npm run portal:*` automation and optional local Next dev keep working. **Docker / Railway / Vercel / Hostinger compose** files now live under **`deploy-artifacts/`** above — not at repo root. See **`REPO_ROOT_APP_ARTIFACTS.md`** for what remains at the root.
 
 ## Related context (not deploy runbooks)
 

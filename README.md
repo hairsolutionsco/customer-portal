@@ -25,7 +25,7 @@ The repo previously centered on a **custom Next.js** app deployed via **Railway 
 
 **`docs/archive/legacy-next-hostinger-railway-app/`** — `README.md`, `runbooks/` (old `docs/app/`), and **`REPO_ROOT_APP_ARTIFACTS.md`** listing Next/Docker/Railway files still at repo root for tooling or optional local dev.
 
-If you only care about CMS: ignore `app/`, root `Dockerfile`, `railway*.toml/json`, and `vercel.json` unless you are explicitly reviving the old stack.
+If you only care about CMS: ignore `app/` and root Node/Prisma unless you are explicitly reviving the old Next stack. Docker / Railway / Vercel / Hostinger files live under **`docs/archive/legacy-next-hostinger-railway-app/deploy-artifacts/`**.
 
 ## Operations log
 

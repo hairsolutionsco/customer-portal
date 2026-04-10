@@ -15,7 +15,7 @@ Run the automated setup script:
 
 ```bash
 # From customer-portal/ (this app’s product root):
-bash infra/setup-local.sh
+bash docs/archive/legacy-next-hostinger-railway-app/deploy-artifacts/infra/setup-local.sh
 ```
 
 This will:
@@ -166,4 +166,4 @@ See detailed troubleshooting in:
 
 ---
 
-**Ready to test?** Run `bash infra/setup-local.sh` from **`customer-portal/`** and follow the prompts!
+**Ready to test?** Run `bash docs/archive/legacy-next-hostinger-railway-app/deploy-artifacts/infra/setup-local.sh` from **`customer-portal/`** and follow the prompts!

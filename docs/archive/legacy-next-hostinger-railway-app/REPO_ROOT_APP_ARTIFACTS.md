@@ -1,15 +1,15 @@
-# Legacy app artifacts still present at repo root
+# Legacy app code still at repo root (not CMS theme)
 
-These paths support the **old custom Next.js portal** and/or shared **npm tooling** (e.g. `portal:verify` may still typecheck app code). They are **not** part of the HubSpot CMS upload surface.
+The **HubSpot CMS** upload target is **`hair-solutions-portal/`** (and related **`cms/`**). These paths are **not** uploaded as theme files; they exist for the old **Next.js** stack and shared Node tooling.
 
 | Area | Paths (typical) | Notes |
 |------|-----------------|--------|
-| Next.js app | `app/`, `middleware.ts`, `next.config.js`, `public/` | Optional local dev; may be trimmed later if you go CMS-only in this repo. |
-| UI shared with old app | `components/`, `lib/` | Used by Next routes; not uploaded as HubSpot theme. |
-| Node / Prisma | `package.json`, `package-lock.json`, `prisma/`, `postcss.config.js`, `tailwind.config.ts`, `tsconfig.json` | `portal:*` scripts and Prisma hooks. |
-| VPS / PaaS deploy | `Dockerfile`, `docker-compose.hostinger.yml`, `infra/`, `hostinger.env.example` | Hostinger / container experiments. |
-| Railway | `railway.json`, `railway.toml`, `railway-deploy.sh` | Legacy Railway deploy. |
-| Vercel | `vercel.json`, `deploy-to-vercel.sh` | Legacy Vercel deploy. |
-| Local bootstrap | `setup-local.sh` | Old app local setup. |
+| Next.js app | `app/`, `middleware.ts`, `next.config.js`, `public/` | Optional local dev. |
+| UI / libs | `components/`, `lib/` | Used by Next routes. |
+| Node / Prisma | `package.json`, `package-lock.json`, `prisma/`, `postcss.config.js`, `tailwind.config.ts`, `tsconfig.json` | `portal:*` scripts; Prisma postinstall. |
 
-**CMS upload target:** `hair-solutions-portal/` (and `cms/` if used). **Data:** `data/`. **Automation:** `scripts/`, `ops/`.
+**Moved to archive:** Docker, Hostinger Compose, Railway, Vercel, `setup-local.sh`, and the old **`infra/`** tree → **`docs/archive/legacy-next-hostinger-railway-app/deploy-artifacts/`**.
+
+**Still under `app/` (if present):** e.g. `app/railway.json` — legacy platform hints for the Next app, not used for CMS.
+
+**CMS + automation:** `hair-solutions-portal/`, `data/`, `scripts/`, `ops/`.
