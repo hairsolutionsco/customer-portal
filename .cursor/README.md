@@ -33,11 +33,17 @@ Authoritative copies for CMS work live in **`docs/skills/`** (committed). Symlin
 This repo includes **`.cursor/mcp.json`** with the official **Mem0** HTTP MCP server (semantic long-term memory across sessions). Docs: https://docs.mem0.ai/integrations/cursor
 
 1. Create an account and API key at https://app.mem0.ai/ (key prefix `m0-`).
-2. Export the key where Cursor inherits env (shell profile, 1Password Desktop env injection, or Cursor’s env settings):
+2. Make **`MEM0_API_KEY`** available to **Cursor’s process** (not only terminal scripts). Options:
+   - **1Password Desktop → Developer → Environments:** if you added the key to the **HubSpot Dev** environment whose destination is the HubSpot tree `.env` (e.g. `…/00-engineering/hubspot/.env` or `…/00_engineering/hubspot/.env` depending on your checkout), that file is correct for **`op run`** and HubSpot CLI — **Cursor may still not inject it** when it spawns MCP servers. If Mem0 shows “connection failed” or missing auth, use one of the fallbacks below.
+   - **Shell profile:** `export MEM0_API_KEY="m0-…"` (only helps if you **launch Cursor from that shell**).
+   - **Cursor Settings → MCP / env:** if your Cursor build exposes per-server or global env for MCP, set **`MEM0_API_KEY`** there (no key committed in this repo).
+   - **Smoke test in terminal** (proves the key works; does not prove Cursor sees it):
 
    ```bash
-   export MEM0_API_KEY="m0-…"
+   op run --env-file="/Users/vMac/00-hair-solutions-co/00-engineering/hubspot/.env" -- printenv MEM0_API_KEY | wc -c
    ```
+
+   Use the same `hubspot/.env` path your 1Password destination shows (underscore vs hyphen in `00_engineering` must match your disk).
 
 3. Restart Cursor (or reload the window). Confirm **mem0** appears under MCP and tools like `search_memories` work.
 4. Optional: install the **Mem0** plugin from the **Cursor Marketplace** for lifecycle hooks + richer behavior (MCP-only still works with this file).
