@@ -191,11 +191,14 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 | Contact → documents / files (if any) | ☐ Not recorded | ☐ Introspect if needed |
 | Contact → meetings / custom events (if used for “events”) | ☐ Not recorded | ☐ Introspect if needed |
 | **G5b:** staff-only **membership** access group feasible on this tier | ☐ | ☐ Confirm in HubSpot **Memberships** / access groups UI |
-| **`hair_profile.graphql`:** `portal_hair_profile_json` (or explorer name) on `CRM.contact` | ☑ Repo keeps name/email-only until explorer lists the property (**no** `portal_hair_profile_json` in query yet) | ☐ When field appears in explorer, extend query; then consider **A5/A6** work |
+| **`hair_profile.graphql`:** `portal_hair_profile_json` | ☑ In query; upload **50966981** **2026-04-10** | ☐ Explorer spot-check |
+| **`customization_templates.graphql`:** `portal_saved_templates_json` | ☑ In query; upload **2026-04-10** | ☐ Explorer |
+| **`invoices.graphql`:** `portal_invoices_json` | ☑ In query; upload **2026-04-10** | ☐ Explorer |
+| **`settings.graphql`:** notify + address | ☑ `notify_order_updates`, `notify_production_reminders`, `notify_marketing`, `phone`, `address`, `city`, `state`, `zip` | ☐ Explorer |
 
-**Last updated:** 2026-04-10 — orchestrator repo pass; Design Manager cells remain **☐** until a human runs the GraphQL tool and updates this table (or opens a PR with pasted explorer results).
+**Last updated:** 2026-04-10 — A5 CRM GraphQL validated via **`hs cms upload`** on **50966981**.
 
-**A5 / A6 spawn rule:** Spawn **A5/A6** only after **Design Manager** confirms `portal_hair_profile_json` on `CRM.contact` (or another agreed read path). Until then, do **not** extend `hair_profile.graphql` with that field.
+**A5 / A6:** A6 owns HubDB **#27–#28**.
 
 ### Verification steps (GraphQL explorer)
 
@@ -206,6 +209,10 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
    - Search for any **`order`**-related collection (e.g. patterns like `*_order_*` / `*order*contact*`). If none, **membership GraphQL does not expose native orders** — keep deals-as-orders.
 4. Run `dashboard` / `orders_list` queries; fix association spelling before merge if the explorer shows a different deals field name.
 5. **Optional:** CRM **Associations API** (private app) — list association types between object type **order** and **contact** to document CRM-side type IDs (not printed in repo); helps automations that attach orders to contacts.
+
+### Theme `fields.json` (native portal / KB URLs)
+
+HubSpot **theme** `fields.json` does not support **`text`**, **`link`**, or **`url`** for marketer-editable paths. Any such fields were **removed**; **`portal-sidebar.module`** uses **module** URL fields (see `fields.json` / module defaults) or hardcoded fallbacks **`/customer-portal`** and **`/knowledge-base`**.
 
 ### Blockers
 

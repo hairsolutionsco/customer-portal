@@ -1,7 +1,7 @@
 # label: "Portal Dashboard"
-# description: "Logged-in contact + deal mirror (orders). Re-add portal_* JSON fields when those properties exist in CMS GraphQL."
+# description: "Contact + deals-as-orders + portal_hair_profile_json. portal_billing_json not on crm_contact GraphQL here — omitted."
 # $contact_id: {{ request.contact.contact_vid || '' }}
-# Deal association label: verify in GraphQL explorer if upload fails — see SCHEMA_REGISTRY.md
+# Deal association: p_order_collection__primary aliases deal_collection__contact_to_deal — see SCHEMA_REGISTRY.md
 query dashboard($contact_id: String!) {
   CRM {
     contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
@@ -11,6 +11,7 @@ query dashboard($contact_id: String!) {
       firstname
       lastname
       email
+      portal_hair_profile_json
       associations {
         p_order_collection__primary: deal_collection__contact_to_deal {
           items {

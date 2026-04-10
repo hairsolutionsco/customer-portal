@@ -1,5 +1,5 @@
 # label: "Portal Settings"
-# description: "Profile fields. Re-add `notify_*` custom booleans when they exist on crm_contact in GraphQL (after portal:hubspot-props)."
+# description: "Profile + notification_preferences (#11). Validated upload 50966981 2026-04-10."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query settings($contact_id: String!) {
   CRM {
@@ -12,6 +12,9 @@ query settings($contact_id: String!) {
       city
       state
       zip
+      notify_order_updates
+      notify_production_reminders
+      notify_marketing
     }
   }
 }
