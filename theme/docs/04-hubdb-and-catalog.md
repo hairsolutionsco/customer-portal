@@ -12,6 +12,7 @@ Legacy planning docs often assumed **`HUBDB { ... }`** blocks inside `.graphql` 
 
    - `products_table_id`
    - `subscription_plans_table_id`
+   - `affiliated_locations_table_id`
 
 2. **Modules** load rows with **`hubdb_table_rows(table_id)`**:
 
@@ -23,7 +24,9 @@ Legacy planning docs often assumed **`HUBDB { ... }`** blocks inside `.graphql` 
 {% endfor %}
 ```
 
-3. **`products.graphql`** exists mainly to satisfy the template **`dataQueryPath`** and can return minimal **contact** fields; the **grid** does not depend on `data_query` for product rows.
+3. **`products.graphql`** exists mainly to satisfy the template **`dataQueryPath`** on **`portal-shop.html`** and returns minimal **contact** fields; the **grid** does not depend on `data_query` for product rows.
+
+4. **`locations.graphql`** follows the same pattern for **GitHub #28**: CRM **contact** only in GraphQL; **`affiliated_locations`** rows are **not** selected via `HUBDB` on this portal. Wire **`dataQueryPath: ../data-queries/locations`** when a locations page template is added, and load rows with **`hubdb_table_rows(theme.hubdb.affiliated_locations_table_id)`** in the module (same pattern as **`product-grid`**).
 
 ## Subscription / billing grids
 
@@ -36,7 +39,7 @@ Keep table IDs in sync with HubSpot after `portal:hubdb-sync`; document numeric 
 
 ## Locations table
 
-The **affiliated locations** HubDB table may still exist for other channels, but the **Locations** portal route and `locations.graphql` were **removed** from this theme per [`../../docs/cms-customer-portal-plan.md`](../../docs/cms-customer-portal-plan.md). Do not reintroduce without an IA decision.
+The **affiliated locations** HubDB table remains in **`fields.json`** for ops and future UI. The **customer-route locations page** is still **out of scope** in this theme slice per [`../../docs/cms-customer-portal-plan.md`](../../docs/cms-customer-portal-plan.md) — do not add a **`portal-locations`** template (or public route) without an **IA / A11 (#38–#39)** decision. **`theme/data-queries/locations.graphql`** is a **membership-safe** CRM stub so **#28** matches the same **GraphQL + HubL** story as **#27**; row reads use **`hubdb_table_rows`** when a module ships.
 
 ## HubDB dynamic pages (optional)
 

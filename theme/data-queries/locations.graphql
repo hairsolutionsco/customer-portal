@@ -1,0 +1,12 @@
+# label: "Portal Locations (HubDB via HubL)"
+# description: "Logged-in contact. Affiliated location rows load via HubL `hubdb_table_rows(theme.hubdb.affiliated_locations_table_id)` when a locations module/template ships (membership GraphQL has no HUBDB.table on portal 50966981). Wire `dataQueryPath` on a template when A11 adds the route."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query locations($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+    }
+  }
+}

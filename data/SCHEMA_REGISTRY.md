@@ -21,6 +21,19 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 
 ---
 
+## GitHub issues #27 / #28 alignment (products + locations HubDB vs membership GraphQL)
+
+Issues **[#27](https://github.com/hairsolutionsco/customer-portal/issues/27)** and **[#28](https://github.com/hairsolutionsco/customer-portal/issues/28)** describe **`HUBDB { … }`** queries under legacy **`src/data-queries/`**. On portal **50966981** that shape **does not validate** for membership GraphQL (same `HUBDB.table` limitation as above). **Do not** commit the issue-body `products_collection` / `affiliated_locations_collection` fragments as-uploadable GraphQL for this portal.
+
+| Issue | Accepted read model | Implementation |
+|-------|-------------------|----------------|
+| **#27** Products | **HubL:** **`hubdb_table_rows(theme.hubdb.products_table_id)`** in **`theme/modules/product-grid.module/module.html`**. **GraphQL:** **`theme/data-queries/products.graphql`** returns **`CRM.contact`** only (with `$contact_id` / `dataQueryPath` on **`portal-shop.html`**) so the shop template stays membership-scoped; product **rows** are not read from `data_query.data.HUBDB`. | See **`theme/docs/04-hubdb-and-catalog.md`**. |
+| **#28** Locations | **HubL:** when **A11** (#38–#39) adds a locations UI, read **`affiliated_locations`** with **`hubdb_table_rows(theme.hubdb.affiliated_locations_table_id)`** (table ID **241636157** in **`theme/fields.json`** defaults). **GraphQL:** **`theme/data-queries/locations.graphql`** mirrors **`products.graphql`** (CRM contact only + header comment). There is **no** `portal-locations` template in this slice yet, so **`locations.graphql` is not wired to `dataQueryPath`** until a page needs it — avoids orphan upload validation noise while keeping one file path for #28. | Same doc + plan IA note below. |
+
+**GraphiQL / Design Manager:** The **upload-valid** queries to exercise for #27 are **`products`** with a test `contact_id` (CRM branch only). For #28, **`locations`** uses the same CRM shape once referenced by a template; **HubDB row reads** are verified by publishing the HubDB table (**#13**) and rendering a module that calls **`hubdb_table_rows`**, not by a `HUBDB` block in GraphQL.
+
+---
+
 ## GitHub issue #7 alignment (native orders, not custom object)
 
 Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** title/body still describe a **custom** Order object (`schemas/order.json` + `POST /crm/v3/schemas`). For Portal 2.0, **`AGENT_PROMPT.md` §1** and **`IMPLEMENTATION_PLAN_SUBAGENTS.md` north star supersede that:** orders are **native HubSpot Commerce `order`** records, associated to **contacts** in CRM — **no custom order object** is required for the theme or G1.

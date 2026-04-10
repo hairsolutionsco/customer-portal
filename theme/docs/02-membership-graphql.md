@@ -66,7 +66,7 @@ Legacy docs sometimes show `HUBDB { table(...) { rows } }` in `.graphql` files. 
 - **Per-contact CRM** → `data-queries/*.graphql` + `dataQueryPath` on templates.
 - **Shared catalog / plans** → `hubdb_table_rows(theme.hubdb.*_table_id)` in modules, plus table IDs in `fields.json` → see [04-hubdb-and-catalog.md](./04-hubdb-and-catalog.md).
 
-`products.graphql` may still carry a **light** contact selection for consistency; the **product grid** does not rely on `data_query.data.HUBDB` for rows.
+`products.graphql` and **`locations.graphql`** carry a **light** contact selection for consistency; **catalog and locations grids** do not rely on `data_query.data.HUBDB` for rows (use **`hubdb_table_rows`** — see [04-hubdb-and-catalog.md](./04-hubdb-and-catalog.md)).
 
 ## Official pattern reference
 
