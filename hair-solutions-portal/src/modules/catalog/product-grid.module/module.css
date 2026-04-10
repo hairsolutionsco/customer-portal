@@ -1,0 +1,2 @@
+.product-grid__cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.product-grid__tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }

@@ -1,1 +1,13 @@
-{ "label": "Quick actions", "css_assets": [{ "path": "module.css" }], "js_assets": [], "host_template_types": ["PAGE"] }
+{
+  "global" : false,
+  "content_types" : [ "LANDING_PAGE", "SITE_PAGE" ],
+  "host_template_types" : [ "PAGE" ],
+  "module_id" : 210794348097,
+  "css_assets" : [ {
+    "autoload" : false,
+    "path" : "module.css",
+    "name" : "module.css"
+  } ],
+  "label" : "Quick actions",
+  "is_available_for_new_content" : true
+}

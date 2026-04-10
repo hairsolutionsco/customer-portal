@@ -1,0 +1,34 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set raw = contact.portal_invoices_json if contact else none %}
+{% set rows = raw|fromjson if raw else [] %}
+<section class="invoice-table" aria-label="Invoices">
+  <h1 class="hs-page-title">Invoices</h1>
+  {% if rows and rows|length > 0 %}
+  <div class="hs-table-wrap">
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th scope="col">Invoice</th>
+          <th scope="col">Issued</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Status</th>
+          <th scope="col">PDF</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inv in rows %}
+        <tr>
+          <td>{{ inv.invoice_number }}</td>
+          <td>{{ inv.issue_date }}</td>
+          <td>${{ inv.total }} {{ inv.currency }}</td>
+          <td><span class="hs-badge hs-badge--{{ inv.status }}">{{ inv.status }}</span></td>
+          <td>{% if inv.pdf_url %}<a href="{{ inv.pdf_url }}" target="_blank" rel="noopener">View PDF</a>{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="hs-card"><p>No invoices yet.</p></div>
+  {% endif %}
+</section>

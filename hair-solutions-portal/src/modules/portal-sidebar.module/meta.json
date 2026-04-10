@@ -1,7 +1,14 @@
 {
-  "label": "Portal sidebar",
-  "css_assets": [{ "path": "module.css" }],
-  "js_assets": [],
-  "host_template_types": ["PAGE"],
-  "global": true
+  "global" : true,
+  "content_types" : [ "LANDING_PAGE", "SITE_PAGE" ],
+  "smart_type" : "NOT_SMART",
+  "host_template_types" : [ "PAGE" ],
+  "module_id" : 210796422521,
+  "css_assets" : [ {
+    "autoload" : false,
+    "path" : "module.css",
+    "name" : "module.css"
+  } ],
+  "label" : "Portal sidebar",
+  "is_available_for_new_content" : true
 }

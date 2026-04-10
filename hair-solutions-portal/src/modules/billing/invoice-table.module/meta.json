@@ -1,0 +1,13 @@
+{
+  "global" : false,
+  "content_types" : [ "LANDING_PAGE", "SITE_PAGE" ],
+  "host_template_types" : [ "PAGE" ],
+  "module_id" : 210621546377,
+  "css_assets" : [ {
+    "autoload" : false,
+    "path" : "module.css",
+    "name" : "module.css"
+  } ],
+  "label" : "Invoice table",
+  "is_available_for_new_content" : true
+}

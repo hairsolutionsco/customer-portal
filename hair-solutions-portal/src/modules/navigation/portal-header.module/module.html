@@ -1,0 +1,17 @@
+<header class="portal-header-bar">
+  <div class="portal-header-bar__inner">
+    <button type="button" class="portal-header-bar__menu" data-sidebar-toggle aria-expanded="false" aria-controls="portal-sidebar">
+      <span class="hs-sr-only">Open menu</span>
+      <span aria-hidden="true">☰</span>
+    </button>
+    <div class="portal-header-bar__titles">
+      {% if module.page_title %}
+      <h1 class="portal-header-bar__page-title">{{ module.page_title }}</h1>
+      {% endif %}
+      <p class="portal-header-bar__greeting">
+        Hello{% if request.contact.firstname %}, {{ request.contact.firstname }}{% endif %}
+      </p>
+    </div>
+    <a class="portal-header-bar__logout" href="{{ member_logout_url }}">Log out</a>
+  </div>
+</header>
