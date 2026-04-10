@@ -13,8 +13,8 @@
 .hs-form-wrap input[type="email"],
 .hs-form-wrap textarea,
 .hs-form-wrap select {
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
+  border-radius: var(--hs-radius);
+  border: 1px solid var(--hs-color-border);
   padding: 0.5rem 0.75rem;
   width: 100%;
   font: inherit;
@@ -25,7 +25,7 @@
   background: var(--hs-color-accent);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--hs-radius);
   padding: 0.625rem 1.25rem;
   font-weight: 600;
   cursor: pointer;

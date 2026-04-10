@@ -24,7 +24,7 @@
 .portal-sidebar__link {
   display: block;
   padding: 0.625rem 1.25rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--hs-color-nav-link);
   font-size: 0.9375rem;
   text-decoration: none;
 }
@@ -37,6 +37,7 @@
 .portal-sidebar__link.is-active,
 .portal-sidebar__link[aria-current="page"] {
   background: rgba(255, 255, 255, 0.15);
+  color: #fff;
   font-weight: 600;
 }
 

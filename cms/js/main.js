@@ -45,6 +45,20 @@
     });
   }
 
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') setSidebarOpen(false);
+  });
+
+  var mqDesktop = window.matchMedia('(min-width: 1024px)');
+  function onViewportChange() {
+    if (mqDesktop.matches) setSidebarOpen(false);
+  }
+  if (typeof mqDesktop.addEventListener === 'function') {
+    mqDesktop.addEventListener('change', onViewportChange);
+  } else if (typeof mqDesktop.addListener === 'function') {
+    mqDesktop.addListener(onViewportChange);
+  }
+
   var path = window.location.pathname.replace(/\/+$/, '') || '/';
   qsa('[data-nav-link]').forEach(function (link) {
     var href = link.getAttribute('href') || '';

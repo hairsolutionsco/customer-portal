@@ -5,39 +5,81 @@
     "type": "group",
     "children": [
       {
-        "label": "Brand color",
+        "label": "Navbar / sidebar background",
         "name": "brand_color",
         "type": "color",
         "visibility": { "hidden_subfields": { "opacity": true } },
-        "default": { "color": "#1a1a2e" }
+        "default": { "color": "#131313" }
       },
       {
-        "label": "Accent color",
+        "label": "Sidebar link (inactive)",
+        "name": "nav_link_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#B8B8B8" }
+      },
+      {
+        "label": "Primary accent (links & primary actions)",
         "name": "accent_color",
         "type": "color",
         "visibility": { "hidden_subfields": { "opacity": true } },
-        "default": { "color": "#e94560" }
+        "default": { "color": "#326EDC" }
+      },
+      {
+        "label": "Page background",
+        "name": "page_background_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#F5F8FA" }
+      },
+      {
+        "label": "Card / surface",
+        "name": "surface_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#FFFFFF" }
+      },
+      {
+        "label": "Primary text",
+        "name": "text_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#191919" }
+      },
+      {
+        "label": "Muted text",
+        "name": "muted_text_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#64748B" }
+      },
+      {
+        "label": "Border / divider",
+        "name": "border_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#E1E1E1" }
       },
       {
         "label": "Success color",
         "name": "success_color",
         "type": "color",
         "visibility": { "hidden_subfields": { "opacity": true } },
-        "default": { "color": "#22c55e" }
+        "default": { "color": "#16A34A" }
       },
       {
         "label": "Warning color",
         "name": "warning_color",
         "type": "color",
         "visibility": { "hidden_subfields": { "opacity": true } },
-        "default": { "color": "#f59e0b" }
+        "default": { "color": "#D97706" }
       },
       {
         "label": "Error color",
         "name": "error_color",
         "type": "color",
         "visibility": { "hidden_subfields": { "opacity": true } },
-        "default": { "color": "#ef4444" }
+        "default": { "color": "#DC2626" }
       },
       {
         "label": "Logo",
@@ -64,6 +106,16 @@
         "max": 360,
         "suffix": "px",
         "default": 280
+      },
+      {
+        "label": "Content max width",
+        "name": "content_max_width",
+        "type": "number",
+        "display": "text",
+        "min": 960,
+        "max": 1440,
+        "suffix": "px",
+        "default": 1200
       },
       {
         "label": "Enable serverless ping fetch (body data attribute)",
@@ -98,6 +150,23 @@
         "type": "number",
         "display": "text",
         "default": 241666864
+      }
+    ]
+  },
+  {
+    "label": "Typography",
+    "name": "typography",
+    "type": "group",
+    "children": [
+      {
+        "label": "Root font size",
+        "name": "root_font_size_px",
+        "type": "number",
+        "display": "text",
+        "min": 14,
+        "max": 20,
+        "suffix": "px",
+        "default": 16
       }
     ]
   }

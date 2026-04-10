@@ -4,7 +4,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--hs-radius);
   font-weight: 600;
   font-size: 0.9375rem;
   border: 1px solid transparent;
@@ -23,9 +23,9 @@
 }
 
 .hs-btn--secondary {
-  background: #f1f5f9;
+  background: var(--hs-color-bg);
   color: var(--hs-color-text);
-  border-color: #e2e8f0;
+  border-color: var(--hs-color-border);
 }
 
 .hs-btn--outline {

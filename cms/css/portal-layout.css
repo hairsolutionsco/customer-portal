@@ -1,4 +1,5 @@
 {% set sidebar_w = theme.portal_layout.sidebar_width || 280 %}
+{% set content_max = theme.portal_layout.content_max_width || 1200 %}
 
 .portal-layout {
   display: flex;
@@ -20,6 +21,7 @@
   z-index: 40;
   transform: translateX(0);
   transition: transform 0.2s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .portal-main {
@@ -35,14 +37,14 @@
   top: 0;
   z-index: 30;
   background: var(--hs-color-surface);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--hs-color-border);
   box-shadow: var(--hs-shadow);
 }
 
 .portal-content {
   flex: 1;
   padding: var(--hs-space-6);
-  max-width: 1200px;
+  max-width: {{ content_max }}px;
   width: 100%;
   margin: 0 auto;
 }
@@ -53,6 +55,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   z-index: 35;
+  cursor: pointer;
 }
 
 .portal-overlay.is-visible {

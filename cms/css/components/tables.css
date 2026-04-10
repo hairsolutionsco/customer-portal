@@ -1,7 +1,7 @@
 .hs-table-wrap {
   overflow-x: auto;
   border-radius: var(--hs-radius);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--hs-color-border);
   background: var(--hs-color-surface);
 }
 
@@ -15,11 +15,11 @@
 .hs-table td {
   text-align: left;
   padding: var(--hs-space-3) var(--hs-space-4);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--hs-color-border);
 }
 
 .hs-table th {
-  background: #f8fafc;
+  background: var(--hs-color-bg);
   font-weight: 600;
   color: var(--hs-color-muted);
   font-size: 0.8125rem;
@@ -28,7 +28,7 @@
 }
 
 .hs-table tbody tr:hover {
-  background: #f8fafc;
+  background: var(--hs-color-bg);
 }
 
 .hs-table tbody tr:last-child td {
