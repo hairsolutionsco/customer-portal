@@ -62,8 +62,8 @@ Issue **[#8](https://github.com/hairsolutionsco/customer-portal/issues/8)** titl
 ### Legacy #8 checklist — interpret as “done” when
 
 - [x] **Timeline pattern documented** in this registry (deals-as-orders + optional tickets + native order when GraphQL allows) — **no** `order_status_history` custom object.
-- [ ] **Optional:** Introspect and fill **Contact → Tickets** association field name in **GraphQL association aliases** if the program adopts ticket-based timelines.
-- [ ] **Optional (human):** Rename/reorder deal pipeline stages so the static list in `order-detail.module` matches **your** pipeline’s internal stage IDs (or adjust the HubL `stages` array to match the mirror pipeline).
+- [~] **Optional / explicitly deferred:** **Contact → Tickets** association field name — **not** explorer-verified in-repo; record under **GraphQL association aliases** when ticket-based timelines are adopted or when **Design Manager** A9a / membership GraphQL verification runs (autocomplete on `CRM.contact.associations`). *Typical generated pattern (verify, do not trust blindly):* `ticket_collection__contact_to_ticket`.
+- [~] **Optional (human / deferred):** Rename/reorder deal pipeline stages so the static list in `order-detail.module` matches **your** pipeline’s internal stage IDs (or adjust the HubL `stages` array to match the mirror pipeline).
 
 ---
 
@@ -155,7 +155,7 @@ Paste **real** names from your portal after introspection. Examples only — you
 | **Contact → Deals** (portal “orders” today) | `deal_collection__contact_to_deal` | Used in theme `*.graphql`; if upload/validation errors, open explorer and match the **exact** deals association field on `contact`. |
 | **GraphQL alias only** | `p_order_collection__primary` | Not a HubSpot association ID — a **query alias** mapping the deals collection to a stable key for HubL/modules. |
 | Contact → Company | e.g. `company_collection__primary` | Pattern reference |
-| Contact → Tickets | *(introspect)* | For support / timeline |
+| Contact → Tickets | *(introspect when adopted)* | For support / timeline; **#8 optional** — see checklist above (typical pattern to verify: `ticket_collection__contact_to_ticket`) |
 | Contact → **native Orders** | *(introspect)* | **Expected absent** on many portals per CMS docs; if present, document field name here and plan query swap |
 | Contact → Invoices | *(introspect)* | Same caveat as orders |
 | Order detail dynamic page | `request.contact.contact_vid` + slug | Today: detail query uses same deal association + filters by slug/`hs_object_id` — see `order_detail.graphql` |
@@ -173,7 +173,7 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 | `order_detail.graphql` runs | ☑ `deal(uniqueIdentifier: "hs_object_id")` + contact association subset; HubL allow-list in `order-detail.module` | ☐ Run with test `contact_id` + `order_number` (slug) |
 | Contact → deals: `deal_collection__contact_to_deal` (or actual name) | ☑ Used consistently in all three queries (replace portal-wide if explorer shows a different generated name) | ☐ Confirm autocomplete / introspection on `CRM.contact.associations` |
 | Alias `p_order_collection__primary` still valid in queries | ☑ Present in `dashboard`, `orders_list`, `order_detail` (contact branch) | ☐ N/A (alias is client-side) |
-| Contact → tickets collection name | ☐ Not recorded | ☐ Introspect if ticket timeline is adopted (#8 optional lane) |
+| Contact → tickets collection name | ☐ **Deferred** (#8 optional lane — not blocking; record when adopted or A9a runs) | ☐ Introspect if ticket timeline is adopted |
 | Contact → quotes collection name | ☐ Not recorded | ☐ Introspect if quotes are used in portal |
 | Contact → documents / files (if any) | ☐ Not recorded | ☐ Introspect if needed |
 | Contact → meetings / custom events (if used for “events”) | ☐ Not recorded | ☐ Introspect if needed |

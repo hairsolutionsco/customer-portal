@@ -215,6 +215,7 @@ Orchestrators and solo agents run this after **each** merged PR slice, **each** 
 
 | Gate | When | Check |
 |------|------|--------|
+| **G0 Bootstrap (P0)** | After #3–#4; #5 executed **or** explicitly deferred | **`hs accounts list`** shows a default account; **`hubspot.config.yml`** (and **`.hsaccount`**) gitignored; **portal target** documented (primary account ID + optional test/dev account); **#5**: custom domain + DNS + SSL **live** (issue closed) **or** deferral + subdomain plan documented for release (**#54–#57**) so membership work can proceed on the chosen target portal |
 | **G1 CRM** | After #6–#11 | Contact properties visible; native orders/invoices (or documented mirror) associated to test contact; optional custom objects not required |
 | **G2 HubDB** | After #12–#14 | Rows queryable; columns match `master-plan` |
 | **G3 GraphQL** | After #20–#29 | Every query executes against **target portal** data (seeded or manual); no null blowups on empty associations |

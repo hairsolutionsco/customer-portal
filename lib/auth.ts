@@ -1,34 +1,9 @@
-import { NextAuthOptions } from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
-import { User, UserRole } from '@prisma/client'
-
-declare module 'next-auth' {
-  interface Session {
-    user: {
-      id: string
-      email: string
-      name: string | null
-      role: UserRole
-      emailVerified: Date | null
-    }
-  }
-
-  interface User {
-    role: UserRole
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id: string
-    role: UserRole
-    email?: string
-    name?: string | null
-  }
-}
+import { UserRole } from '@prisma/client'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -96,12 +71,18 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = user.role
+        if (typeof user.email === 'string') token.email = user.email
+        if (typeof user.name === 'string' || user.name === null) token.name = user.name
       }
 
       // Update session data
       if (trigger === 'update' && session) {
-        token.name = session.name
-        token.email = session.email
+        if (typeof session.name === 'string' || session.name === null) {
+          token.name = session.name
+        }
+        if (typeof session.email === 'string') {
+          token.email = session.email
+        }
       }
 
       return token
@@ -110,7 +91,8 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id
         session.user.role = token.role
-        if (token.email !== undefined) session.user.email = token.email
+        session.user.email =
+          typeof token.email === 'string' ? token.email : session.user.email ?? ''
         if (token.name !== undefined) session.user.name = token.name
       }
       return session
