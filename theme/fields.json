@@ -150,6 +150,13 @@
         "type": "number",
         "display": "text",
         "default": 241666864
+      },
+      {
+        "label": "Affiliated locations table ID",
+        "name": "affiliated_locations_table_id",
+        "type": "number",
+        "display": "text",
+        "default": 241636157
       }
     ]
   },

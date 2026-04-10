@@ -17,7 +17,7 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 
 **Automation rule:** Anything not queryable on membership GraphQL → sync via workflow to **Contact** (preferred), **Deal**, or **Company** properties the portal *can* read.
 
-**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). Shop / locations / plan grid use **`hubdb_table_rows(theme.hubdb.*_table_id)`** in modules; defaults are set in `customer-portal/theme/fields.json` (update after re-sync if table IDs change).
+**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). Shop / locations / plan grid use **`hubdb_table_rows(theme.hubdb.*_table_id)`** in modules; defaults are set in `customer-portal/theme/fields.json` (`products_table_id`, `subscription_plans_table_id`, `affiliated_locations_table_id` — update after re-sync if table IDs change).
 
 ---
 
@@ -31,6 +31,11 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 | **CMS membership GraphQL** | HubSpot’s documented private-page CRM types include **contact, company, deal, ticket, quote, line_item** — **not** `order` / `invoices` (`AGENT_PROMPT.md` Context). **Do not assume** `order` appears in the explorer. |
 | **Portal theme (today)** | Queries use **`deal_collection__contact_to_deal`** (contact → deals) with a GraphQL alias **`p_order_collection__primary`** so modules keep one stable “orders collection” name while the backing data is **deal-based mirror** for GraphQL. See `customer-portal/theme/data-queries/dashboard.graphql`, `orders_list.graphql`, `order_detail.graphql`. |
 | **Future** | If introspection shows a native **`order`** association under `CRM.contact.associations`, A5 can point the same alias (or a new field) at that collection and map real order properties; until then, **deals-as-orders** remains the supported read path. |
+| **Order detail (membership)** | `order_detail.graphql` loads `CRM.p_order` via `deal(uniqueIdentifier: "hs_object_id", …)` **and** `CRM.contact` with the same `p_order_collection__primary: deal_collection__contact_to_deal` alias as `dashboard.graphql` / `orders_list.graphql`. **Authorization** is not expressed in GraphQL alone: `theme/modules/order-detail.module/module.html` sets `allowed` only when `p_order.hs_object_id` matches an id in the contact’s mirrored deal list (see `theme/docs/03-templates-and-data-query.md`). |
+
+**Wave 1 GraphQL alignment (deals-as-orders):** All three order-related queries use the same association alias pair: `p_order_collection__primary: deal_collection__contact_to_deal`. **Account-specific:** if explorer autocomplete shows a different contact→deals field name, replace `deal_collection__contact_to_deal` in all three files together.
+
+**Explorer checklist for `order_detail.graphql` (no substitute for live validation):** Deal selection uses `dealname`, `dealstage`, `amount`, `deal_currency_code`, `createdate`, `closedate`, `description`, `hs_object_id`. These map to common HubSpot deal properties; membership GraphQL still rejects any field missing from **your** schema. **Semantic placeholders:** `shipped_at` and `delivered_at` both alias `closedate` today; `subtotal` aliases `amount` — UI shows duplicate values until mirrored custom deal properties or native order fields exist.
 
 ---
 
@@ -52,9 +57,11 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 
 | Artifact | HubSpot ID / name | Notes |
 |----------|-------------------|--------|
-| Contact `portal_hair_profile_json` | Group **`portal`** (label: Portal) | **Issue #6 (contact-property interpretation):** Hair profile is stored as one **string** property (textarea) containing a **JSON object**. **Do not** POST `hair_profile` as a CMS custom object for Portal 2.0 go-live. Create via `bash scripts/op_run.sh npm run portal:hubspot-props` from **hubspot** root (or `bash customer-portal/ops/scripts/op_env.sh npm run portal:hubspot-props` from **design-manager** root). |
+| Contact `portal_hair_profile_json` | Group **`portal`** (label: Portal) | **Issue #6 (supersedes custom-object AC in GitHub):** GitHub **[#6](https://github.com/hairsolutionsco/customer-portal/issues/6)** still describes a **custom object** + `schemas/hair_profile.json` + `POST /crm/v3/schemas`. **Portal 2.0** follows **`AGENT_PROMPT.md` §1** + **`IMPLEMENTATION_PLAN_SUBAGENTS.md` north star:** hair profile is **one Contact property** (textarea) **`portal_hair_profile_json`** holding a **JSON object** whose keys match the property names below (same names as the old custom-object plan / issue table). **Do not** create a HubSpot custom object for hair profile for go-live. **Create/update properties in HubSpot:** from this repo root run **`./scripts/op_env.sh npm run portal:hubspot-props`** (runs `scripts/hubspot_create_portal_contact_properties.py`; needs a token with **`crm.schemas.contacts.write`** — see `npm run portal:hubspot-props` in `package.json`). *Alternate monorepo paths:* `bash scripts/op_run.sh npm run portal:hubspot-props` from **`hubspot/`** root if your workspace uses that wrapper. |
 
-### `portal_hair_profile_json` — JSON key contract (must match `schemas/hair_profile.json`)
+### `portal_hair_profile_json` — JSON key contract (names align with issue #6 / master-plan; `schemas/hair_profile.json` optional)
+
+**Source of truth for keys:** this table. A committed **`schemas/hair_profile.json`** file (issue #6 checkbox) is **optional** documentation only for the contact-property path — it is **not** POSTed to `crm/v3/schemas` for Portal 2.0. If you add the file later, keep `name` values identical to the keys below.
 
 | Key | JSON type | Values / notes |
 |-----|-----------|----------------|
@@ -76,12 +83,12 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 | `photo_back` | string | |
 | `photo_top` | string | |
 | `notes` | string | |
-| `allergies` | string | |
+| `allergies` | string | Portal extension (not listed in GitHub #6 table; safe to omit in minimal payloads) |
 | `onboarding_completed` | boolean | |
 
 **Reference grouping in `schemas/hair_profile.json`:** properties use `groupName` `hair_profile_information` for documentation alignment with the old custom-object plan; on **Contact**, the live storage for the portal is the single field above in group **`portal`**.
 
-**GraphQL:** `hair_profile.graphql` uses core contact fields until the explorer shows **`portal_hair_profile_json`** on `crm_contact` (upload validation rejects undefined fields even when the CRM property exists).
+**GraphQL:** `theme/data-queries/hair_profile.graphql` uses core contact fields only until **CMS GraphQL** introspection confirms **`portal_hair_profile_json`** (or the explorer’s exact field name) on `crm_contact`. **Do not** add that field to the query without verification — upload validation rejects undefined GraphQL fields even when the CRM property exists in Settings.
 
 | Artifact | HubSpot ID / name | Notes |
 |----------|-------------------|--------|
@@ -103,7 +110,7 @@ Table **names** in HubSpot: `subscription_plans`, `affiliated_locations`, `produ
 |-------|-------------------------|
 | `subscription_plans` | `name`, `description`, `price`, `currency`, `interval`, `systems_per_year`, `features`, `is_active`, `display_order` |
 | `affiliated_locations` | `name`, `country`, `state`, `city`, `address`, `postal_code`, `phone`, `email`, `website`, `services_offered`, `specialties`, `latitude`, `longitude`, `description`, `logo_url`, `is_featured`, `display_order` |
-| `products` | `category` = **SELECT** (options: Hair Systems, Adhesives, Maintenance, Accessories); other columns as listed in `hubdb/products.json` |
+| `products` | `name`, `slug`, `description`, `short_description`, `price`, `compare_at_price`, `currency`, `category` (**SELECT**: Hair Systems, Adhesives, Maintenance, Accessories), `primary_image`, `in_stock`, `featured`, `display_order` |
 
 **Gate G2 (HubDB):** **passing** for portal **50966981** — tables published with seed rows (2026-04-07). Token resolution: `customer-portal/ops/scripts/hubspot_resolve_token.py` (env first, then HubSpot CLI OAuth).
 
@@ -141,6 +148,7 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 | Contact → documents / files (if any) | ☐ | |
 | Contact → meetings / custom events (if used for “events”) | ☐ | |
 | **G5b:** staff-only **membership** access group feasible on this tier | ☐ | |
+| **`hair_profile.graphql`:** `portal_hair_profile_json` (or explorer name) on `CRM.contact` | ☐ | **A1 / A9a:** extend query only after field exists in explorer; until then keep name/email-only query as in repo |
 
 **Last updated:** *(date / initials after A9a completes)*
 
@@ -158,6 +166,8 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 
 | Blocker | Mitigation |
 |---------|------------|
+| **A0 (CLI):** `hs` on PATH has no `hs cms upload` (older/global install) | After `npm install` in this repo, use **`./node_modules/.bin/hs cms upload . customer-portal -m draft`** from **`theme/`**, or **`./scripts/portal_task_complete.sh`** (it prefers the local `hs`). Auth lives in **`~/.hscli/config.yml`**; use **`hs account auth`**, not **`hs init`**. |
+| **A0 (upload):** HubSpot **`internal error`** after many successful file uploads | Retry upload; confirm **Design Manager → `customer-portal`**; if it persists, open a HubSpot support ticket with account **50966981** and timestamp. |
 | `deal_collection__contact_to_deal` missing or renamed on your account | Copy exact field name from explorer into all three queries (`dashboard`, `orders_list`, `order_detail`). |
 | No deals to mirror native orders | Create a workflow or integration that creates/updates a **deal per order** (or stage) for portal display, or wait for HubSpot to expose `order` on membership GraphQL. |
 | Team expects issue #7 “custom object” deliverable | Close #7 with comment pointing to this registry + native Commerce direction; optional custom object is **out of scope** for Professional CMS GraphQL. |
