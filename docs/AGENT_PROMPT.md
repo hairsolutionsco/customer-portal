@@ -44,29 +44,31 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 #### Snapshot
 
 - **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`)
-- **Issues:** #3–#57 · exports: **`exports/github-issues.json`** (run **`npm run portal:issues`** to refresh)
+- **CLI:** Default account **50966981** (`hs accounts list` OK). Test account **51315176** also configured.
+- **Git:** **`main`** matches **`origin/main`**; latest theme batch includes **Portal brand → `customer_portal_url`** (native Service customer portal link) and support CTAs in **billing-plans**, **product-grid**, **quick-actions**, **portal-sidebar**; docs/registry aligned in **`6273b94`** area.
+- **Issues:** #3–#57 still **OPEN** in **`exports/github-issues.json`** — many titles describe **custom objects** superseded by **`AGENT_PROMPT.md` §1** + **`data/SCHEMA_REGISTRY.md`**; **orchestrator should update/close checklists on GitHub** when AC are met (then **`npm run portal:issues`**).
 - **Data model:** **Hair profile + saved templates → Contact properties.** **Orders → native Commerce `order`.** **Invoices → native `invoices`.** **Custom objects not required** for go-live. **GraphQL** on membership pages may list `contact`, `company`, `deal`, `ticket`, `quote`, `line_item` — **confirm** whether `order` / invoices appear in **your** explorer; if not, use **Deal/Contact mirror** via workflows.
-- **Baseline:** GraphQL in repo targets **deals-as-orders** (`deal_collection__contact_to_deal` — verify in explorer), **HubDB** tables `products`, `affiliated_locations`, `subscription_plans`, and contact JSON fields `portal_hair_profile_json`, `portal_saved_templates_json`, `portal_invoices_json`. **API:** **`./scripts/op_env.sh npm run portal:hubspot-props`** and **`./scripts/op_env.sh npm run portal:hubdb-sync`**. **Next gate:** upload theme; fix association labels + HubDB column names if validation errors.
+- **Baseline:** GraphQL in repo targets **deals-as-orders** (`deal_collection__contact_to_deal` — verify in explorer), **HubDB** via **`hubdb_table_rows(theme.hubdb.*_table_id)`** for products/plans, contact JSON for invoices where needed. **API:** **`./scripts/op_env.sh npm run portal:hubspot-props`** and **`./scripts/op_env.sh npm run portal:hubdb-sync`**. **Wave 1 gate (G1/G2):** CRM props + HubDB sync verified; association labels + table IDs in **`data/SCHEMA_REGISTRY.md`**.
 
 #### Lead agent — run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
-1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 (current wave) and §7 (gate for that wave).
+1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 **Wave 1** (CRM + HubDB) and §7 **G1/G2**.
 2. Run **`npm run portal:issues`** if the GitHub snapshot may be stale.
-3. **Subagents:** Execute **Subagents to launch** — **one subagent per row**, respecting **Parallel group**. **Skipping subagents to “do it all yourself” is not allowed** for normal waves.
-4. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** — **include HubSpot upload** (default). Use **`SKIP_HUBSPOT=1`** only if CLI/auth is blocked after retry or the user asked to skip. Upload uses **`hs`** + **`~/.hscli/config.yml`**; optional **`theme/hubspot.config.yml`** (gitignored). See **`IMPLEMENTATION_PLAN_SUBAGENTS.md` §6a**. *If this repo is checked out inside `hubspot/` with nested paths, use the ritual path your workspace README gives (often `customer-portal/ops/scripts/…`).*
+3. **Subagents:** Execute **Subagents to launch** — **one subagent per row**, respecting **Parallel group**.
+4. **HubSpot upload:** If **`hs cms upload … -m publish`** returns **internal error** after many successful file posts, retry once with **`HUBSPOT_CMS_PUBLISH_MODE=draft`**, retry later, or open HubSpot Support — **do not** treat partial per-file success as a full publish until the CLI exits 0.
+5. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** (or **`./scripts/op_env.sh ./scripts/portal_task_complete.sh …`** per **`1password-op-env.mdc`**). Use **`SKIP_HUBSPOT=1`** only after documented retry/support path or if the user asked to skip.
 
 #### Subagents to launch *(trim rows per session)*
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|-------|
-| 1 | **A0** | Platform bootstrap | #3, #4, #5 | **`hs account auth`** → **`~/.hscli/config.yml`**; **`hs accounts list`**; **do not use `hs init`** |
-| 2a | **A1** | CRM config (hair profile → contact props) | #6 | Parallel with 2b after group 1 if portal connected |
-| 2b | **A1** | CRM config (native orders + associations) | #7 | Introspect GraphQL for `order` |
-| — | **A1** | Timeline / status (#8) | #8 | Deal stages, tickets, or native order |
-| 2c | **A2** | HubDB | #12–#14 | **`npm run portal:hubdb-sync`** (API) |
+| — | **A0** | Platform bootstrap | #3–#5 | **Human/light:** CLI already works — **close or rewrite #3 AC** on GitHub; decide **sandbox vs prod** (#4) and **membership subdomain** (#5) in UI/DNS; document in issue comments |
+| 1 | **A1** | CRM config (contact props + commerce alignment) | #6, #7, #9–#11 | **`./scripts/op_env.sh npm run portal:hubspot-props`**; document native order + mirror path per **`SCHEMA_REGISTRY.md`**; update GitHub issue text vs custom-object wording |
+| 1 | **A1** | Timeline / status | #8 | Registry already documents deals-as-orders — **optional:** ticket association name in explorer |
+| 2 | **A2** | HubDB | #12–#14 | **`./scripts/op_env.sh npm run portal:hubdb-sync`**; refresh **`theme/fields.json`** table ID defaults if IDs change |
 | *later* | **A3** | Membership & access | #49–#50 | After subdomain/plan clear |
-| *later* | **A5** + **A6** | GraphQL CRM + HubDB | #20–#29 | **Only after** **`data/SCHEMA_REGISTRY.md`** has real IDs/names |
+| *later* | **A5** + **A6** | GraphQL CRM + HubDB | #20–#29 | **Only after** G1/G2 + explorer verification |
 | *later* | **A7** | Global chrome | #30–#31 | **Before** wide A8–A12 |
 | *later* | **A8–A12** | Pages / system UI | #32–#42 | Parallel per plan §4 after A7 |
 | *later* | **A13** | Forms | #43–#48 | |
@@ -77,8 +79,8 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 #### Blockers / do not launch until
 
-- **A5/A6:** **`data/SCHEMA_REGISTRY.md`** populated enough to match explorer names.
-- **#8:** Order timeline pattern documented in **`data/SCHEMA_REGISTRY.md`**.
+- **Design Manager full upload:** HubSpot occasionally returns **HTTP internal error** on the **final** `hs cms upload` post after per-file OK — retry **draft** publish mode, later retry, or Support ticket.
+- **A5/A6:** **`data/SCHEMA_REGISTRY.md`** + live GraphQL explorer names aligned (G3).
 - **Parallel A8–A12:** **A7** (#30–#31) merged first.
 
 ### Subagent prompt *(copy once per spawn; replace placeholders)*
