@@ -61,3 +61,7 @@ next-env.d.ts
 hubspot.config.yml
 hubspot.config.yaml
 .hsaccount
+
+# Legacy Next.js App Router tree (archived — CMS-native portal is canonical; keep locally, do not commit)
+/app/
+customer-portal/app/
