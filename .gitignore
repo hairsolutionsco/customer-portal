@@ -35,8 +35,14 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# IDE / editor
-.cursor/
+# IDE / editor — track Cursor rules + GSD pack; ignore other .cursor noise
+.cursor/*
+!.cursor/rules/
+!.cursor/skills/
+!.cursor/get-shit-done/
+!.cursor/agents/
+!.cursor/gsd-file-manifest.json
+!.cursor/README.md
 .idea/
 *.swp
 *.swo

@@ -1,0 +1,14 @@
+---
+description: Default GSD skill routing for this repository (use with portal orchestration rules).
+alwaysApply: true
+---
+
+## Default agent skill (Customer Portal repo)
+
+1. **Open-ended work** — When the user has not named a specific skill or command, **read** `.cursor/skills/gsd-do/SKILL.md` and use it to **route** freeform requests to the right GSD workflow (per that skill’s instructions).
+
+2. **Customer Portal 2.0 / HubSpot** — When work is portal, theme, HubDB, or `HANDOFF_PROMPT.md` / wave orchestration, **`portal-2-orchestrator`** and **`HANDOFF_PROMPT.md`** override generic GSD parallelization if they conflict (subagents table, ship ritual, API-first).
+
+3. **GSD (v1) vs GSD 2** — **Cursor skills here are GSD v1** (`get-shit-done-cc --cursor --local`). **GSD 2** is the separate **`gsd-pi`** CLI (`npm install -g gsd-pi`); it does not add more folders under `.cursor/skills/`. Do not assume GSD 2 is installed unless the user runs it in the terminal.
+
+4. **HubSpot CMS skills** — For theme HubL, GraphQL, and CMS architecture, also use the repo’s **`docs/skills/`** copies (symlink those folders into `~/.cursor/skills/` if you need them globally — see `docs/skills/README.md`).

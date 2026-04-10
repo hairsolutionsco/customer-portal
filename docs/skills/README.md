@@ -2,6 +2,8 @@
 
 Canonical copies of skills used for **HubSpot CMS portal** and **Hair Solutions developer** work. Each skill is a directory with a root **`SKILL.md`** (Cursor / Claude agent discovery).
 
+**GSD (Get Shit Done v1)** for Cursor is installed under **`.cursor/skills/`** by the official installer (see **`.cursor/README.md`**). This folder is for **HubSpot + UI** skills; use **`gsd-do`** (default router — see **`.cursor/rules/default-gsd-skill.mdc`**) for phased GSD workflows.
+
 ## Layout
 
 | Path | Skill |
