@@ -1,0 +1,111 @@
+[
+  {
+    "label": "Portal brand",
+    "name": "portal",
+    "type": "group",
+    "children": [
+      {
+        "label": "Brand color",
+        "name": "brand_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#1a1a2e" }
+      },
+      {
+        "label": "Accent color",
+        "name": "accent_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#e94560" }
+      },
+      {
+        "label": "Success color",
+        "name": "success_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#22c55e" }
+      },
+      {
+        "label": "Warning color",
+        "name": "warning_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#f59e0b" }
+      },
+      {
+        "label": "Error color",
+        "name": "error_color",
+        "type": "color",
+        "visibility": { "hidden_subfields": { "opacity": true } },
+        "default": { "color": "#ef4444" }
+      },
+      {
+        "label": "Logo",
+        "name": "logo",
+        "type": "image",
+        "resizable": true,
+        "responsive": true,
+        "show_loading": false,
+        "default": { "size_type": "auto", "src": "", "alt": "Hair Solutions" }
+      }
+    ]
+  },
+  {
+    "label": "Portal layout",
+    "name": "portal_layout",
+    "type": "group",
+    "children": [
+      {
+        "label": "Sidebar width",
+        "name": "sidebar_width",
+        "type": "number",
+        "display": "text",
+        "min": 220,
+        "max": 360,
+        "suffix": "px",
+        "default": 280
+      },
+      {
+        "label": "Enable serverless ping fetch (body data attribute)",
+        "name": "enable_serverless_ping",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "label": "HubSpot account ID (for /_hcms/api/{id}/portal-api/ping)",
+        "name": "hub_id",
+        "type": "number",
+        "display": "text",
+        "default": 50966981
+      }
+    ]
+  },
+  {
+    "label": "HubDB (table IDs)",
+    "name": "hubdb",
+    "type": "group",
+    "children": [
+      {
+        "label": "Products table ID",
+        "name": "products_table_id",
+        "type": "number",
+        "display": "text",
+        "default": 241666863
+      },
+      {
+        "label": "Affiliated locations table ID",
+        "name": "locations_table_id",
+        "type": "number",
+        "display": "text",
+        "default": 241636157
+      },
+      {
+        "label": "Subscription plans table ID",
+        "name": "subscription_plans_table_id",
+        "type": "number",
+        "display": "text",
+        "default": 241666864
+      }
+    ]
+  }
+]

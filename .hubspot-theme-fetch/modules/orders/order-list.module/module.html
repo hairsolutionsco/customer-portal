@@ -1,0 +1,70 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set orders = contact.associations.p_order_collection__primary.items if contact and contact.associations.p_order_collection__primary else [] %}
+<section class="order-list" aria-label="All orders">
+  <h1 class="hs-page-title">Orders</h1>
+  <div class="order-list__toolbar">
+    <label for="order-status-filter">Filter</label>
+    <select id="order-status-filter" data-order-filter>
+      <option value="all">All</option>
+      <option value="active">Active</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+  <div class="hs-table-wrap">
+    <table class="hs-table" data-order-table>
+      <thead>
+        <tr>
+          <th scope="col">Order</th>
+          <th scope="col">Product</th>
+          <th scope="col">Status</th>
+          <th scope="col">Stage</th>
+          <th scope="col">Total</th>
+          <th scope="col">Ordered</th>
+          <th scope="col">Est. completion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        {% set st = o.status|lower %}
+        <tr
+          data-order-status="{{ o.status }}"
+          data-order-row
+          {% if st == 'closedwon' %}data-order-bucket="completed"{% elif st == 'closedlost' %}data-order-bucket="cancelled"{% else %}data-order-bucket="active"{% endif %}
+        >
+          <td><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
+          <td>{{ o.product_name }}</td>
+          <td><span class="hs-badge hs-badge--pending">{{ o.status|replace('_',' ') }}</span></td>
+          <td><span class="hs-badge">{{ o.production_stage|replace('_',' ') }}</span></td>
+          <td>{% if o.total is not none %}${{ o.total }} {{ o.currency }}{% else %}—{% endif %}</td>
+          <td>{{ o.hs_createdate }}</td>
+          <td>{{ o.estimated_completion }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if not orders %}
+  <p>No orders found.</p>
+  {% endif %}
+</section>
+<script>
+(function () {
+  var sel = document.querySelector('[data-order-filter]');
+  var table = document.querySelector('[data-order-table]');
+  if (!sel || !table) return;
+  function apply() {
+    var v = sel.value;
+    table.querySelectorAll('[data-order-row]').forEach(function (row) {
+      var st = row.getAttribute('data-order-status');
+      var bucket = row.getAttribute('data-order-bucket');
+      var show = true;
+      if (v === 'active') show = bucket === 'active';
+      else if (v === 'completed') show = bucket === 'completed';
+      else if (v === 'cancelled') show = bucket === 'cancelled';
+      row.style.display = show ? '' : 'none';
+    });
+  }
+  sel.addEventListener('change', apply);
+})();
+</script>

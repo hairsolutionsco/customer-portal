@@ -1,0 +1,12 @@
+# label: "Portal Invoices"
+# description: "Invoices for logged-in customer (stub until invoice custom object exists)"
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query invoices($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+    }
+  }
+}

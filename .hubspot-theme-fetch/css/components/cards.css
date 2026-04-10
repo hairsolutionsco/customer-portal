@@ -1,0 +1,37 @@
+.hs-card {
+  background: var(--hs-color-surface);
+  border-radius: var(--hs-radius);
+  box-shadow: var(--hs-shadow);
+  padding: var(--hs-space-6);
+  border: 1px solid #e2e8f0;
+}
+
+.hs-card:hover {
+  box-shadow: var(--hs-shadow-lg);
+}
+
+.hs-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--hs-space-4);
+}
+
+.hs-stat-card {
+  background: var(--hs-color-surface);
+  border-radius: var(--hs-radius);
+  box-shadow: var(--hs-shadow);
+  border: 1px solid #e2e8f0;
+  padding: var(--hs-space-4);
+}
+
+.hs-stat-card__label {
+  font-size: 0.875rem;
+  color: var(--hs-color-muted);
+  margin: 0 0 var(--hs-space-2);
+}
+
+.hs-stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}

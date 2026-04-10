@@ -1,0 +1,20 @@
+{% set plans = data_query.data.HUBDB.subscription_plans_collection.items if data_query.data.HUBDB and data_query.data.HUBDB.subscription_plans_collection else [] %}
+<section id="plans" class="billing-plans" aria-label="Available plans">
+  <h2 class="hs-page-title">Plans</h2>
+  {% if plans %}
+  <div class="billing-plans__grid">
+    {% for p in plans %}
+    <div class="hs-card">
+      <h3 style="margin-top:0;">{{ p.name }}</h3>
+      <p style="font-size:1.5rem;font-weight:700;">${{ p.price }}<span style="font-size:0.875rem;font-weight:400;">/{{ p.interval }}</span></p>
+      <p style="font-size:0.875rem;color:var(--hs-color-muted);">{{ p.systems_per_year }} systems / year</p>
+      <div style="font-size:0.9375rem;">{{ p.description }}</div>
+      <div style="margin-top:1rem;">{{ p.features }}</div>
+      <a class="hs-btn hs-btn--outline" style="margin-top:1rem;display:inline-flex;" href="/portal/support">Talk to us</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="hs-card"><p>Plan catalog will appear after HubDB is published (issue #12).</p></div>
+  {% endif %}
+</section>

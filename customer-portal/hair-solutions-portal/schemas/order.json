@@ -1,0 +1,145 @@
+{
+  "name": "order",
+  "labels": {
+    "singular": "Order",
+    "plural": "Orders"
+  },
+  "primaryDisplayProperty": "order_number",
+  "requiredProperties": ["order_number", "product_name"],
+  "searchableProperties": ["order_number", "product_name"],
+  "associatedObjects": ["CONTACT"],
+  "properties": [
+    {
+      "name": "order_number",
+      "label": "Order number",
+      "type": "string",
+      "fieldType": "text",
+      "hasUniqueValue": true,
+      "groupName": "order_information"
+    },
+    {
+      "name": "product_name",
+      "label": "Product name",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "order_information"
+    },
+    {
+      "name": "status",
+      "label": "Status",
+      "type": "enumeration",
+      "fieldType": "select",
+      "groupName": "order_information",
+      "options": [
+        { "label": "Pending", "value": "pending" },
+        { "label": "Confirmed", "value": "confirmed" },
+        { "label": "In production", "value": "in_production" },
+        { "label": "Quality check", "value": "quality_check" },
+        { "label": "Shipped", "value": "shipped" },
+        { "label": "Delivered", "value": "delivered" },
+        { "label": "Cancelled", "value": "cancelled" }
+      ]
+    },
+    {
+      "name": "production_stage",
+      "label": "Production stage",
+      "type": "enumeration",
+      "fieldType": "select",
+      "groupName": "order_information",
+      "options": [
+        { "label": "Awaiting confirmation", "value": "awaiting_confirmation" },
+        { "label": "Materials preparation", "value": "materials_preparation" },
+        { "label": "Base construction", "value": "base_construction" },
+        { "label": "Hair ventilation", "value": "hair_ventilation" },
+        { "label": "Styling", "value": "styling" },
+        { "label": "Quality inspection", "value": "quality_inspection" },
+        { "label": "Packaging", "value": "packaging" },
+        { "label": "Completed", "value": "completed" }
+      ]
+    },
+    {
+      "name": "subtotal",
+      "label": "Subtotal",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "order_financials"
+    },
+    {
+      "name": "tax",
+      "label": "Tax",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "order_financials"
+    },
+    {
+      "name": "shipping",
+      "label": "Shipping",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "order_financials"
+    },
+    {
+      "name": "total",
+      "label": "Total",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "order_financials"
+    },
+    {
+      "name": "currency",
+      "label": "Currency",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "order_financials"
+    },
+    {
+      "name": "estimated_production_start",
+      "label": "Estimated production start",
+      "type": "date",
+      "fieldType": "date",
+      "groupName": "order_dates"
+    },
+    {
+      "name": "estimated_completion",
+      "label": "Estimated completion",
+      "type": "date",
+      "fieldType": "date",
+      "groupName": "order_dates"
+    },
+    {
+      "name": "actual_completion_date",
+      "label": "Actual completion date",
+      "type": "date",
+      "fieldType": "date",
+      "groupName": "order_dates"
+    },
+    {
+      "name": "shipped_at",
+      "label": "Shipped at",
+      "type": "date",
+      "fieldType": "date",
+      "groupName": "order_dates"
+    },
+    {
+      "name": "delivered_at",
+      "label": "Delivered at",
+      "type": "date",
+      "fieldType": "date",
+      "groupName": "order_dates"
+    },
+    {
+      "name": "customer_notes",
+      "label": "Customer notes",
+      "type": "string",
+      "fieldType": "textarea",
+      "groupName": "order_information"
+    },
+    {
+      "name": "configuration_snapshot",
+      "label": "Configuration snapshot",
+      "type": "string",
+      "fieldType": "textarea",
+      "groupName": "order_information"
+    }
+  ]
+}

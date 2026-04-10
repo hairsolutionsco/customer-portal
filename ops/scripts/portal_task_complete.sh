@@ -16,15 +16,23 @@
 #   bash scripts/op_run.sh bash 99-development/design-manager/customer-portal/ops/scripts/portal_task_complete.sh "msg"
 #
 # HubSpot: theme dir customer-portal/cms/; CLI default ~/.hscli/config.yml; optional local hubspot.config.yml (gitignored).
+# Publish vs draft: uploads use -m / --cms-publish-mode (default publish). Override with:
+#   HUBSPOT_CMS_PUBLISH_MODE=draft bash customer-portal/ops/scripts/portal_task_complete.sh
 # Secrets: bash customer-portal/ops/scripts/op_env.sh bash customer-portal/ops/scripts/portal_task_complete.sh "msg"
 #   or from design-manager: op run --env-file ../../.env.op --env-file ../../.env -- bash customer-portal/ops/scripts/portal_task_complete.sh "msg"
 set -euo pipefail
 
 # HubSpot CLI: newer releases use `hs cms upload`; older use top-level `hs upload`.
 # Theme may be flat (theme.json at root) or legacy layout with a `src/` folder.
+# Note: `hs theme` has no "publish" subcommand — publishing is upload with -m publish (HubSpot default).
 portal_hs_theme_upload() {
   local theme_dir="$1" dest="$2"
-  local upload_path help errf
+  local upload_path help errf mode
+  mode="${HUBSPOT_CMS_PUBLISH_MODE:-publish}"
+  if [[ "$mode" != "publish" && "$mode" != "draft" ]]; then
+    echo "portal_task_complete: HUBSPOT_CMS_PUBLISH_MODE must be publish or draft (got: $mode)" >&2
+    exit 1
+  fi
   if [[ -d "$theme_dir/src" ]]; then
     upload_path="src"
   else
@@ -32,18 +40,18 @@ portal_hs_theme_upload() {
   fi
   help="$(cd "$theme_dir" && hs cms upload --help 2>&1)" || true
   if echo "$help" | grep -qE 'Upload a folder|Positionals:|\[src\]'; then
-    (cd "$theme_dir" && hs cms upload "$upload_path" "$dest")
+    (cd "$theme_dir" && hs cms upload "$upload_path" "$dest" -m "$mode")
     return
   fi
   errf="$(mktemp "${TMPDIR:-/tmp}/hs-upload.XXXXXX")"
-  if (cd "$theme_dir" && hs upload "$upload_path" "$dest" 2>"$errf"); then
+  if (cd "$theme_dir" && hs upload "$upload_path" "$dest" -m "$mode" 2>"$errf"); then
     rm -f "$errf"
     return 0
   fi
   if grep -qiE 'cms upload|Did you mean' "$errf" 2>/dev/null; then
     cat "$errf" >&2
     rm -f "$errf"
-    (cd "$theme_dir" && hs cms upload "$upload_path" "$dest")
+    (cd "$theme_dir" && hs cms upload "$upload_path" "$dest" -m "$mode")
   else
     cat "$errf" >&2
     rm -f "$errf"

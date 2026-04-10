@@ -1,0 +1,8 @@
+[
+  {
+    "name": "form_field",
+    "label": "HubSpot form",
+    "type": "form",
+    "default": { "response_type": "inline", "message": "" }
+  }
+]

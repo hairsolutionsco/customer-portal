@@ -1,0 +1,10 @@
+# label: "Portal Shop"
+# description: "Product catalog from HubDB (stub until HubDB products table exists)"
+# Runtime: replace with products_collection query from AGENT_PROMPT after #14.
+query products {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: "0") {
+      email
+    }
+  }
+}

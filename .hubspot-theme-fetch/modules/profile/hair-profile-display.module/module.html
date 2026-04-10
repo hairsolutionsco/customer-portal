@@ -1,0 +1,51 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set raw = contact.portal_hair_profile_json if contact else none %}
+{% set hp = raw|fromjson if raw else none %}
+<section class="hair-profile-display" aria-label="Hair profile">
+  <h1 class="hs-page-title">Hair profile</h1>
+  {% if hp %}
+  <div class="hair-profile__grid">
+    <div class="hs-card">
+      <h3 style="margin-top:0;">Measurements</h3>
+      <p>Head circumference: {{ hp.head_circumference }}</p>
+      <p>Front to nape: {{ hp.front_to_nape }}</p>
+      <p>Ear to ear: {{ hp.ear_to_ear }}</p>
+      <p>Temple to temple: {{ hp.temple_to_temple }}</p>
+    </div>
+    <div class="hs-card">
+      <h3 style="margin-top:0;">Style preferences</h3>
+      <p>Preferred style: {{ hp.preferred_style }}</p>
+      <p>Density: {{ hp.density }}</p>
+      <p>Hair color: {{ hp.hair_color }}</p>
+      <p>Base: {{ hp.base_type }}</p>
+      <p>Attachment: {{ hp.attachment_method }}</p>
+    </div>
+    <div class="hs-card">
+      <h3 style="margin-top:0;">Lifestyle</h3>
+      <p>Activity: {{ hp.activity_level }}</p>
+      <p>Sweating: {{ hp.sweating_level }}</p>
+      <p>Work environment: {{ hp.work_environment }}</p>
+      <p>Sports: {{ hp.sports_activities }}</p>
+    </div>
+  </div>
+  {% if hp.photo_front or hp.photo_side or hp.photo_back or hp.photo_top %}
+  <div class="hs-card hair-profile__photos" style="margin-top:1rem;">
+    {% if hp.photo_front %}<img src="{{ hp.photo_front }}" alt="Front reference">{% endif %}
+    {% if hp.photo_side %}<img src="{{ hp.photo_side }}" alt="Side reference">{% endif %}
+    {% if hp.photo_back %}<img src="{{ hp.photo_back }}" alt="Back reference">{% endif %}
+    {% if hp.photo_top %}<img src="{{ hp.photo_top }}" alt="Top reference">{% endif %}
+  </div>
+  {% endif %}
+  {% if hp.notes or hp.allergies %}
+  <div class="hs-card" style="margin-top:1rem;">
+    {% if hp.notes %}<p><strong>Notes</strong><br>{{ hp.notes }}</p>{% endif %}
+    {% if hp.allergies %}<p><strong>Allergies</strong><br>{{ hp.allergies }}</p>{% endif %}
+  </div>
+  {% endif %}
+  {% else %}
+  <div class="hs-card">
+    <h2 style="margin-top:0;">Complete your hair profile</h2>
+    <p>We use these details to build your system. Add your measurements and preferences below.</p>
+  </div>
+  {% endif %}
+</section>

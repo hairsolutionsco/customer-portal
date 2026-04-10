@@ -1,0 +1,48 @@
+.hs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.hs-btn:hover {
+  text-decoration: none;
+}
+
+.hs-btn--primary {
+  background: var(--hs-color-accent);
+  color: #fff;
+}
+
+.hs-btn--secondary {
+  background: #f1f5f9;
+  color: var(--hs-color-text);
+  border-color: #e2e8f0;
+}
+
+.hs-btn--outline {
+  background: transparent;
+  color: var(--hs-color-accent);
+  border-color: var(--hs-color-accent);
+}
+
+.hs-btn--ghost {
+  background: transparent;
+  color: var(--hs-color-muted);
+}
+
+.hs-btn--danger {
+  background: var(--hs-color-error);
+  color: #fff;
+}
+
+.hs-btn--sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
+.hs-btn--lg { padding: 0.75rem 1.5rem; font-size: 1rem; }

@@ -1,0 +1,13 @@
+.production-alert {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 1rem 1.25rem;
+  border-radius: var(--hs-radius);
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.production-alert[hidden] { display: none !important; }

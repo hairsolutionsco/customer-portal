@@ -1,0 +1,122 @@
+/* BASE theme styles */
+
+/*
+z-indexes
+1000 Dropdown
+1020 Sticky
+1030 Fixed
+1030 BASE Global Header
+1040 Offcanvas backdrop
+1045 Offcanvas
+1050 Modal backdrop
+1055 Modal
+1070 Popover
+1080 Tooltip
+1090 Toasts
+1100 BASE Skip To Content
+9990 HubSpot Chat
+9998 HubSpot CTA Slide-In
+9999 HubSpot CTA Pop-up
+9999 HubSpot CTA Banner
+3000000000 HubSpot Consent Banner
+*/
+
+{% include "./variables.css" %}
+
+:root {
+	
+	/* Global colors */
+	--base-color-primary: {{ base_color_primary }};
+	--base-color-secondary: {{ base_color_secondary }};
+	--base-color-background: {{ base_color_background }};
+	--base-color-background--dark-5: {{ base_color_background__dark_5 }};
+	--base-color-background--dark-8: {{ base_color_background__dark_8 }};
+	--base-color-background--dark-10: {{ base_color_background__dark_10 }};
+	--base-color-background--dark-15: {{ base_color_background__dark_15 }};
+	--base-color-background--dark-20: {{ base_color_background__dark_20 }};
+	--base-color-background--dark-25: {{ base_color_background__dark_25 }};
+
+	/* Global fonts */
+	--base-font-heading-family: {{ base_font_heading_family }};
+	--base-font-heading-color: {{ base_font_heading_color }};
+	--base-font-heading-color-rgb: {{ base_font_heading_color_rgb }};
+	--base-font-body-family: {{ base_font_body_family }};
+	--base-font-body-color: {{ base_font_body_color }};
+	--base-font-body-color-rgb: {{ base_font_body_color_rgb }};
+	--base-font-body-color--light: {{ base_font_body_color__light }};
+
+	/* Global corners */
+	--base-corner-radius: {{ base_corner_radius }};
+
+	/* Menus */
+	--base-menu-horizontal-link-padding-top: {{ base_menu_horizontal_link_padding_top }};
+	--base-menu-horizontal-link-padding-bottom: {{ base_menu_horizontal_link_padding_bottom }};
+	--base-menu-horizontal-link-padding-right: {{ base_menu_horizontal_link_padding_right }};
+	--base-menu-horizontal-link-padding-left: {{ base_menu_horizontal_link_padding_left }};
+	--base-menu-horizontal-dropdown-toggle-scale: {{ base_menu_horizontal_dropdown_toggle_scale }};
+
+	/* Layout */
+	--base-layout-column-gutter-desktop: {{ base_layout_column_gutter_desktop }};
+	--base-layout-column-gutter-mobile: {{ base_layout_column_gutter_mobile }};
+	--base-layout-maximum-content-width: {{ base_layout_maximum_content_width }};
+	
+}
+
+/* Content */
+{% include './content/_reboot.css' %}
+{% include './content/_typography.css' %}
+{% include './content/_images.css' %}
+
+/* Layout */
+{% include './layout/_header.css' %}
+{% include './layout/_layout.css' %}
+
+/* Components */
+{% include './components/_buttons.css' %}
+{% include './components/_carousel.css' %}
+{% include './components/_collapse.css' %}
+{% include './components/_dropdowns.css' %}
+{% include './components/_forms.css' %}
+{% include './components/_inview.css' %}
+{% include './components/_links.css' %}
+{% include './components/_modal.css' %}
+{% include './components/_offcanvas.css' %}
+
+/* Tools */
+{% include './tools/_helpers.css' %}
+{% include './tools/_utilities.css' %}
+
+/* Templates */
+{% include './templates/_blog-post.css' %}
+{% include './templates/_system-pages.css' %}
+
+/* Modules */
+{% include './modules/_base_site_header.css' %}
+{% include './modules/_blog-comments.css' %}
+{% include './modules/_blog-posts.css' %}
+{% include './modules/_blog-subscribe.css' %}
+{% include './modules/_button.css' %}
+{% include './modules/_content-library.css' %}
+{% include './modules/_email-subscriptions-confirmation.css' %}
+{% include './modules/_image.css' %}
+{% include './modules/_image-grid.css' %}
+{% include './modules/_image-slider.css' %}
+{% include './modules/_language-switcher.css' %}
+{% include './modules/_menu.css' %}
+{% include './modules/_my-login.css' %}
+{% include './modules/_my-my-password-reset.css' %}
+{% include './modules/_my-my-password-reset-request.css' %}
+{% include './modules/_my-register.css' %}
+{% include './modules/_page-footer.css' %}
+{% include './modules/_pagination.css' %}
+{% include './modules/_password-prompt.css' %}
+{% include './modules/_post-filter.css' %}
+{% include './modules/_post-listing.css' %}
+{% include './modules/_simple-menu.css' %}
+{% include './modules/_site-search-input.css' %}
+{% include './modules/_site-search-results.css' %}
+{% include './modules/_social-follow.css' %}
+{% include './modules/_social-sharing.css' %}
+{% include './modules/_subscription-preference.css' %}
+{% include './modules/_tabbed-card.css' %}
+{% include './modules/_video.css' %}

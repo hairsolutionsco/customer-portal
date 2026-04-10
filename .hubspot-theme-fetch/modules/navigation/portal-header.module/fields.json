@@ -1,0 +1,11 @@
+[ {
+  "id" : "page_title",
+  "name" : "page_title",
+  "label" : "Page title",
+  "required" : false,
+  "locked" : true,
+  "allow_new_line" : false,
+  "display_width" : null,
+  "type" : "text",
+  "default" : ""
+} ]

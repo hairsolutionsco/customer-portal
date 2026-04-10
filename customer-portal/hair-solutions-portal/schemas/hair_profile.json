@@ -1,0 +1,177 @@
+{
+  "name": "hair_profile",
+  "labels": {
+    "singular": "Hair Profile",
+    "plural": "Hair Profiles"
+  },
+  "primaryDisplayProperty": "preferred_style",
+  "requiredProperties": [],
+  "searchableProperties": ["hair_color", "base_type"],
+  "associatedObjects": ["CONTACT"],
+  "properties": [
+    {
+      "name": "head_circumference",
+      "label": "Head circumference",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "front_to_nape",
+      "label": "Front to nape",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "ear_to_ear",
+      "label": "Ear to ear",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "temple_to_temple",
+      "label": "Temple to temple",
+      "type": "number",
+      "fieldType": "number",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "preferred_style",
+      "label": "Preferred style",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "density",
+      "label": "Density",
+      "type": "enumeration",
+      "fieldType": "select",
+      "groupName": "hair_profile_information",
+      "options": [
+        { "label": "Light", "value": "light" },
+        { "label": "Medium", "value": "medium" },
+        { "label": "Heavy", "value": "heavy" }
+      ]
+    },
+    {
+      "name": "hair_color",
+      "label": "Hair color",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "base_type",
+      "label": "Base type",
+      "type": "enumeration",
+      "fieldType": "select",
+      "groupName": "hair_profile_information",
+      "options": [
+        { "label": "Lace", "value": "lace" },
+        { "label": "Skin", "value": "skin" },
+        { "label": "Mono", "value": "mono" }
+      ]
+    },
+    {
+      "name": "attachment_method",
+      "label": "Attachment method",
+      "type": "enumeration",
+      "fieldType": "select",
+      "groupName": "hair_profile_information",
+      "options": [
+        { "label": "Tape", "value": "tape" },
+        { "label": "Glue", "value": "glue" },
+        { "label": "Clips", "value": "clips" }
+      ]
+    },
+    {
+      "name": "activity_level",
+      "label": "Activity level",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "sweating_level",
+      "label": "Sweating level",
+      "type": "enumeration",
+      "fieldType": "select",
+      "groupName": "hair_profile_information",
+      "options": [
+        { "label": "Low", "value": "low" },
+        { "label": "Moderate", "value": "moderate" },
+        { "label": "High", "value": "high" }
+      ]
+    },
+    {
+      "name": "work_environment",
+      "label": "Work environment",
+      "type": "string",
+      "fieldType": "text",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "sports_activities",
+      "label": "Sports activities",
+      "type": "string",
+      "fieldType": "textarea",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "photo_front",
+      "label": "Photo front",
+      "type": "string",
+      "fieldType": "file",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "photo_side",
+      "label": "Photo side",
+      "type": "string",
+      "fieldType": "file",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "photo_back",
+      "label": "Photo back",
+      "type": "string",
+      "fieldType": "file",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "photo_top",
+      "label": "Photo top",
+      "type": "string",
+      "fieldType": "file",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "notes",
+      "label": "Notes",
+      "type": "string",
+      "fieldType": "textarea",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "allergies",
+      "label": "Allergies",
+      "type": "string",
+      "fieldType": "textarea",
+      "groupName": "hair_profile_information"
+    },
+    {
+      "name": "onboarding_completed",
+      "label": "Onboarding completed",
+      "type": "enumeration",
+      "fieldType": "booleancheckbox",
+      "groupName": "hair_profile_information",
+      "options": [
+        { "label": "Yes", "value": "true" },
+        { "label": "No", "value": "false" }
+      ]
+    }
+  ]
+}

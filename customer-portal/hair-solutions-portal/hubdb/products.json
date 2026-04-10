@@ -1,0 +1,94 @@
+{
+  "tableName": "products",
+  "description": "Seed catalog for HubDB products (issue #14).",
+  "columns": [
+    { "name": "name", "type": "TEXT" },
+    { "name": "slug", "type": "TEXT" },
+    { "name": "description", "type": "RICHTEXT" },
+    { "name": "short_description", "type": "TEXT" },
+    { "name": "price", "type": "NUMBER" },
+    { "name": "compare_at_price", "type": "NUMBER" },
+    { "name": "currency", "type": "TEXT" },
+    { "name": "category", "type": "SELECT", "options": ["maintenance", "styling", "accessories"] },
+    { "name": "primary_image", "type": "IMAGE" },
+    { "name": "in_stock", "type": "BOOLEAN" },
+    { "name": "featured", "type": "BOOLEAN" },
+    { "name": "display_order", "type": "NUMBER" }
+  ],
+  "rows": [
+    {
+      "name": "Lace Front System — Classic",
+      "slug": "lace-front-classic",
+      "description": "<p>Full lace front with natural hairline and breathable cap.</p>",
+      "short_description": "Natural hairline, breathable lace",
+      "price": 1299,
+      "compare_at_price": 1499,
+      "currency": "USD",
+      "category": "styling",
+      "in_stock": true,
+      "featured": true,
+      "display_order": 1
+    },
+    {
+      "name": "Skin Base — Thin Poly",
+      "slug": "skin-base-thin-poly",
+      "description": "<p>Ultra-thin poly perimeter for adhesive-friendly daily wear.</p>",
+      "short_description": "Thin poly base for tape or glue",
+      "price": 1199,
+      "currency": "USD",
+      "category": "styling",
+      "in_stock": true,
+      "featured": false,
+      "display_order": 2
+    },
+    {
+      "name": "Adhesive Remover — Gentle",
+      "slug": "adhesive-remover-gentle",
+      "description": "<p>Citrus-based remover safe for lace and skin units.</p>",
+      "short_description": "Citrus-based, lace-safe",
+      "price": 24,
+      "currency": "USD",
+      "category": "maintenance",
+      "in_stock": true,
+      "featured": true,
+      "display_order": 3
+    },
+    {
+      "name": "No-Shine Tape Roll",
+      "slug": "no-shine-tape-roll",
+      "description": "<p>Extended-wear tape roll with matte edge.</p>",
+      "short_description": "Matte extended-wear tape",
+      "price": 18,
+      "currency": "USD",
+      "category": "maintenance",
+      "in_stock": true,
+      "featured": false,
+      "display_order": 4
+    },
+    {
+      "name": "Ventilation Brush Set",
+      "slug": "ventilation-brush-set",
+      "description": "<p>Soft bristles for styling without stressing knots.</p>",
+      "short_description": "Soft bristle styling set",
+      "price": 32,
+      "currency": "USD",
+      "category": "accessories",
+      "in_stock": true,
+      "featured": false,
+      "display_order": 5
+    },
+    {
+      "name": "Travel Care Kit",
+      "slug": "travel-care-kit",
+      "description": "<p>TSA-friendly bottles with shampoo, conditioner, and protectant.</p>",
+      "short_description": "TSA-friendly maintenance kit",
+      "price": 45,
+      "compare_at_price": 55,
+      "currency": "USD",
+      "category": "accessories",
+      "in_stock": true,
+      "featured": true,
+      "display_order": 6
+    }
+  ]
+}

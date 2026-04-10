@@ -1,0 +1,17 @@
+# label: "Portal Settings"
+# description: "Profile fields. Re-add `notify_*` custom booleans when they exist on crm_contact in GraphQL (after portal:hubspot-props)."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query settings($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      phone
+      address
+      city
+      state
+      zip
+    }
+  }
+}

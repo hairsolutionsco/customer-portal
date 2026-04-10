@@ -1,0 +1,58 @@
+/* Global colors */
+
+{% set base_color_primary = theme.global.colors.global_primary_color.color or '#000000' %}
+{% set base_color_secondary = theme.global.colors.global_secondary_color.color or '#000000' %}
+{% set base_color_background = theme.global.colors.background_color.color or '#FFFFFF' %}
+{% set base_color_background__dark_5 = color_variant(base_color_background, -5) %} /* FAFAFA */
+{% set base_color_background__dark_8 = color_variant(base_color_background, -8) %} /* F7F7F7 */
+{% set base_color_background__dark_10 = color_variant(base_color_background, -10) %} /* F5F5F5 */
+{% set base_color_background__dark_15 = color_variant(base_color_background, -15) %} /* F0F0F0 */
+{% set base_color_background__dark_20 = color_variant(base_color_background, -20) %} /* EBEBEB */
+{% set base_color_background__dark_25 = color_variant(base_color_background, -25) %} /* E6E6E6 */
+
+/* Global fonts */
+
+{% set base_font_heading_family = theme.global.fonts.global_heading_font.styles['font-family'] or 'Inter, serif' %}
+{% set base_font_heading_color = theme.global.fonts.global_heading_font.color or '#000000' %}
+{% set base_font_heading_color_rgb = base_font_heading_color|convert_rgb %}
+{% set base_font_body_family = theme.global.fonts.global_body_font.styles['font-family'] or 'Inter, serif' %}
+{% set base_font_body_color = theme.global.fonts.global_body_font.color or '#333333' %}
+{% set base_font_body_color_rgb = base_font_body_color|convert_rgb %}
+
+{% set base_font_body_color__lighten_20 = color_variant(base_font_body_color, 20) %}
+{% set base_font_body_color__lighten_40 = color_variant(base_font_body_color, 40) %}
+{% set base_font_body_color__lighten_60 = color_variant(base_font_body_color, 60) %}
+{% set base_font_body_color__lighten_80 = color_variant(base_font_body_color, 80) %}
+{% set base_font_body_color__lighten_100 = color_variant(base_font_body_color, 100) %}
+
+{% if color_contrast(base_font_body_color__lighten_100, base_color_background) %}
+    {% set base_font_body_color__light = base_font_body_color__lighten_100 %}
+{% elif color_contrast(base_font_body_color__lighten_80, base_color_background) %}
+    {% set base_font_body_color__light = base_font_body_color__lighten_80 %}
+{% elif color_contrast(base_font_body_color__lighten_60, base_color_background) %}
+    {% set base_font_body_color__light = base_font_body_color__lighten_60 %}
+{% elif color_contrast(base_font_body_color__lighten_40, base_color_background) %}
+    {% set base_font_body_color__light = base_font_body_color__lighten_40 %}
+{% elif color_contrast(base_font_body_color__lighten_20, base_color_background) %}
+    {% set base_font_body_color__light = base_font_body_color__lighten_20 %}
+{% else %}
+    {% set base_font_body_color__light = base_font_body_color %}
+{% endif %}
+
+/* Global corners */
+
+{% set base_corner_radius = (theme.global.corners.radius|default(8)) ~ 'px' %}
+
+/* Menus */
+
+{% set base_menu_horizontal_link_padding_top = (theme.menus.menu.horizontal.links.spacing.padding.top.value|default(10)) ~ (theme.menus.menu.horizontal.links.spacing.padding.top.units|default('px')) %}
+{% set base_menu_horizontal_link_padding_bottom = (theme.menus.menu.horizontal.links.spacing.padding.bottom.value|default(10)) ~ (theme.menus.menu.horizontal.links.spacing.padding.bottom.units|default('px')) %}
+{% set base_menu_horizontal_link_padding_right = (theme.menus.menu.horizontal.links.spacing.padding.right.value|default(10)) ~ (theme.menus.menu.horizontal.links.spacing.padding.right.units|default('px')) %}
+{% set base_menu_horizontal_link_padding_left = (theme.menus.menu.horizontal.links.spacing.padding.left.value|default(10)) ~ (theme.menus.menu.horizontal.links.spacing.padding.left.units|default('px')) %}
+{% set base_menu_horizontal_dropdown_toggle_scale = theme.menus.menu.horizontal.dropdown_toggle.scale|default(1) %}
+
+/* Layout */
+
+{% set base_layout_column_gutter_desktop = (theme.layout.columns.desktop_gutter_width|default(40)) ~ 'px' %}
+{% set base_layout_column_gutter_mobile = (theme.layout.columns.mobile_gutter_width|default(20)) ~ 'px' %}
+{% set base_layout_maximum_content_width = (theme.layout.maximum_content_width.width|default(1500)) ~ 'px' %}

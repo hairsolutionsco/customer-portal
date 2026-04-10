@@ -1,0 +1,6 @@
+{
+  "label": "BASE (Hair Solutions child)",
+  "extends": "@marketplace/SmartAcre_Inc_/BASE",
+  "preview_path": "./templates/home.html",
+  "enable_domain_stylesheets": false
+}

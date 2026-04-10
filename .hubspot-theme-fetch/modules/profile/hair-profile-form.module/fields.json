@@ -1,0 +1,13 @@
+[ {
+  "id" : "form_field",
+  "name" : "form_field",
+  "label" : "HubSpot form",
+  "required" : false,
+  "locked" : false,
+  "display_width" : null,
+  "type" : "form",
+  "default" : {
+    "response_type" : "inline",
+    "message" : ""
+  }
+} ]

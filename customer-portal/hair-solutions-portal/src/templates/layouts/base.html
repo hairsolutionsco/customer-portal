@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" {{ html_lang_dir }}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if page_meta.html_title || pageTitle %}
+  <title>{{ page_meta.html_title || pageTitle }}</title>
+  {% endif %}
+  {{ standard_header_includes }}
+  {{ require_css(get_asset_url("../../css/main.css")) }}
+  {% if template_css %}
+  {{ require_css(get_asset_url(template_css)) }}
+  {% endif %}
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% block body %}{% endblock %}
+  {{ standard_footer_includes }}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

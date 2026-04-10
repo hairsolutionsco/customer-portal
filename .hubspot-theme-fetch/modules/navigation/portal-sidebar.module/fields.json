@@ -1,0 +1,21 @@
+[ {
+  "id" : "support_url",
+  "name" : "support_url",
+  "label" : "Service Hub / support URL",
+  "required" : false,
+  "locked" : true,
+  "allow_new_line" : false,
+  "display_width" : null,
+  "type" : "text",
+  "default" : "/portal/support"
+}, {
+  "id" : "help_url",
+  "name" : "help_url",
+  "label" : "Knowledge base URL",
+  "required" : false,
+  "locked" : true,
+  "allow_new_line" : false,
+  "display_width" : null,
+  "type" : "text",
+  "default" : "/portal/help"
+} ]

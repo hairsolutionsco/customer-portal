@@ -1,0 +1,12 @@
+# label: "Portal Dashboard"
+# description: "Dashboard data (stub until custom objects + contact subscription props exist)"
+# $contact_id: {{ request.contact.contact_vid || '' }}
+query dashboard($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+    }
+  }
+}

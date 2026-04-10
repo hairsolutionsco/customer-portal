@@ -1,0 +1,18 @@
+.order-detail__header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.order-detail__timeline { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.order-detail__stage {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+  font-size: 0.7rem;
+  padding: 0.35rem 0.25rem;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: var(--hs-color-muted);
+}
+.order-detail__stage.is-current {
+  background: var(--hs-color-brand);
+  color: #fff;
+  font-weight: 600;
+}
+.order-detail__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }

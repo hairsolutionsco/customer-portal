@@ -1,0 +1,21 @@
+[ {
+  "id" : "status_value",
+  "name" : "status_value",
+  "label" : "Status value (slug)",
+  "required" : false,
+  "locked" : false,
+  "allow_new_line" : false,
+  "display_width" : null,
+  "type" : "text",
+  "default" : "pending"
+}, {
+  "id" : "label_text",
+  "name" : "label_text",
+  "label" : "Display label",
+  "required" : false,
+  "locked" : false,
+  "allow_new_line" : false,
+  "display_width" : null,
+  "type" : "text",
+  "default" : ""
+} ]

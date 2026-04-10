@@ -1,0 +1,8 @@
+[
+  {
+    "name": "profile_form",
+    "label": "Profile update form",
+    "type": "form",
+    "default": { "response_type": "inline", "message": "" }
+  }
+]
