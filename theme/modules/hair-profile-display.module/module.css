@@ -1,2 +1,25 @@
 .hair-profile__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
-.hair-profile__photos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+.hair-profile__card-title { margin-top: 0; }
+.hair-profile__dl { margin: 0; display: grid; gap: 0.5rem 0; font-size: 0.9375rem; }
+.hair-profile__dl dt { color: var(--hs-color-muted, #6b7280); font-weight: 500; margin: 0; }
+.hair-profile__dl dd { margin: 0.125rem 0 0; }
+.hair-profile__photos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.hair-profile__photos img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--hs-radius-md, 8px);
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+  background: var(--hs-color-surface-2, #f3f4f6);
+}
+.hair-profile__notes { margin-top: 1rem; }
+.hair-profile__cta-title { margin-top: 0; }
+.hair-profile__cta-copy { margin-bottom: 0; color: var(--hs-color-muted, #6b7280); }
+@media (max-width: 520px) {
+  .hair-profile__photos { grid-template-columns: 1fr; }
+}

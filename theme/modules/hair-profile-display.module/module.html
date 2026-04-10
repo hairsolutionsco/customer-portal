@@ -1,51 +1,59 @@
+{# Reads portal_hair_profile_json via template dataQueryPath (hair_profile.graphql). Keys: data/SCHEMA_REGISTRY.md #}
 {% set contact = data_query.data.CRM.contact %}
 {% set raw = contact.portal_hair_profile_json if contact else none %}
 {% set hp = raw|fromjson if raw else none %}
+{% set onboarding_done = hp and (hp.onboarding_completed == true or hp.onboarding_completed == 'true') %}
 <section class="hair-profile-display" aria-label="Hair profile">
   <h1 class="hs-page-title">Hair profile</h1>
-  {% if hp %}
+  {% if onboarding_done %}
   <div class="hair-profile__grid">
     <div class="hs-card">
-      <h3 style="margin-top:0;">Measurements</h3>
-      <p>Head circumference: {{ hp.head_circumference }}</p>
-      <p>Front to nape: {{ hp.front_to_nape }}</p>
-      <p>Ear to ear: {{ hp.ear_to_ear }}</p>
-      <p>Temple to temple: {{ hp.temple_to_temple }}</p>
+      <h3 class="hair-profile__card-title">Measurements</h3>
+      <dl class="hair-profile__dl">
+        <div><dt>Head circumference</dt><dd>{{ hp.head_circumference|default('—') }}</dd></div>
+        <div><dt>Front to nape</dt><dd>{{ hp.front_to_nape|default('—') }}</dd></div>
+        <div><dt>Ear to ear</dt><dd>{{ hp.ear_to_ear|default('—') }}</dd></div>
+        <div><dt>Temple to temple</dt><dd>{{ hp.temple_to_temple|default('—') }}</dd></div>
+      </dl>
     </div>
     <div class="hs-card">
-      <h3 style="margin-top:0;">Style preferences</h3>
-      <p>Preferred style: {{ hp.preferred_style }}</p>
-      <p>Density: {{ hp.density }}</p>
-      <p>Hair color: {{ hp.hair_color }}</p>
-      <p>Base: {{ hp.base_type }}</p>
-      <p>Attachment: {{ hp.attachment_method }}</p>
+      <h3 class="hair-profile__card-title">Preferences</h3>
+      <dl class="hair-profile__dl">
+        <div><dt>Preferred style</dt><dd>{{ hp.preferred_style|default('—') }}</dd></div>
+        <div><dt>Density</dt><dd>{{ hp.density|default('—') }}</dd></div>
+        <div><dt>Hair color</dt><dd>{{ hp.hair_color|default('—') }}</dd></div>
+        <div><dt>Base type</dt><dd>{{ hp.base_type|default('—') }}</dd></div>
+        <div><dt>Attachment</dt><dd>{{ hp.attachment_method|default('—') }}</dd></div>
+      </dl>
     </div>
     <div class="hs-card">
-      <h3 style="margin-top:0;">Lifestyle</h3>
-      <p>Activity: {{ hp.activity_level }}</p>
-      <p>Sweating: {{ hp.sweating_level }}</p>
-      <p>Work environment: {{ hp.work_environment }}</p>
-      <p>Sports: {{ hp.sports_activities }}</p>
+      <h3 class="hair-profile__card-title">Lifestyle</h3>
+      <dl class="hair-profile__dl">
+        <div><dt>Activity level</dt><dd>{{ hp.activity_level|default('—') }}</dd></div>
+        <div><dt>Sweating</dt><dd>{{ hp.sweating_level|default('—') }}</dd></div>
+        <div><dt>Work environment</dt><dd>{{ hp.work_environment|default('—') }}</dd></div>
+        <div><dt>Sports / activities</dt><dd>{{ hp.sports_activities|default('—') }}</dd></div>
+      </dl>
     </div>
   </div>
   {% if hp.photo_front or hp.photo_side or hp.photo_back or hp.photo_top %}
-  <div class="hs-card hair-profile__photos" style="margin-top:1rem;">
-    {% if hp.photo_front %}<img src="{{ hp.photo_front }}" alt="Front reference">{% endif %}
-    {% if hp.photo_side %}<img src="{{ hp.photo_side }}" alt="Side reference">{% endif %}
-    {% if hp.photo_back %}<img src="{{ hp.photo_back }}" alt="Back reference">{% endif %}
-    {% if hp.photo_top %}<img src="{{ hp.photo_top }}" alt="Top reference">{% endif %}
+  <div class="hs-card hair-profile__photos">
+    {% if hp.photo_front %}<img src="{{ hp.photo_front }}" alt="Front reference" loading="lazy">{% endif %}
+    {% if hp.photo_side %}<img src="{{ hp.photo_side }}" alt="Side reference" loading="lazy">{% endif %}
+    {% if hp.photo_back %}<img src="{{ hp.photo_back }}" alt="Back reference" loading="lazy">{% endif %}
+    {% if hp.photo_top %}<img src="{{ hp.photo_top }}" alt="Top reference" loading="lazy">{% endif %}
   </div>
   {% endif %}
   {% if hp.notes or hp.allergies %}
-  <div class="hs-card" style="margin-top:1rem;">
+  <div class="hs-card hair-profile__notes">
     {% if hp.notes %}<p><strong>Notes</strong><br>{{ hp.notes }}</p>{% endif %}
     {% if hp.allergies %}<p><strong>Allergies</strong><br>{{ hp.allergies }}</p>{% endif %}
   </div>
   {% endif %}
   {% else %}
-  <div class="hs-card">
-    <h2 style="margin-top:0;">Complete your hair profile</h2>
-    <p>We use these details to build your system. Add your measurements and preferences below.</p>
+  <div class="hs-card hair-profile__cta">
+    <h2 class="hair-profile__cta-title">Complete your hair profile</h2>
+    <p class="hair-profile__cta-copy">We use these details to build your system. Add your measurements and preferences in the form below when your team has connected the HubSpot form (issues #43–#48).</p>
   </div>
   {% endif %}
 </section>

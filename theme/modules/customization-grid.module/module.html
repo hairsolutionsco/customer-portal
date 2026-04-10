@@ -1,24 +1,45 @@
+{# portal_saved_templates_json array — template fields align with contact JSON in data/SCHEMA_REGISTRY.md (portal group). #}
 {% set contact = data_query.data.CRM.contact %}
 {% set raw = contact.portal_saved_templates_json if contact else none %}
 {% set items = raw|fromjson if raw else [] %}
 <section class="customization-grid" aria-label="Saved templates">
-  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem;">
-    <h1 class="hs-page-title" style="margin:0;">Customization</h1>
-    <a class="hs-btn hs-btn--secondary" href="/portal/shop">Browse shop</a>
+  <div class="customization-grid__toolbar">
+    <h1 class="hs-page-title customization-grid__title">Customization</h1>
+    <div class="customization-grid__toolbar-actions">
+      <button type="button" class="hs-btn hs-btn--primary" disabled title="Form wiring is tracked in issues #43–#48">Create new template</button>
+      <a class="hs-btn hs-btn--secondary" href="/portal/shop">Browse shop</a>
+    </div>
   </div>
   {% if items and items|length > 0 %}
   <div class="customization-grid__cards">
     {% for t in items %}
-    <div class="hs-card">
-      <h3 style="margin-top:0;">{{ t.template_name }}</h3>
-      {% if t.is_default == true or t.is_default == 'true' %}<span class="hs-badge hs-badge--confirmed">Default</span>{% endif %}
-      <p style="font-size:0.875rem;color:var(--hs-color-muted);">{{ t.style }} · {{ t.density }} · {{ t.hair_color }}</p>
-      <p style="font-size:0.875rem;">Base: {{ t.base_type }} · {{ t.attachment_method }}</p>
-      {% if t.notes %}<p style="font-size:0.875rem;">{{ t.notes }}</p>{% endif %}
-    </div>
+    {% set title = t.template_name if t.template_name else (t.name if t.name else 'Untitled template') %}
+    <article class="hs-card customization-grid__card">
+      <header class="customization-grid__card-head">
+        <h3 class="customization-grid__card-title">{{ title }}</h3>
+        {% if t.is_default == true or t.is_default == 'true' %}<span class="hs-badge hs-badge--confirmed">Default</span>{% endif %}
+      </header>
+      <dl class="customization-grid__meta">
+        {% if t.created_at or t.created_date or t.date_created %}
+        <div><dt>Created</dt><dd>{% if t.created_at %}{{ t.created_at }}{% elif t.created_date %}{{ t.created_date }}{% else %}{{ t.date_created }}{% endif %}</dd></div>
+        {% endif %}
+        <div><dt>Style · density · color</dt><dd>{{ t.style|default('—') }} · {{ t.density|default('—') }} · {{ t.hair_color|default('—') }}</dd></div>
+        <div><dt>Base · attachment</dt><dd>{{ t.base_type|default('—') }} · {{ t.attachment_method|default('—') }}</dd></div>
+      </dl>
+      {% if t.notes %}<p class="customization-grid__notes">{{ t.notes }}</p>{% endif %}
+      <div class="customization-grid__actions" role="group" aria-label="Template actions">
+        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Server-side actions ship after forms (#43–#48)">Set as default</button>
+        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Server-side actions ship after forms (#43–#48)">Edit</button>
+        <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" disabled title="Server-side actions ship after forms (#43–#48)">Delete</button>
+      </div>
+    </article>
     {% endfor %}
   </div>
   {% else %}
-  <div class="hs-card"><p>No saved templates yet.</p></div>
+  <div class="hs-card customization-grid__empty">
+    <h2 class="customization-grid__empty-title">No saved templates yet</h2>
+    <p class="customization-grid__empty-copy">Save a customization preset to see it here. Template creation will use the HubSpot form once your team connects it (issues #43–#48).</p>
+    <button type="button" class="hs-btn hs-btn--primary" disabled title="Form wiring is tracked in issues #43–#48">Create your first template</button>
+  </div>
   {% endif %}
 </section>
