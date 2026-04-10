@@ -17,7 +17,7 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 
 **Automation rule:** Anything not queryable on membership GraphQL → sync via workflow to **Contact** (preferred), **Deal**, or **Company** properties the portal *can* read.
 
-**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). Shop / locations / plan grid use **`hubdb_table_rows(theme.hubdb.*_table_id)`** in modules; defaults are set in `customer-portal/theme/fields.json` (`products_table_id`, `subscription_plans_table_id`, `affiliated_locations_table_id` — update after re-sync if table IDs change).
+**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). The live theme currently uses **`hubdb_table_rows(theme.hubdb.*_table_id)`** for the **shop** and **plan grid** surfaces; `affiliated_locations` remains a synced HubDB table, but the pruned customer-route set no longer renders a locations page from `theme/`.
 
 ---
 
@@ -77,7 +77,7 @@ Issue **[#8](https://github.com/hairsolutionsco/customer-portal/issues/8)** titl
 | **Orders — GraphQL (membership)** | **Deals** associated to contact (mirror for UI) | `associations { p_order_collection__primary: deal_collection__contact_to_deal { ... } }` — **confirm `deal_collection__contact_to_deal` in explorer** |
 | Invoices (this theme) | **`portal_invoices_json`** on contact | Workflow/automation mirrors rows; native `invoices` in GraphQL when available |
 | Order timeline / history | **Deal** `dealstage` on deals-as-orders mirror + optional **tickets**; native order fields when GraphQL exposes `order` | **Authoritative:** **GitHub issue #8 alignment** above — **not** custom `order_status_history`. Theme: `order-detail.module`, `production-alert.module`. |
-| Catalog (plans, locations, products) | **HubDB** | HubDB GraphQL |
+| Catalog (plans + products; `affiliated_locations` retained for ops) | **HubDB** | Live theme reads HubDB via `hubdb_table_rows(...)`, not membership GraphQL |
 
 ---
 
@@ -160,25 +160,29 @@ Paste **real** names from your portal after introspection. Examples only — you
 | Contact → Invoices | *(introspect)* | Same caveat as orders |
 | Order detail dynamic page | `request.contact.contact_vid` + slug | Today: detail query uses same deal association + filters by slug/`hs_object_id` — see `order_detail.graphql` |
 
-### A9a verification log (portal **50966981**) — fill after explorer run
+### A9a verification log (portal **50966981**) — Wave 0 GraphQL gate
 
 Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **seeded test contact** with at least one deal on the orders mirror. Record **exact** association field names from autocomplete / introspection (they vary by portal).
 
-| Check | Status | Result (field names, notes) |
-|-------|--------|-----------------------------|
-| `dashboard.graphql` runs | ☐ | |
-| `orders_list.graphql` runs | ☐ | |
-| `order_detail.graphql` runs | ☐ | |
-| Contact → deals: `deal_collection__contact_to_deal` (or actual name) | ☐ | |
-| Alias `p_order_collection__primary` still valid in queries | ☐ | |
-| Contact → tickets collection name | ☐ | |
-| Contact → quotes collection name | ☐ | |
-| Contact → documents / files (if any) | ☐ | |
-| Contact → meetings / custom events (if used for “events”) | ☐ | |
-| **G5b:** staff-only **membership** access group feasible on this tier | ☐ | |
-| **`hair_profile.graphql`:** `portal_hair_profile_json` (or explorer name) on `CRM.contact` | ☐ | **A1 / A9a:** extend query only after field exists in explorer; until then keep name/email-only query as in repo |
+**Column legend:** **Repo / orchestrator** = static review in git (query shape, variables, HubL guards). **Design Manager** = execute in HubSpot’s **GraphQL** tool on a membership-capable template (see **Verification steps** below) — required for **G3** and for trusting field names against the live schema.
 
-**Last updated:** *(date / initials after A9a completes)*
+| Check | Repo / orchestrator (2026-04-10) | Design Manager GraphQL |
+|-------|-----------------------------------|-------------------------|
+| `dashboard.graphql` runs | ☑ Query + `#` headers + `contact_id` variable; `p_order_collection__primary: deal_collection__contact_to_deal` block present | ☐ Run with test `contact_id` |
+| `orders_list.graphql` runs | ☑ Same association alias + deal field selections as `dashboard.graphql` | ☐ Run with test `contact_id` |
+| `order_detail.graphql` runs | ☑ `deal(uniqueIdentifier: "hs_object_id")` + contact association subset; HubL allow-list in `order-detail.module` | ☐ Run with test `contact_id` + `order_number` (slug) |
+| Contact → deals: `deal_collection__contact_to_deal` (or actual name) | ☑ Used consistently in all three queries (replace portal-wide if explorer shows a different generated name) | ☐ Confirm autocomplete / introspection on `CRM.contact.associations` |
+| Alias `p_order_collection__primary` still valid in queries | ☑ Present in `dashboard`, `orders_list`, `order_detail` (contact branch) | ☐ N/A (alias is client-side) |
+| Contact → tickets collection name | ☐ Not recorded | ☐ Introspect if ticket timeline is adopted (#8 optional lane) |
+| Contact → quotes collection name | ☐ Not recorded | ☐ Introspect if quotes are used in portal |
+| Contact → documents / files (if any) | ☐ Not recorded | ☐ Introspect if needed |
+| Contact → meetings / custom events (if used for “events”) | ☐ Not recorded | ☐ Introspect if needed |
+| **G5b:** staff-only **membership** access group feasible on this tier | ☐ | ☐ Confirm in HubSpot **Memberships** / access groups UI |
+| **`hair_profile.graphql`:** `portal_hair_profile_json` (or explorer name) on `CRM.contact` | ☑ Repo keeps name/email-only until explorer lists the property (**no** `portal_hair_profile_json` in query yet) | ☐ When field appears in explorer, extend query; then consider **A5/A6** work |
+
+**Last updated:** 2026-04-10 — orchestrator repo pass; Design Manager cells remain **☐** until a human runs the GraphQL tool and updates this table (or opens a PR with pasted explorer results).
+
+**A5 / A6 spawn rule:** Spawn **A5/A6** only after **Design Manager** confirms `portal_hair_profile_json` on `CRM.contact` (or another agreed read path). Until then, do **not** extend `hair_profile.graphql` with that field.
 
 ### Verification steps (GraphQL explorer)
 
@@ -200,6 +204,7 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 | No deals to mirror native orders | Create a workflow or integration that creates/updates a **deal per order** (or stage) for portal display, or wait for HubSpot to expose `order` on membership GraphQL. |
 | Team expects issue #7 “custom object” deliverable | Close #7 with comment pointing to this registry + native Commerce direction; optional custom object is **out of scope** for Professional CMS GraphQL. |
 | Team expects issue #8 **Order Status History** custom object | Close #8 with comment pointing to **GitHub issue #8 alignment** in this file; timeline uses **deal stages** (+ optional **tickets**), not `order_status_history`. |
+| **`op run` / `op_env.sh` shows no output for many minutes** | **1Password Desktop** must be unlocked and the **hubspot** `.env` source must be actively injecting (Desktop **Environments** / developer integration). Until vars flow, `op run` blocks on the FIFO. Approve/inject in 1Password, then re-run **`./scripts/op_env.sh npm run portal:hubdb-sync`** and **`./scripts/op_env.sh npm run portal:hubspot-props`** from **`customer-portal/`** (delegates to **`customer-portal/ops/scripts/op_env.sh`** → **`design-manager`** + **`hubspot/scripts/op_run.sh`**). |
 
 ---
 

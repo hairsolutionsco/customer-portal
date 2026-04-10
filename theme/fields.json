@@ -89,6 +89,20 @@
         "responsive": true,
         "show_loading": false,
         "default": { "size_type": "auto", "src": "", "alt": "Hair Solutions" }
+      },
+      {
+        "label": "Native customer portal URL",
+        "name": "customer_portal_url",
+        "type": "text",
+        "default": "/customer-portal",
+        "help_text": "Set this to the exact HubSpot native customer portal URL or slug configured under Service > Customer Portal."
+      },
+      {
+        "label": "Native knowledge base URL",
+        "name": "knowledge_base_url",
+        "type": "text",
+        "default": "/knowledge-base",
+        "help_text": "Set this to the exact URL for the HubSpot knowledge base on this account."
       }
     ]
   },

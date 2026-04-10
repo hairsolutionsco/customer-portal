@@ -1,3 +1,5 @@
+{% set customer_portal_url = theme.portal.customer_portal_url if theme.portal.customer_portal_url else "/customer-portal" %}
+{% set knowledge_base_url = theme.portal.knowledge_base_url if theme.portal.knowledge_base_url else "/knowledge-base" %}
 <aside id="portal-sidebar" class="portal-sidebar" data-portal-sidebar aria-label="Portal navigation">
   <div class="portal-sidebar__brand">
     {% if theme.portal.logo.src %}
@@ -8,12 +10,12 @@
   </div>
   <nav class="portal-sidebar__nav" aria-label="Primary">
     <a class="portal-sidebar__link" data-nav-link href="/portal">Dashboard</a>
-    <a class="portal-sidebar__link" data-nav-link href="#">Tickets</a>
+    <a class="portal-sidebar__link" data-nav-link href="{{ customer_portal_url }}">Tickets</a>
     <a class="portal-sidebar__link" data-nav-link href="#">Quotes</a>
     <a class="portal-sidebar__link" data-nav-link href="/portal/invoices">Invoices</a>
     <a class="portal-sidebar__link" data-nav-link href="#">Documents</a>
     <a class="portal-sidebar__link" data-nav-link href="#">Events</a>
-    <a class="portal-sidebar__link" data-nav-link href="#">Knowledge Base</a>
+    <a class="portal-sidebar__link" data-nav-link href="{{ knowledge_base_url }}">Knowledge Base</a>
     <a class="portal-sidebar__link" data-nav-link href="/portal/orders">Orders</a>
     <a class="portal-sidebar__link" data-nav-link href="/portal/shop">Shop</a>
     <a class="portal-sidebar__link" data-nav-link href="/portal/billing">Billing</a>

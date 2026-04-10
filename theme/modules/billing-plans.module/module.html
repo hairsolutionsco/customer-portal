@@ -1,5 +1,6 @@
 {% set hubdb_pid = theme.hubdb.subscription_plans_table_id %}
 {% set plans = hubdb_table_rows(hubdb_pid) if hubdb_pid else [] %}
+{% set customer_portal_url = theme.portal.customer_portal_url if theme.portal.customer_portal_url else "/customer-portal" %}
 <section id="plans" class="billing-plans" aria-label="Available plans">
   <h2 class="hs-page-title">Plans</h2>
   {% if plans %}
@@ -12,7 +13,7 @@
       <p style="font-size:0.875rem;color:var(--hs-color-muted);">{{ p.systems_per_year }} systems / year</p>
       <div style="font-size:0.9375rem;">{{ p.description }}</div>
       <div style="margin-top:1rem;">{{ p.features }}</div>
-      <a class="hs-btn hs-btn--outline" style="margin-top:1rem;display:inline-flex;" href="/portal/support">Talk to us</a>
+      <a class="hs-btn hs-btn--outline" style="margin-top:1rem;display:inline-flex;" href="{{ customer_portal_url }}">Open support portal</a>
     </div>
     {% endif %}
     {% endfor %}

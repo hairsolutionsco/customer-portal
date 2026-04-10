@@ -18,6 +18,8 @@ You are building **Customer Portal 2.0** for a hair replacement company called *
 
 Build every file in the theme directory structure below. The **canonical theme on disk** is **`theme/`** (uploaded to Design Manager as **`customer-portal`** by default; set **`HUBSPOT_THEME_DEST`** to override). Treat **`hair-solutions-portal/src/`** only as legacy reference. Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
 
+**Live-theme note:** the active `theme/` route set has already **pruned** the CMS templates `portal-locations`, `portal-support`, `portal-help`, and `location-cards.module`. Support/ticketing should route into **HubSpot’s native customer portal**, and help content should route into the **account’s native HubSpot knowledge base**, not custom CMS pages. If older sections below still mention those paths, defer to **`docs/cms-customer-portal-plan.md`** and **`theme/docs/README.md`** for the live scope.
+
 ---
 
 ## Execution model: use the subagent plan + GitHub Issues
