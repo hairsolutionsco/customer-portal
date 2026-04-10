@@ -13,8 +13,11 @@ Living log of problems that tend to recur. Update when a new failure mode appear
 | `op_env: missing .../.env` | 1Password Desktop Environment not linked at `hubspot/.env` | Per `AGENTS.md`: use 1Password Developer Environments; do not commit secrets. |
 | HubSpot CLI upload works but API scripts fail | CLI uses `hs account auth`; API uses PAT from env — different credentials | Align: use a private app PAT with correct scopes in `op` env; CLI account must target the same portal if you expect one account. |
 | Deal association label errors in GraphQL (`p_order_collection__primary` etc.) | Association type name differs per portal | Use CMS GraphQL explorer; update `dashboard.graphql`, `orders_list.graphql`, `order_detail.graphql` to match your portal’s contact↔deal association. |
+| **`op_env.sh ./scripts/portal_task_complete.sh` stuck / background job never finishes** | 1Password **`op run`** waiting for approval, or the job was **backgrounded** in the IDE and is still running | **Finish or cancel** that terminal job (approve `op`, or kill the process). For **routine theme uploads** when the HubSpot CLI is already authenticated (`hs accounts list` shows the right default account), you **do not** need `op` for upload: run **`bash scripts/portal_task_complete.sh --skip-git`** from `customer-portal/` (issues export sync + Design Manager upload; no git commit). |
 
 ## Quick commands
+
+**Uploads:** If you rely on **`op`**, do not leave **`./scripts/op_env.sh ./scripts/portal_task_complete.sh "msg"`** running in the background unattended — finish or cancel it. For routine uploads with a working **`hs`** session, use **`--skip-git`** as below.
 
 ```bash
 cd customer-portal

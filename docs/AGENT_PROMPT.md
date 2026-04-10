@@ -26,6 +26,11 @@ After the table above, read **Portal orchestration (lead agent)** below, then co
 
 **Ship policy (project default):** After every **meaningful batch** (theme HubL/CSS/JS/modules/templates, or material portal automation/docs that expect live HubSpot to match git), the lead agent **runs the full task-completion ritual** including **Design Manager upload** via **`portal_task_complete.sh`**, unless upload is impossible (`SKIP_HUBSPOT=1` after a documented CLI/auth failure) or the user said to skip upload for that batch. **Git push alone is not enough** when the batch changed the theme.
 
+**1Password (`op_env`) vs routine HubSpot upload (orchestrator + agents):**
+
+- If **`./scripts/op_env.sh ./scripts/portal_task_complete.sh "…"`** was **backgrounded** or **hangs**, **`op run`** may be waiting for approval — **finish or cancel** that terminal job; do not assume it completed.
+- For **routine Design Manager uploads** when the HubSpot CLI is already authenticated (**`hs accounts list`** shows the intended default account; config in **`~/.hscli/config.yml`**), run from **`customer-portal/`**: **`bash scripts/portal_task_complete.sh --skip-git`**. That performs **GitHub issues export sync + theme upload** and **skips git** commit/push. **`op_env`** is still required for **private-app token** work (**`portal:hubspot-props`**, **`portal:hubdb-sync`**, etc.); it is **often unnecessary** for **`hs cms upload`** alone.
+
 **Handoff edits to this file:** When recording what the **next** agent should do, change **only** the heading **Next session — do this now** and its subsections below (**Snapshot**, **Lead agent — run in order**, **Subagents to launch**, **Blockers / do not launch until**). Leave the evergreen spec, Subagent prompt template, and long-form sections untouched unless this batch’s work was explicitly to update those.
 
 ### Mandatory: you must use subagents
@@ -44,27 +49,26 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 #### Snapshot
 
 - **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`) · account **50966981**
-- **CLI:** **`portal_task_complete.sh`** uses **`hs cms upload`** when available (**`@hubspot/cli` 8.3.0**). **`HUBSPOT_CMS_PUBLISH_MODE=draft`** succeeded for the latest batch; **`publish`** hit a HubSpot **internal error** on one run — **retry publish** later or stay on **draft** for UAT.
-- **`main` tip:** **`69b1667`** (A11 settings #39) on **`3d6b7c9`** (A12 system templates #42) on **`b76d0ff`** (exports sync) on **`e463938`** (Special Agent / CMS–legacy ops: **`package.json`**, **`tsconfig`/`tsconfig.legacy.json`**, scripts, CI **`theme/**`**, **`docs/SPECIAL_AGENT_REPORT.md`**, handoff here) — then Wave 4 A8/A10/A9 stack below.
-- **Orchestrator session (2026-04-10):** Pushed **`e463938`** + **`b76d0ff`**. Posted **UAT reminder comments** on **#32–#37, #39–#41** (not auto-closed). **Closed #38** as **not planned** (pruned `portal-locations` / `location-cards` IA). Ran **`portal_task_complete.sh --skip-git`**: full **publish** OK for ops baseline; after **A11/A12**, **publish** flaked — **draft** upload **OK** for current theme.
+- **CLI / upload:** **`portal_task_complete.sh`** probes **`hs cms upload`**. If **`op_env.sh … portal_task_complete`** is **backgrounded or stuck**, see **`KNOWN_ISSUES.md`** and **Portal orchestration** → **1Password (`op_env`) vs routine HubSpot upload**. Routine: **`bash scripts/portal_task_complete.sh --skip-git`** when **`hs accounts list`** is OK. **`publish`** may still **internal-error** — use **`HUBSPOT_CMS_PUBLISH_MODE=draft`** for UAT or retry publish.
+- **`main`:** Wave **4** (A8–A10, A9) + **A11** (#39) + **A12** (#42) + ops (**`e463938`**) + handoff/export commits; see git log for SHAs.
+- **GitHub (2026-04-10):** **Closed completed:** **#32–#37, #39–#41, #42** after orchestrator verification (**`npm run portal:build`** + merged theme). **#38** **not planned** (locations IA). **#30–#31** (global chrome) still **OPEN** for UAT if needed. **A13** landed **`fa69d51`** — form fields + **`{% form %}`** wiring in billing, customization, order-detail, settings, hair-profile copy; **#43–#48** stay **OPEN** until HubSpot **Forms** exist in the portal and are selected in module sidebars + workflows per each issue’s AC.
 - **Layout:** **`portal-*.html`** → **`layouts/portal-shell.html`**. Orphan **`portal.html`** in DM may still need manual cleanup if present.
-- **Theme URLs:** No **`portal.support_portal_url`** in **`theme/fields.json`** — module-level URLs only (A7/A8 rule).
-- **Open issues:** **#30–#37, #39–#42** remain **OPEN** until **human UAT** closes them; **#38 CLOSED**. **#43–#48** forms / serverless. **`npm run portal:issues`** to refresh **`exports/`** after GitHub changes.
+- **Theme URLs:** Module-level portal/KB URLs — no invalid theme URL field shapes in **`theme/fields.json`**.
 
 #### Lead agent — run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
-1. **Human UAT** on **draft** (or published when stable): **#30–#31**, **#32–#37, #39–#41**, **#42** — close on GitHub when AC match; refresh **`exports/`**.
-2. **`HUBSPOT_CMS_PUBLISH_MODE=publish`** retry **`bash scripts/portal_task_complete.sh --skip-git`** (or full ritual with commit message) if you need **published** theme after HubSpot transient errors.
-3. **Next build wave:** **A13** forms **#43–#48** (attach HubSpot forms to modules per **`settings-*`**, profile, etc.); then **A14** / **A15** per plan.
-4. Optional: align **`package.json`** **`portal:cms-upload-*`** script comments with **`scripts/portal_task_complete.sh`** (probe behavior).
+1. **Upload:** **`bash scripts/portal_task_complete.sh --skip-git`** so **`fa69d51`** (A13) theme reaches Design Manager (use **`draft`** if **`publish`** errors).
+2. **Human HubSpot UI:** Create/map **Forms** for **#43–#48**, pick them in **Design Manager** module fields, add workflows per **`data/SCHEMA_REGISTRY.md`**; then **close** **#43–#48** when AC met.
+3. **`HUBSPOT_CMS_PUBLISH_MODE=publish`** retry when HubSpot transient errors clear.
+4. **Human spot-check** **#30–#31** on draft/published theme; close when AC met.
+5. Optional: align **`package.json`** **`portal:cms-upload-*`** with **`scripts/portal_task_complete.sh`** header.
 
 #### Subagents to launch *(trim rows per session)*
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|-------|
-| — | **Human** | UAT + issue hygiene | **#30–#37, #39–#42** | Close when AC met; **#38** done (not planned) |
-| — | **A13** | Forms / writes | **#43–#48** | After UAT or in parallel where safe |
+| — | **Human** | Forms + chrome UAT | **#30–#31**, **#43–#48** | Create forms in HubSpot; module field picks; workflows |
 | 2 | **A3** | Membership UI (human-heavy) | **#49–#50** | HubSpot UI per **`data/SCHEMA_REGISTRY.md`** Phase 6 |
 | *later* | **A14** | Service / KB | **#51–#53** | |
 | *later* | **A15** | Release | **#54–#57** | |
@@ -75,7 +79,7 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 - **HubSpot publish:** If **internal error** persists, use **`draft`** for UAT and contact Support or retry off-peak.
 - **`theme/fields.json`:** Do not add **theme-level portal/KB URL** fields without upload validation — **module** fields remain the safe pattern.
-- **Forms:** **#39** / profile modules expect **#47–#48** before “done” in production.
+- **Forms:** **#43–#48** require **live HubSpot Forms** + module picks + workflows before “done” in production (theme wiring in **`fa69d51`**).
 
 ### Subagent prompt *(copy once per spawn; replace placeholders)*
 
@@ -181,7 +185,7 @@ Do **not** mark work done until all three are satisfied:
 | Step | Action |
 |------|--------|
 | **1. Git** | Commit and **push** the **`hubspot/`** git repo with a clear message (Design Manager + Next app live under `99-development/design-manager/`). |
-| **2. HubSpot Design Manager** | Upload the CMS theme from **`customer-portal/theme/`**. Use **`portal_task_complete.sh`** (always uploads the canonical theme root `.`; handles `hs cms upload` vs `hs upload`). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`customer-portal/theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **Portal orchestration** → *HubSpot CLI and portal choice* above. |
+| **2. HubSpot Design Manager** | Upload the CMS theme from **`customer-portal/theme/`**. Use **`portal_task_complete.sh`** (always uploads the canonical theme root `.`; handles `hs cms upload` vs `hs upload`). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`customer-portal/theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **Portal orchestration** → *HubSpot CLI and portal choice* above. **Routine upload without git:** **`bash scripts/portal_task_complete.sh --skip-git`** when **`hs`** is already authenticated; see **1Password (`op_env`) vs routine HubSpot upload** under *Portal orchestration* if a background **`op_env.sh … portal_task_complete`** job is stuck. |
 | **3. GitHub issues snapshot** | Refresh **`customer-portal/exports/github-issues.json`** (and milestones) — e.g. `npm run portal:issues` or `bash customer-portal/ops/scripts/sync-github-exports.sh` from **design-manager** root. Close/update issues on GitHub when AC are met **before** or **as part of** the sync. |
 
 **One-shot automation (recommended):** from **`99-development/design-manager/`**:

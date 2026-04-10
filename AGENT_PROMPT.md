@@ -39,7 +39,7 @@ Do **not** mark work done until all steps below are satisfied:
 | Step | Action |
 |------|--------|
 | **1. Git** | Commit and **push** this repo (`customer-portal`) with a clear message. |
-| **2. HubSpot Design Manager** | Upload from **`theme/`** via **`portal_task_complete.sh`** (uses **`hs cms upload . customer-portal`** when the local CLI supports it, else legacy **`hs upload`**). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **`docs/AGENT_PROMPT.md`** → *Portal orchestration* → *HubSpot CLI and portal choice*. |
+| **2. HubSpot Design Manager** | Upload from **`theme/`** via **`portal_task_complete.sh`** (uses **`hs cms upload . customer-portal`** when the local CLI supports it, else legacy **`hs upload`**). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **`docs/AGENT_PROMPT.md`** → *Portal orchestration* → *HubSpot CLI and portal choice*. **Routine upload (no git):** **`./scripts/portal_task_complete.sh --skip-git`** when **`hs`** is already authenticated. If **`./scripts/op_env.sh ./scripts/portal_task_complete.sh`** was **backgrounded** or **stuck on `op`**, finish or cancel that job — see **`docs/AGENT_PROMPT.md`** → *1Password (`op_env`) vs routine HubSpot upload* and **`KNOWN_ISSUES.md`**. |
 | **3. GitHub issues snapshot** | Refresh `exports/github-issues.json` (and milestones) so agents and CI use current issue text — e.g. run `npm run portal:issues` or `./scripts/sync-github-exports.sh`. Close/update issues on GitHub when AC are met (`gh issue close`, edit checklists, etc.) **before** or **as part of** the sync. |
 | **4. Next-step handoff in repo** | In **`docs/AGENT_PROMPT.md`** → *Portal orchestration* → **Next session — do this now**, update **only** that subsection (snapshot, **Lead agent — run in order**, **Subagents to launch**, **Blockers / do not launch until**) so the next agent knows what to do. Do **not** change other parts of **`docs/AGENT_PROMPT.md`** or this file solely for handoff text. |
 
@@ -49,7 +49,7 @@ Do **not** mark work done until all steps below are satisfied:
 ./scripts/portal_task_complete.sh "type(scope): what you completed"
 ```
 
-This runs **issues sync → HubSpot upload → git add / commit / push** (use `SKIP_HUBSPOT=1` if CLI config is not on this machine). If you use 1Password env injection for tools, wrap the whole command in `op run ...` per monorepo `AGENTS.md`.
+This runs **issues sync → HubSpot upload → git add / commit / push** (use `SKIP_HUBSPOT=1` if CLI config is not on this machine). If you use 1Password env injection for tools, wrap the whole command in `op run ...` per monorepo `AGENTS.md`. **Do not** leave **`./scripts/op_env.sh ./scripts/portal_task_complete.sh`** running in the background unattended; for many uploads, **`./scripts/portal_task_complete.sh --skip-git`** is enough when **`hs accounts list`** works (details in **`docs/AGENT_PROMPT.md`** → *Portal orchestration*).
 
 ### Map: this prompt’s sections → subagent role → GitHub Issues
 
