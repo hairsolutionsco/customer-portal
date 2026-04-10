@@ -1,2 +1,38 @@
-.order-list__toolbar { margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.order-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.order-list__title {
+  margin-bottom: 0;
+}
+.order-list__cta {
+  flex-shrink: 0;
+}
+.order-list__toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
 .order-list__toolbar label { font-size: 0.875rem; font-weight: 500; }
+.order-list__pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+.order-list__pager-meta {
+  font-size: 0.8125rem;
+  color: var(--hs-color-muted);
+  min-width: 6.5rem;
+  text-align: center;
+}
+.order-list__empty {
+  margin-top: 0.5rem;
+}

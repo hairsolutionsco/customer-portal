@@ -16,18 +16,30 @@
       </thead>
       <tbody>
         {% for o in orders %}
+        {% if loop.index <= 5 %}
         <tr>
-          <td><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
-          <td>{{ o.product_name }}</td>
-          <td><span class="hs-badge hs-badge--pending">{{ o.status|replace('_',' ') }}</span></td>
-          <td>{% if o.total is not none %}${{ o.total }}{% else %}—{% endif %}</td>
-          <td>{{ o.hs_createdate }}</td>
+          <td data-label="Order"><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
+          <td data-label="Product">{{ o.product_name }}</td>
+          <td data-label="Status">
+            {% set deal_stage = o.status %}
+            {% include '../../partials/deal-stage-badge.html' %}
+          </td>
+          <td data-label="Total">{% if o.total is not none %}${{ o.total }}{% if o.currency %} {{ o.currency }}{% endif %}{% else %}—{% endif %}</td>
+          <td data-label="Date">{{ o.hs_createdate }}</td>
         </tr>
+        {% endif %}
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {% if orders|length > 5 %}
+  <p class="recent-orders__more"><a href="/portal/orders">View all orders</a></p>
+  {% endif %}
   {% else %}
-  <p>No orders yet.</p>
+  <div class="hs-empty-state">
+    <p class="hs-empty-state__title">No orders yet</p>
+    <p class="hs-empty-state__text">When you place an order, it will show up here.</p>
+    <a class="hs-btn hs-btn--primary" href="/portal/shop">Browse plans</a>
+  </div>
   {% endif %}
 </section>

@@ -12,54 +12,95 @@
 {% set stages = [
   'appointmentscheduled','qualifiedtobuy','presentationscheduled','decisionmakerboughtin','contractsent','closedwon','closedlost'
 ] %}
+{% set ns_i = namespace(cur=-1) %}
+{% if order %}
+  {% for s in stages %}
+    {% if order.status|lower == s %}
+      {% set ns_i.cur = loop.index0 %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
 {% if order and ns.allowed %}
 <article class="order-detail">
   <header class="order-detail__header">
     <div>
-      <h1 class="hs-page-title" style="margin-bottom:0.25rem;">Order {{ order.order_number }}</h1>
-      <p style="margin:0;color:var(--hs-color-muted);">{{ order.product_name }}</p>
+      <h1 class="hs-page-title order-detail__title">Order {{ order.order_number }}</h1>
+      <p class="order-detail__subtitle">{{ order.product_name }}</p>
     </div>
-    <span class="hs-badge hs-badge--pending">{{ order.status|replace('_',' ') }}</span>
+    <div class="order-detail__badge-wrap">
+      {% set deal_stage = order.status %}
+      {% include '../../partials/deal-stage-badge.html' %}
+    </div>
   </header>
 
   <div class="order-detail__grid">
     <div class="hs-card">
-      <h3 style="margin-top:0;">Totals</h3>
-      <p>Subtotal: {% if order.subtotal is not none %}${{ order.subtotal }}{% else %}—{% endif %}</p>
-      <p>Tax: —</p>
-      <p>Shipping: —</p>
-      <p><strong>Total: {% if order.total is not none %}${{ order.total }}{% else %}—{% endif %} {{ order.currency }}</strong></p>
+      <h3 class="order-detail__card-title">Totals</h3>
+      <dl class="order-detail__dl">
+        <div><dt>Subtotal</dt><dd>{% if order.subtotal is not none %}${{ order.subtotal }}{% else %}—{% endif %}</dd></div>
+        <div><dt>Tax</dt><dd>—</dd></div>
+        <div><dt>Shipping</dt><dd>—</dd></div>
+        <div><dt>Total</dt><dd><strong>{% if order.total is not none %}${{ order.total }}{% else %}—{% endif %}{% if order.currency %} {{ order.currency }}{% endif %}</strong></dd></div>
+      </dl>
     </div>
     <div class="hs-card">
-      <h3 style="margin-top:0;">Dates</h3>
-      <p>Created: {{ order.hs_createdate }}</p>
-      <p>Est. / close: {{ order.estimated_completion }}</p>
-      <p>Shipped: {{ order.shipped_at }}</p>
-      <p>Delivered: {{ order.delivered_at }}</p>
+      <h3 class="order-detail__card-title">Dates</h3>
+      <dl class="order-detail__dl">
+        <div><dt>Created</dt><dd>{{ order.hs_createdate }}</dd></div>
+        <div><dt>Est. / close</dt><dd>{{ order.estimated_completion or '—' }}</dd></div>
+        <div><dt>Shipped</dt><dd>{{ order.shipped_at or '—' }}</dd></div>
+        <div><dt>Delivered</dt><dd>{{ order.delivered_at or '—' }}</dd></div>
+      </dl>
     </div>
   </div>
 
-  <section class="hs-card" style="margin-top:1rem;">
-    <h3 style="margin-top:0;">Pipeline stage</h3>
-    <p style="margin:0;font-size:0.9375rem;color:var(--hs-color-muted);">Deal stages reflect your HubSpot pipeline. Adjust labels in Sales Settings or map native commerce orders when GraphQL exposes them.</p>
-    <div class="order-detail__timeline" role="list">
+  <section class="hs-card order-detail__section">
+    <h3 class="order-detail__card-title">Pipeline progress</h3>
+    <p class="order-detail__hint">Stages follow your HubSpot deal pipeline (deals-as-orders mirror). Timestamped stage history lives in CRM; the portal highlights your current stage.</p>
+    <div class="order-detail__timeline" role="list" aria-label="Deal stages">
       {% for s in stages %}
-      <div role="listitem" class="order-detail__stage{% if order.status == s %} is-current{% endif %}">{{ s|replace('_',' ') }}</div>
+      <div role="listitem" class="order-detail__stage{% if ns_i.cur >= 0 and loop.index0 < ns_i.cur %} is-done{% endif %}{% if order.status|lower == s %} is-current{% endif %}">{{ s|replace('_',' ') }}</div>
       {% endfor %}
     </div>
   </section>
 
+  <section class="hs-card order-detail__section" aria-label="Status history">
+    <h3 class="order-detail__card-title">Status history</h3>
+    <p class="order-detail__hint">Milestones follow the default portal pipeline order. For full CRM history, open the deal in HubSpot.</p>
+    <ol class="order-detail__history">
+      {% if ns_i.cur < 0 %}
+      <li class="order-detail__history-item is-current">
+        <span class="order-detail__history-label">{{ order.status|replace('_',' ') }}</span>
+        <span class="order-detail__history-meta">Current stage</span>
+      </li>
+      {% else %}
+      {% for s in stages %}
+      {% if loop.index0 <= ns_i.cur %}
+      <li class="order-detail__history-item{% if order.status|lower == s %} is-current{% endif %}">
+        <span class="order-detail__history-label">{{ s|replace('_',' ') }}</span>
+        {% if order.status|lower == s %}
+        <span class="order-detail__history-meta">Current — updated {{ order.hs_createdate }}</span>
+        {% elif loop.index0 < ns_i.cur %}
+        <span class="order-detail__history-meta">Completed</span>
+        {% endif %}
+      </li>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+    </ol>
+  </section>
+
   {% if order.description %}
-  <section class="hs-card" style="margin-top:1rem;">
-    <h3 style="margin-top:0;">Details</h3>
-    <p>{{ order.description }}</p>
+  <section class="hs-card order-detail__section">
+    <h3 class="order-detail__card-title">Configuration &amp; notes</h3>
+    <pre class="order-detail__notes">{{ order.description }}</pre>
   </section>
   {% endif %}
 </article>
 {% else %}
-<div class="hs-card">
+<div class="hs-card order-detail__empty">
   <h1 class="hs-page-title">Order not found</h1>
-  <p>We could not find this order for your account.</p>
+  <p>We could not find this order for your account, or the link may be invalid.</p>
   <a class="hs-btn hs-btn--primary" href="/portal/orders">Back to orders</a>
 </div>
 {% endif %}

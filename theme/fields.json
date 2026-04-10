@@ -89,13 +89,6 @@
         "responsive": true,
         "show_loading": false,
         "default": { "size_type": "auto", "src": "", "alt": "Hair Solutions" }
-      },
-      {
-        "label": "Support portal URL (global default)",
-        "name": "support_portal_url",
-        "type": "text",
-        "default": "/customer-portal",
-        "help_text": "Default Support / inquire URL for sidebar (when not overridden on the sidebar module) and commerce modules when their module field is empty."
       }
     ]
   },

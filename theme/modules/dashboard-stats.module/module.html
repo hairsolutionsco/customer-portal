@@ -4,11 +4,10 @@
 {% set order_total = orders_assoc.total if orders_assoc else 0 %}
 {% set hp_raw = contact.portal_hair_profile_json if contact else none %}
 {% set hp = hp_raw|fromjson if hp_raw else none %}
-{% set bill_raw = contact.portal_billing_json if contact else none %}
-{% set bill = bill_raw|fromjson if bill_raw else none %}
 {% set ns = namespace(active=0) %}
 {% for o in orders %}
-  {% if not o.estimated_completion %}
+  {% set st = o.status|lower %}
+  {% if st != 'closedwon' and st != 'closedlost' %}
     {% set ns.active = ns.active + 1 %}
   {% endif %}
 {% endfor %}
@@ -18,7 +17,7 @@
     <p class="hs-stat-card__value">{{ order_total }}</p>
   </div>
   <div class="hs-stat-card">
-    <p class="hs-stat-card__label">Open deals</p>
+    <p class="hs-stat-card__label">Active orders</p>
     <p class="hs-stat-card__value">{{ ns.active }}</p>
   </div>
   <div class="hs-stat-card">
@@ -29,6 +28,6 @@
   </div>
   <div class="hs-stat-card">
     <p class="hs-stat-card__label">Current plan</p>
-    <p class="hs-stat-card__value">{% if bill and bill.current_plan %}{{ bill.current_plan }}{% else %}—{% endif %}</p>
+    <p class="hs-stat-card__value">{% if contact and contact.current_plan %}{{ contact.current_plan }}{% else %}—{% endif %}</p>
   </div>
 </section>

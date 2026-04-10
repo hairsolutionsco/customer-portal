@@ -11,6 +11,8 @@ query dashboard($contact_id: String!) {
       firstname
       lastname
       email
+      current_plan
+      plan_status
       portal_hair_profile_json
       associations {
         p_order_collection__primary: deal_collection__contact_to_deal {

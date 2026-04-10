@@ -9,18 +9,17 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-if [[ -f "$ROOT/theme/theme.json" ]]; then
-  SRC="$ROOT/theme"
-elif [[ -f "$ROOT/hair-solutions-portal/src/theme.json" ]]; then
-  SRC="$ROOT/hair-solutions-portal/src"
-else
-  SRC="$ROOT/hair-solutions-portal/src"
-fi
+SRC="$ROOT/theme"
 
 json_ok() {
   local f="$1"
   python3 -m json.tool "$f" >/dev/null
 }
+
+if [[ ! -f "$SRC/theme.json" ]]; then
+  echo "portal_build: ERROR: missing canonical theme file $SRC/theme.json. CMS validation only supports ./theme." >&2
+  exit 1
+fi
 
 echo "portal_build: theme root $SRC"
 
@@ -45,7 +44,7 @@ done < <(find "$SRC/modules" -maxdepth 1 -mindepth 1 -type d -name '*.module' -p
 echo "portal_build: required templates..."
 REQUIRED_TEMPLATES=(
   "templates/layouts/base.html"
-  "templates/layouts/portal.html"
+  "templates/layouts/portal-shell.html"
   "templates/portal-dashboard.html"
   "templates/portal-orders.html"
   "templates/portal-order-detail.html"

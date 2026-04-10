@@ -2,7 +2,7 @@
 {% set plans = hubdb_table_rows(hubdb_pid) if hubdb_pid else [] %}
 {% set contact = data_query.data.CRM.contact if data_query and data_query.data and data_query.data.CRM and data_query.data.CRM.contact else none %}
 {% set cur_plan = contact.current_plan|trim if contact and contact.current_plan else '' %}
-{% set support_href = theme.portal.support_portal_url if theme.portal.support_portal_url else (module.support_portal_url if module.support_portal_url else '/customer-portal') %}
+{% set support_href = module.support_portal_url if module.support_portal_url else '/customer-portal' %}
 <section id="plans" class="billing-plans" aria-label="Available plans">
   <h2 class="billing-plans__title">Plans</h2>
   {% if plans %}

@@ -40,7 +40,7 @@ done < <(find "$SRC/modules" -type d -name '*.module' -print0 2>/dev/null || tru
 echo "portal_build: required templates..."
 REQUIRED_TEMPLATES=(
   "templates/layouts/base.html"
-  "templates/layouts/portal.html"
+  "templates/layouts/portal-shell.html"
   "templates/portal-dashboard.html"
   "templates/portal-orders.html"
   "templates/portal-order-detail.html"

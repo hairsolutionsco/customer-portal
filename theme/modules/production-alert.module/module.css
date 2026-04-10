@@ -11,3 +11,12 @@
   gap: 1rem;
 }
 .production-alert[hidden] { display: none !important; }
+.production-alert__product {
+  margin: 0.35rem 0 0;
+  font-weight: 600;
+}
+.production-alert__meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--hs-color-muted);
+}

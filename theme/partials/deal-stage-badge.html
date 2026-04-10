@@ -1,0 +1,26 @@
+{#
+  Renders a color-coded badge for a HubSpot deal stage (deals-as-orders mirror).
+  Expects HubL variables before include:
+    - deal_stage: internal stage id string (e.g. closedwon)
+    - label_override: optional display string
+#}
+{% set st = deal_stage|default('')|lower %}
+{% if st == 'closedlost' %}
+  {% set mod = 'cancelled' %}
+{% elif st == 'closedwon' %}
+  {% set mod = 'delivered' %}
+{% elif st == 'contractsent' %}
+  {% set mod = 'in-production' %}
+{% elif st == 'decisionmakerboughtin' %}
+  {% set mod = 'confirmed' %}
+{% elif st == 'presentationscheduled' %}
+  {% set mod = 'confirmed' %}
+{% elif st == 'qualifiedtobuy' %}
+  {% set mod = 'pending' %}
+{% elif st == 'appointmentscheduled' %}
+  {% set mod = 'pending' %}
+{% else %}
+  {% set mod = 'pending' %}
+{% endif %}
+{% set lbl = label_override if label_override else st|replace('_', ' ') %}
+<span class="hs-badge hs-badge--{{ mod }}" data-deal-stage="{{ st }}">{{ lbl }}</span>

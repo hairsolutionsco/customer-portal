@@ -5,7 +5,8 @@
   screenshotPath: ../images/template-previews/portal-order-detail.png
   dataQueryPath: ../data-queries/order_detail
 -->
-{% extends "./layouts/portal.html" %}
+{# Dynamic membership route: path segment → order_detail $order_number via request.path_param_dict.dynamic_slug (deal hs_object_id). See theme/docs/03-templates-and-data-query.md. #}
+{% extends "./layouts/portal-shell.html" %}
 {% block portal_content %}
 {% dnd_area "portal_content" label="Main" %}
   {% dnd_section %}

@@ -1,7 +1,11 @@
 {% set contact = data_query.data.CRM.contact %}
 {% set orders = contact.associations.p_order_collection__primary.items if contact and contact.associations.p_order_collection__primary else [] %}
-<section class="order-list" aria-label="All orders">
-  <h1 class="hs-page-title">Orders</h1>
+<section class="order-list" data-order-list-root aria-label="All orders">
+  <div class="order-list__head">
+    <h1 class="hs-page-title order-list__title">Orders</h1>
+    <a class="hs-btn hs-btn--primary order-list__cta" href="/portal/shop">New order</a>
+  </div>
+  {% if orders %}
   <div class="order-list__toolbar">
     <label for="order-status-filter">Filter</label>
     <select id="order-status-filter" data-order-filter>
@@ -10,6 +14,11 @@
       <option value="completed">Completed</option>
       <option value="cancelled">Cancelled</option>
     </select>
+    <div class="order-list__pager" data-order-pager hidden>
+      <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-order-prev aria-label="Previous page">Prev</button>
+      <span class="order-list__pager-meta" data-order-page-label></span>
+      <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-order-next aria-label="Next page">Next</button>
+    </div>
   </div>
   <div class="hs-table-wrap">
     <table class="hs-table" data-order-table>
@@ -32,39 +41,96 @@
           data-order-row
           {% if st == 'closedwon' %}data-order-bucket="completed"{% elif st == 'closedlost' %}data-order-bucket="cancelled"{% else %}data-order-bucket="active"{% endif %}
         >
-          <td><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
-          <td>{{ o.product_name }}</td>
-          <td><span class="hs-badge hs-badge--pending">{{ o.status|replace('_',' ') }}</span></td>
-          <td><span class="hs-badge">{{ o.production_stage|replace('_',' ') }}</span></td>
-          <td>{% if o.total is not none %}${{ o.total }} {{ o.currency }}{% else %}—{% endif %}</td>
-          <td>{{ o.hs_createdate }}</td>
-          <td>{{ o.estimated_completion }}</td>
+          <td data-label="Order"><a href="/portal/orders/{{ o.order_number }}">{{ o.order_number }}</a></td>
+          <td data-label="Product">{{ o.product_name }}</td>
+          <td data-label="Status">
+            {% set deal_stage = o.status %}
+            {% include '../../partials/deal-stage-badge.html' %}
+          </td>
+          <td data-label="Stage">
+            {% set deal_stage = o.production_stage %}
+            {% include '../../partials/deal-stage-badge.html' %}
+          </td>
+          <td data-label="Total">{% if o.total is not none %}${{ o.total }}{% if o.currency %} {{ o.currency }}{% endif %}{% else %}—{% endif %}</td>
+          <td data-label="Ordered">{{ o.hs_createdate }}</td>
+          <td data-label="Est. completion">{{ o.estimated_completion or '—' }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-  {% if not orders %}
-  <p>No orders found.</p>
+  {% else %}
+  <div class="hs-empty-state order-list__empty">
+    <p class="hs-empty-state__title">No orders yet</p>
+    <p class="hs-empty-state__text">You do not have any orders linked to this account.</p>
+    <a class="hs-btn hs-btn--primary" href="/portal/shop">Start a new order</a>
+  </div>
   {% endif %}
 </section>
 <script>
 (function () {
-  var sel = document.querySelector('[data-order-filter]');
-  var table = document.querySelector('[data-order-table]');
+  var root = document.querySelector('[data-order-list-root]');
+  if (!root) return;
+  var sel = root.querySelector('[data-order-filter]');
+  var table = root.querySelector('[data-order-table]');
+  var pager = root.querySelector('[data-order-pager]');
+  var prev = root.querySelector('[data-order-prev]');
+  var next = root.querySelector('[data-order-next]');
+  var label = root.querySelector('[data-order-page-label]');
   if (!sel || !table) return;
-  function apply() {
+  var pageSize = 10;
+  var page = 1;
+  function visibleRows() {
+    return Array.prototype.slice.call(table.querySelectorAll('[data-order-row]')).filter(function (row) {
+      return row.getAttribute('data-order-hidden-filter') !== '1';
+    });
+  }
+  function applyFilter() {
     var v = sel.value;
     table.querySelectorAll('[data-order-row]').forEach(function (row) {
-      var st = row.getAttribute('data-order-status');
       var bucket = row.getAttribute('data-order-bucket');
       var show = true;
       if (v === 'active') show = bucket === 'active';
       else if (v === 'completed') show = bucket === 'completed';
       else if (v === 'cancelled') show = bucket === 'cancelled';
-      row.style.display = show ? '' : 'none';
+      row.setAttribute('data-order-hidden-filter', show ? '0' : '1');
+    });
+    page = 1;
+    applyPage();
+  }
+  function applyPage() {
+    var all = Array.prototype.slice.call(table.querySelectorAll('[data-order-row]'));
+    all.forEach(function (row) {
+      if (row.getAttribute('data-order-hidden-filter') === '1') row.style.display = 'none';
+    });
+    var rows = visibleRows();
+    var total = rows.length;
+    var pages = Math.max(1, Math.ceil(total / pageSize));
+    if (page > pages) page = pages;
+    var start = (page - 1) * pageSize;
+    rows.forEach(function (row, i) {
+      var inPage = i >= start && i < start + pageSize;
+      row.style.display = inPage ? '' : 'none';
+    });
+    if (pager && label && prev && next) {
+      var needPager = total > pageSize;
+      pager.hidden = !needPager;
+      if (needPager) {
+        label.textContent = 'Page ' + page + ' of ' + pages;
+        prev.disabled = page <= 1;
+        next.disabled = page >= pages;
+      }
+    }
+  }
+  sel.addEventListener('change', applyFilter);
+  if (prev && next) {
+    prev.addEventListener('click', function () { if (page > 1) { page--; applyPage(); } });
+    next.addEventListener('click', function () {
+      var rows = visibleRows();
+      var pages = Math.max(1, Math.ceil(rows.length / pageSize));
+      if (page < pages) { page++; applyPage(); }
     });
   }
-  sel.addEventListener('change', apply);
+  applyFilter();
 })();
 </script>

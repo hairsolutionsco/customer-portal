@@ -1,1 +1,5 @@
 .recent-orders h2 { margin-top: 0; }
+.recent-orders__more {
+  margin: 0.75rem 0 0;
+  font-size: 0.9375rem;
+}

@@ -1,5 +1,5 @@
 {% set c = data_query.data.CRM.contact %}
-{% set support_href = theme.portal.support_portal_url if theme.portal.support_portal_url else '/customer-portal' %}
+{% set support_href = '/customer-portal' %}
 <section class="billing-current hs-card" aria-label="Current plan">
   <h2 class="billing-current__heading">Your plan</h2>
   {% if c %}
