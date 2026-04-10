@@ -212,7 +212,9 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 
 ### Theme `fields.json` (native portal / KB URLs)
 
-HubSpot **theme** `fields.json` does not support **`text`**, **`link`**, or **`url`** for marketer-editable paths. Any such fields were **removed**; **`portal-sidebar.module`** uses **module** URL fields (see `fields.json` / module defaults) or hardcoded fallbacks **`/customer-portal`** and **`/knowledge-base`**.
+HubSpot **theme** `fields.json` does not support **`text`**, **`link`**, or **`url`** for marketer-editable paths. Any such fields were **removed**; **`portal-sidebar.module`** uses **module** URL fields (see `theme/modules/portal-sidebar.module/fields.json`) or HubL fallbacks **`/customer-portal`** and **`/knowledge-base`**. Full ops checklist, KB categories, and email alignment: **Phase 7** below.
+
+**Phase 7 detail:** native KB + Service customer portal + email alignment — see **Phase 7 — Native Knowledge Base, Service customer portal, email (#51–#53)** below (categories, pipeline, notification mapping, repo vs HubSpot-admin split).
 
 ### Blockers
 
@@ -303,3 +305,75 @@ Issue **#50** still mentions **HairProfile** and **CustomerPlan** **custom objec
 2. **Profile completed:** Trigger on hair profile form submit (**#43**) → ensure **`onboarding_completed`** is true inside **`portal_hair_profile_json`** (via form mapping or a workflow step that updates the property — avoid maintaining duplicate boolean fields unless ops require it).
 
 Close **#49 / #50** when UI checklists above are done **or** tick “dev complete on 50966981” and leave “production domain” explicitly tracked on **#5** / **#54–#57**.
+
+---
+
+## Phase 7 — Native Knowledge Base, Service customer portal, and email (GitHub **#51–#53**, Agent **A14**)
+
+**Plan refs:** **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §3 (**A14**), §4 **Wave 5**, §5 (P7). **`AGENT_PROMPT.md`** *Live-theme note*: do **not** restore CMS templates **`portal-support`**, **`portal-help`**, or custom `/portal/help` / `/portal/support` pages; help and ticketing use **HubSpot-native** Knowledge Base + Service Hub **customer portal**.
+
+### Theme integration (repo)
+
+| Artifact | Role |
+|----------|------|
+| `theme/modules/portal-sidebar.module/fields.json` | **`customer_portal_url`**, **`knowledge_base_url`** (`text`: relative path or full URL), **`support_label`**, **`knowledge_base_label`**, **`brand_title`**. |
+| `theme/modules/portal-sidebar.module/module.html` | Defaults when empty: **`/customer-portal`**, **`/knowledge-base`**. |
+| `theme/templates/partials/portal-primary-nav.html` | Sidebar links for Support + Knowledge base (**#51** “Add KB link to portal sidebar” / **#30** chrome). |
+
+**Design Manager:** On layouts using **`portal-sidebar`**, set module fields to the **live** Service Hub customer portal URL and KB home URL HubSpot provides for the site (paths often match defaults — **verify** per account).
+
+### Knowledge Base — canonical categories (**#51**)
+
+Use these **category labels** when creating the native KB (migration from Notion / legacy DB should map into this structure):
+
+| Order | Category |
+|-------|----------|
+| 1 | Getting Started |
+| 2 | Hair Systems |
+| 3 | Ordering |
+| 4 | Billing & Payments |
+| 5 | Customization |
+| 6 | Account Settings |
+| 7 | Troubleshooting |
+
+**HubSpot admin (human):** Enable Knowledge Base in Service Hub, create categories above, migrate articles, configure KB domain/host, branding, search, and article feedback (**#51** checklists). No API automation in this repo for KB content.
+
+### Service Hub customer portal + tickets (**#52**)
+
+**HubSpot admin (human):**
+
+- Enable **Customer Portal** in Service Hub; align hostname with membership / production plan (**#5**, **#54–#57**).
+- **Ticket pipeline (ops name):** **Customer Support** with stages **New → In Progress → Waiting on Customer → Resolved → Closed** (internal stage IDs may differ — match these **labels** in UI for staff and reporting).
+- Style the Service portal to match brand (HubSpot Service portal theming).
+- Link portal access to contacts / membership expectations per HubSpot docs and **#49** (**Portal Customers**).
+- **Depends:** support ticket form **#45**; membership **#49**.
+- **Test:** customer submits ticket → agent responds → customer sees update in Service portal.
+
+### Email and notifications (**#53**)
+
+**Preference properties (Contact, group `notification_preferences`):** `notify_order_updates`, `notify_production_reminders`, `notify_marketing` — see **Contact properties (billing, notifications, portal — issue #11)** above. Settings surface: **`settings.graphql`** + form **#48**; workflows should **branch on these booleans** where the issue lists a preference-sensitive email.
+
+**Suggested workflow inventory** (create and name clearly in HubSpot for handoff; exact enrollment triggers depend on objects and **#43–#48** forms):
+
+| # | Event (conceptual) | Customer email / action | Respect preference |
+|---|---------------------|---------------------------|--------------------|
+| 1 | Registration / portal access | Welcome | — |
+| 2 | Hair profile submitted | Profile complete | — |
+| 3 | Order created | Order confirmation | `notify_order_updates` |
+| 4 | Order / deal status change | Order status update | `notify_order_updates` |
+| 5 | Production milestone | Production milestone | `notify_production_reminders` |
+| 6 | Invoice available | Invoice ready | *(define vs billing emails)* |
+| 7 | Ticket created | Support ticket created | — |
+| 8 | Ticket updated (agent reply) | Support ticket updated | — |
+| 9 | Subscription / plan change | Plan change confirmation | — |
+
+**HubSpot admin (human):** Email templates, workflow enrollments, sender domain + DKIM, test sends. Marketing vs transactional tooling follows HubSpot product boundaries — document the chosen approach for ops.
+
+### A14 “done” split — repo vs HubSpot (**IMPLEMENTATION_PLAN_SUBAGENTS.md** §3, §7)
+
+| Owner | Criteria |
+|-------|----------|
+| **Repo (this batch)** | Registry + theme pattern documented; KB category names frozen here; notification matrix + preference gates documented; **no** deprecated CMS help/support routes added under `theme/templates/`. |
+| **HubSpot admin** | **#51–#53** UI checklists (KB, Service portal, pipeline, emails, workflows); Design Manager **`portal-sidebar`** URL fields set to live KB + customer portal paths; GitHub issues closed when AC met. |
+
+**Gate note:** **G6** (forms **#43–#48**) and **#45** / **#49** precede many **#53** end-to-end tests; **G7** is **A15** release. A14 delivers **documentation + theme link wiring**; full closure of **#51–#53** may require prior form and membership work per issue bodies.
