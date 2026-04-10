@@ -223,3 +223,10 @@ Create via **Settings → Properties → Contact**, CRM Properties API, or:
 **Templates (#9–#11):** `portal_saved_templates_json` and related — see issue bodies; keep **internal names** stable for GraphQL and forms.
 
 **Optional later:** If membership GraphQL cannot expose `portal_hair_profile_json` or JSON-in-HubL is too heavy, add **flat** contact properties under a HubSpot group (mirroring `hair_profile_information`) — coordinate with A5 before duplicating data with the JSON field.
+
+### G1 CRM slice (A1) — verification log
+
+| Date | What ran | Result |
+|------|----------|--------|
+| 2026-04-10 | `npm run portal:hubspot-props` (CLI-resolved token; no `op_env` wait) | All groups + properties **exist** (idempotent `property ok (exists)` / `group ok (exists)`). **`portal_billing_json`:** skipped with **403** — create via UI or re-run with a Private App PAT that has **`crm.schemas.contacts.write`** (`HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN` / `HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN` in 1Password). |
+| 2026-04-10 | GitHub **#6, #7, #9, #10, #11** | **Closed** with comments pointing to this file + `docs/AGENT_PROMPT.md` §1 (custom-object AC superseded by contact properties + native Commerce + deals/invoice mirrors). |
