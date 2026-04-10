@@ -140,7 +140,7 @@ Table **names** in HubSpot: `subscription_plans`, `affiliated_locations`, `produ
 | `affiliated_locations` | `name`, `country`, `state`, `city`, `address`, `postal_code`, `phone`, `email`, `website`, `services_offered`, `specialties`, `latitude`, `longitude`, `description`, `logo_url`, `is_featured`, `display_order` |
 | `products` | `name`, `slug`, `description`, `short_description`, `price`, `compare_at_price`, `currency`, `category` (**SELECT**: Hair Systems, Adhesives, Maintenance, Accessories), `primary_image`, `in_stock`, `featured`, `display_order` |
 
-**Gate G2 (HubDB):** **passing** for portal **50966981** — tables published with seed rows (2026-04-07). Token resolution: `customer-portal/ops/scripts/hubspot_resolve_token.py` (env first, then HubSpot CLI OAuth).
+**Gate G2 (HubDB):** **passing** for portal **50966981** — tables published with seed rows (2026-04-07). GitHub **#12–#14** closed when AC matched registry + `theme/fields.json` (2026-04-10, Agent A2). Re-run **`./scripts/op_env.sh npm run portal:hubdb-sync`** after seed edits; script reads **`data/hubdb/*.json`** first. Token resolution: `scripts/hubspot_resolve_token.py` (env first, then HubSpot CLI OAuth).
 
 | Optional custom objects (`schemas/*.json`) | *(only if created)* | **Not required** for theme upload |
 

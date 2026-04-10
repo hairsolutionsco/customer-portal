@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Sync HubDB tables from hair-solutions-portal/hubdb/*.json via HubSpot CMS HubDB API (issues #12–#14).
+Sync HubDB tables from `data/hubdb/*.json` (canonical; issues #12–#14), with fallback to
+`hair-solutions-portal/hubdb/*.json` if the data path is missing, via HubSpot CMS HubDB API.
 
 Uses the same token resolution as hubspot_create_portal_contact_properties.py
 (hubspot_resolve_token.py): prefers scoped env tokens first (`HUBSPOT_PRIVATE_APP__HUBDB__ACCESS_TOKEN`,
@@ -316,9 +317,14 @@ def main() -> int:
         recreate.update(x.strip() for x in env_re.split(",") if x.strip())
 
     portal_root = Path(__file__).resolve().parent.parent
-    hubdb_dir = portal_root / "hair-solutions-portal" / "hubdb"
+    hubdb_dir = portal_root / "data" / "hubdb"
     if not hubdb_dir.is_dir():
-        print(f"error: missing {hubdb_dir}", file=sys.stderr)
+        hubdb_dir = portal_root / "hair-solutions-portal" / "hubdb"
+    if not hubdb_dir.is_dir():
+        print(
+            f"error: missing HubDB seed dir (tried data/hubdb and hair-solutions-portal/hubdb under {portal_root})",
+            file=sys.stderr,
+        )
         return 1
 
     files = sorted(hubdb_dir.glob("*.json"))
