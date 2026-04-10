@@ -1,6 +1,6 @@
 # Schema registry (Portal 2.0)
 
-Fill this in **after** the **target HubSpot portal** is configured (sandbox recommended when available; otherwise production with care — see `HANDOFF_PROMPT.md`). **A5/A6 GraphQL** must match **your** portal’s GraphQL explorer (association aliases differ per account).
+Fill this in **after** the **target HubSpot portal** is configured (sandbox recommended when available; otherwise production with care — see `docs/AGENT_PROMPT.md` *Portal orchestration*). **A5/A6 GraphQL** must match **your** portal’s GraphQL explorer (association aliases differ per account).
 
 ## Entitlements snapshot (verify in-product)
 

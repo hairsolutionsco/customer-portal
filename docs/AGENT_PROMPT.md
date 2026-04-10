@@ -1,5 +1,149 @@
 # Code Agent Prompt — Build Customer Portal 2.0 on HubSpot CMS
 
+## Mandatory session start (every agent — orchestrator, subagent, or solo)
+
+**Do this before** reading the rest of this file, spawning work, or editing the repo. **Read each skill’s `SKILL.md` in full** (or the equivalent path if the skill is installed only under `~/.cursor/skills/` — see `docs/skills/README.md`).
+
+| Order | Skill | Repo path (canonical) |
+|------|--------|------------------------|
+| 1 | **hubspot-cms-fundamentals** | `docs/skills/hubspot-cms-fundamentals/SKILL.md` |
+| 2 | **hubspot-cms-templating** | `docs/skills/hubspot-cms-templating/SKILL.md` |
+| 3 | **hubspot-cms-data-apis** | `docs/skills/hubspot-cms-data-apis/SKILL.md` |
+| 4 | **hubspot-cms-advanced-patterns** | `docs/skills/hubspot-cms-advanced-patterns/SKILL.md` |
+| 5 | **hubspot-developer** | `docs/skills/hubspot-developer/SKILL.md` |
+| 6 | **mem0-memory** | `.cursor/skills/mem0-memory/SKILL.md` |
+| 7 | **GSD (router + workflow skills)** | Read **`.cursor/skills/gsd-do/SKILL.md`** first, then **every** GSD skill that `gsd-do` routes you to for this task (e.g. `gsd-plan-phase`, `gsd-execute-phase`, `gsd-discuss-phase`, `gsd-progress`, `gsd-ship`, `gsd-debug`, `gsd-code-review`, `gsd-verify-work` — load each **before** executing that phase of the workflow). For open-ended requests, follow `gsd-do` end-to-end. |
+
+**Portal orchestration** is in this file under **Portal orchestration (lead agent)**. **Canonical product plan:** `docs/cms-customer-portal-plan.md`. **Cursor rules:** `.cursor/rules/portal-2-orchestrator.mdc` — they override generic GSD parallelization when they conflict (subagent grid, ship ritual).
+
+After the table above, read **Portal orchestration (lead agent)** below, then continue with **Context** and the rest of this prompt.
+
+---
+
+## Portal orchestration (lead agent)
+
+**Doc map:** **Canonical plan** → `docs/cms-customer-portal-plan.md`. **Waves, roster, gates, ritual** → `IMPLEMENTATION_PLAN_SUBAGENTS.md` §3–§7. **File-level build spec** → the rest of this document. **Paste for tools without Cursor rules:** share this file (or the **Subagent prompt** block below).
+
+### Mandatory: you must use subagents
+
+You are the **orchestrator**, not a solo implementer. **You must use subagents** (Task tool, background agents, or your environment’s equivalent) when parallel delegation is possible. **Do not** absorb the full scope of A0–A15, multi-file theme work, and HubSpot verification in a single thread.
+
+| Rule | Detail |
+|------|--------|
+| **Spawn** | For each row in **Subagents to launch**, spawn **one dedicated subagent** with the **Subagent prompt** below (filled placeholders). Same **Parallel group** = launch together. |
+| **Stay orchestrator** | You coordinate, merge results, run gates (`portal:verify`, `portal_task_complete.sh`), and fix cross-cutting blockers — you do **not** replace subagents for their scoped issues. |
+| **If the tool allows only one agent** | Still **structure** work as sequential subagent-sized tasks: finish one spawn’s scope, ritual, then the next — never “one giant unprompted refactor.” |
+| **Exception** | Tiny one-file fixes (e.g. typo in one module) may be direct; anything touching **GraphQL + HubL + upload**, **CRM/HubDB API**, or **≥2 concerns** → **subagent**. |
+
+### Next session — do this now *(edit this section each handoff)*
+
+#### Snapshot
+
+- **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`)
+- **Issues:** #3–#57 · exports: **`exports/github-issues.json`** (run **`npm run portal:issues`** to refresh)
+- **Data model:** **Hair profile + saved templates → Contact properties.** **Orders → native Commerce `order`.** **Invoices → native `invoices`.** **Custom objects not required** for go-live. **GraphQL** on membership pages may list `contact`, `company`, `deal`, `ticket`, `quote`, `line_item` — **confirm** whether `order` / invoices appear in **your** explorer; if not, use **Deal/Contact mirror** via workflows.
+- **Baseline:** GraphQL in repo targets **deals-as-orders** (`deal_collection__contact_to_deal` — verify in explorer), **HubDB** tables `products`, `affiliated_locations`, `subscription_plans`, and contact JSON fields `portal_hair_profile_json`, `portal_saved_templates_json`, `portal_invoices_json`. **API:** **`./scripts/op_env.sh npm run portal:hubspot-props`** and **`./scripts/op_env.sh npm run portal:hubdb-sync`**. **Next gate:** upload theme; fix association labels + HubDB column names if validation errors.
+
+#### Lead agent — run in order
+
+0. **Mandatory session start:** this file, top section (skills table).
+1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 (current wave) and §7 (gate for that wave).
+2. Run **`npm run portal:issues`** if the GitHub snapshot may be stale.
+3. **Subagents:** Execute **Subagents to launch** — **one subagent per row**, respecting **Parallel group**. **Skipping subagents to “do it all yourself” is not allowed** for normal waves.
+4. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** (use **`SKIP_HUBSPOT=1`** only if upload must be skipped). Upload uses **`hs`** + **`~/.hscli/config.yml`**; optional **`theme/hubspot.config.yml`** (gitignored). See **`IMPLEMENTATION_PLAN_SUBAGENTS.md` §6a**. *If this repo is checked out inside `hubspot/` with nested paths, use the ritual path your workspace README gives (often `customer-portal/ops/scripts/…`).*
+
+#### Subagents to launch *(trim rows per session)*
+
+| Parallel group | Agent | Role (from plan §3) | Issues | Notes |
+|----------------|-------|---------------------|--------|-------|
+| 1 | **A0** | Platform bootstrap | #3, #4, #5 | **`hs account auth`** → **`~/.hscli/config.yml`**; **`hs accounts list`**; **do not use `hs init`** |
+| 2a | **A1** | CRM config (hair profile → contact props) | #6 | Parallel with 2b after group 1 if portal connected |
+| 2b | **A1** | CRM config (native orders + associations) | #7 | Introspect GraphQL for `order` |
+| — | **A1** | Timeline / status (#8) | #8 | Deal stages, tickets, or native order |
+| 2c | **A2** | HubDB | #12–#14 | **`npm run portal:hubdb-sync`** (API) |
+| *later* | **A3** | Membership & access | #49–#50 | After subdomain/plan clear |
+| *later* | **A5** + **A6** | GraphQL CRM + HubDB | #20–#29 | **Only after** **`data/SCHEMA_REGISTRY.md`** has real IDs/names |
+| *later* | **A7** | Global chrome | #30–#31 | **Before** wide A8–A12 |
+| *later* | **A8–A12** | Pages / system UI | #32–#42 | Parallel per plan §4 after A7 |
+| *later* | **A13** | Forms | #43–#48 | |
+| *later* | **A14** | Service / KB | #51–#53 | |
+| *later* | **A15** | Release | #54–#57 | |
+
+**Delete or mark *later* rows** so the next agent only spawns what applies **this** session.
+
+#### Blockers / do not launch until
+
+- **A5/A6:** **`data/SCHEMA_REGISTRY.md`** populated enough to match explorer names.
+- **#8:** Order timeline pattern documented in **`data/SCHEMA_REGISTRY.md`**.
+- **Parallel A8–A12:** **A7** (#30–#31) merged first.
+
+### Subagent prompt *(copy once per spawn; replace placeholders)*
+
+```text
+You are Agent {{AGENT_ID}} ({{ROLE_NAME}}) for hairsolutionsco/customer-portal — a **dedicated subagent** spawned by the portal orchestrator (do not try to run the whole program alone).
+
+Orchestrator batch: {{BATCH_DESCRIPTION}}
+
+0. Mandatory session start: read docs/AGENT_PROMPT.md — “Mandatory session start (every agent)” — and load every skill listed there (four HubSpot CMS skills, hubspot-developer, mem0-memory, gsd-do + any GSD skills your workflow requires) before other steps.
+1. Read IMPLEMENTATION_PLAN_SUBAGENTS.md — your role in §3, wave in §4, issues: {{ISSUE_NUMBERS}}.
+2. Read AGENT_PROMPT.md — only the sections from the execution-model table for your role.
+3. Read master-plan for the matching phase.
+4. Work only in your scope. Update `data/SCHEMA_REGISTRY.md` (or `customer-portal/data/SCHEMA_REGISTRY.md` in a monorepo checkout) if CRM/HubDB IDs or GraphQL association names change.
+
+Done when: GitHub issue AC + quality gate G* from IMPLEMENTATION_PLAN_SUBAGENTS.md §7 satisfied; orchestrator runs portal_task_complete.sh (or you run it if solo).
+```
+
+### Evergreen reference
+
+#### Mission
+
+Deliver **Portal 2.0** on **HubSpot CMS** from local **`theme/`** (uploaded to Design Manager as **`customer-portal`** by default). The Next.js app in this repo is **legacy** for the CMS program.
+
+**Done (program):** issues **#3–#57** closed or explicitly deferred; portal usable on membership domain with real data, forms, deploy, QA — per **`master-plan`**, this file, and issue AC.
+
+#### Repo map *(this git checkout)*
+
+| Path | Purpose |
+|------|---------|
+| **`theme/`** | **Canonical HubSpot theme** (upload via `portal_task_complete.sh` / `hs cms upload`) |
+| `hair-solutions-portal/src/` | Older theme scaffold (not source of truth) |
+| **`data/`** | HubDB seeds, schemas, **`SCHEMA_REGISTRY.md`** |
+| `exports/` | **`github-issues.json`** (refreshed by **`npm run portal:issues`**) |
+| `app/` | Legacy Next.js app |
+
+**GitHub:** `hairsolutionsco/customer-portal`
+
+#### HubSpot CLI and portal choice (#3–#5)
+
+**Default:** **`~/.hscli/config.yml`**. Use **`hs account auth`** only when setting up, rotating keys, or the CLI reports failure. From **`theme/`**: **`hs cms upload . customer-portal`** (or use **`portal_task_complete.sh`**). **Do not use `hs init`.**
+
+| Situation | Approach |
+|-----------|----------|
+| HubSpot **Sandbox** available | Prefer it for build/test. |
+| One primary portal only | Disciplined drafts/test data; **`HUBSPOT_THEME_DEST`** (default **`customer-portal`**) |
+| Need isolation | Second portal if licensing allows. |
+
+#### Doc index
+
+1. **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** — waves, roster A0–A15, G1–G7, §6a ritual  
+2. **This file** — mandatory session start, portal orchestration, technical spec  
+3. **`master-plan`** — architecture, routes, phases  
+4. **`exports/github-issues.json`** — AC per issue  
+
+**Reference theme:** [HubSpot/recruiting-agency-graphql-theme](https://github.com/HubSpot/recruiting-agency-graphql-theme)
+
+#### If stuck
+
+- **GraphQL:** Explorer → fix `.graphql` / HubL → **`data/SCHEMA_REGISTRY.md`**
+- **Upload:** `hs accounts list`, `HUBSPOT_THEME_DEST`
+- **Membership:** #5 / #57; prefer sandbox when possible
+
+#### Autonomous / overnight runs
+
+Closing **all** of #3–#57 unattended is **unlikely** without a long-running session, working **`hs`** + **`gh`** auth, HubSpot UI access for some steps, and a machine that stays awake. Trim **Subagents to launch** to the next waves only. In Cursor, open this workspace (orchestrator rules load automatically) and instruct the lead agent to follow **Portal orchestration** in this file, **use subagents** per row, and run **`portal_task_complete.sh`** after each wave (`SKIP_HUBSPOT=1` if blocked).
+
+---
+
 ## Context
 
 You are building **Customer Portal 2.0** for a hair replacement company called **Hair Solutions**. This is a full HubSpot CMS theme that replaces an existing Next.js/Prisma customer portal. The portal uses **HubSpot Memberships** for authentication, **GraphQL data queries** to show per-customer CRM data, **HubDB tables** for catalog data, and **HubSpot Forms** for all write operations.
@@ -14,7 +158,7 @@ You are building **Customer Portal 2.0** for a hair replacement company called *
 
 ## What to Build
 
-Build every file in the theme directory structure below. The **canonical paths in this monorepo** are **`customer-portal/cms/`** (CMS theme), **`customer-portal/data/`** (schemas + HubDB JSON), and **`customer-portal/app/`** (Next.js app). The tree below uses `hair-solutions-portal/` as a **logical** theme root name; map it to `customer-portal/cms/` on disk. Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
+Build every file in the theme directory structure below. The **canonical paths in this monorepo** are **`customer-portal/theme/`** (CMS theme), **`customer-portal/data/`** (schemas + HubDB JSON), and **`customer-portal/app/`** (Next.js app). The tree below uses `hair-solutions-portal/` as a **historical logical** layout name in the spec; on disk the canonical root is **`customer-portal/theme/`**. **Design Manager upload destination** defaults to **`customer-portal`** (`HUBSPOT_THEME_DEST`). Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
 
 ---
 
@@ -35,7 +179,7 @@ Do **not** mark work done until all three are satisfied:
 | Step | Action |
 |------|--------|
 | **1. Git** | Commit and **push** the **`hubspot/`** git repo with a clear message (Design Manager + Next app live under `99-development/design-manager/`). |
-| **2. HubSpot Design Manager** | Upload the CMS theme from **`customer-portal/cms/`**. Use **`portal_task_complete.sh`** (handles `hs cms upload` vs `hs upload`, and **`.` vs `src`**). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`customer-portal/cms/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **`HANDOFF_PROMPT.md`**. |
+| **2. HubSpot Design Manager** | Upload the CMS theme from **`customer-portal/theme/`**. Use **`portal_task_complete.sh`** (handles `hs cms upload` vs `hs upload`, and **`.` vs `src`**). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`customer-portal/theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **Portal orchestration** → *HubSpot CLI and portal choice* above. |
 | **3. GitHub issues snapshot** | Refresh **`customer-portal/ops/exports/github-issues.json`** (and milestones) — e.g. `npm run portal:issues` or `bash customer-portal/ops/scripts/sync-github-exports.sh` from **design-manager** root. Close/update issues on GitHub when AC are met **before** or **as part of** the sync. |
 
 **One-shot automation (recommended):** from **`99-development/design-manager/`**:
@@ -68,24 +212,15 @@ This runs **issues sync → HubSpot upload → git add / commit / push** (use `S
 
 ### Subagent spawn template
 
-```text
-You are Agent {{AGENT_ID}} for hairsolutionsco/customer-portal.
+Copy the **Subagent prompt** block under **Portal orchestration (lead agent)** above; fill `{{AGENT_ID}}`, `{{ROLE_NAME}}`, `{{BATCH_DESCRIPTION}}`, and `{{ISSUE_NUMBERS}}`.
 
-1. Read IMPLEMENTATION_PLAN_SUBAGENTS.md — your role, wave, and issues: {{ISSUE_NUMBERS}}.
-2. Read AGENT_PROMPT.md — only the sections listed in the map above for your role (technical spec).
-3. Read master-plan for architecture alignment.
-4. Implement only your scope; do not duplicate another agent’s files. Hand off **`customer-portal/data/SCHEMA_REGISTRY.md`** updates if you change CRM/HubDB IDs.
-
-Done when: issue acceptance criteria + relevant quality gate in IMPLEMENTATION_PLAN_SUBAGENTS.md §7.
-```
-
-**Secrets:** Never print PAKs or tokens; keep **`customer-portal/cms/hubspot.config.yml`** gitignored if you create it (#3). Global CLI config lives under **`~/.hscli/`** — never commit that either.
+**Secrets:** Never print PAKs or tokens; keep **`customer-portal/theme/hubspot.config.yml`** gitignored if you create it (#3). Global CLI config lives under **`~/.hscli/`** — never commit that either.
 
 ---
 
 ## Directory Structure
 
-**On disk:** JSON schemas and HubDB seeds live under **`customer-portal/data/`** (`schemas/`, `hubdb/`). The tree below is the **logical** theme layout; map the root to **`customer-portal/cms/`**.
+**On disk:** JSON schemas and HubDB seeds live under **`customer-portal/data/`** (`schemas/`, `hubdb/`). The tree below is the **logical** theme layout; map the root to **`customer-portal/theme/`**.
 
 ```
 hair-solutions-portal/
@@ -402,7 +537,7 @@ Include 6 sample products.
 ### `src/theme.json`
 ```json
 {
-  "name": "hair-solutions-portal",
+  "name": "customer-portal",
   "label": "Hair Solutions Portal",
   "version": "1.0.0",
   "author": "Hair Solutions Co",
@@ -464,6 +599,8 @@ Minimal vanilla JS:
 ---
 
 ## 6. GraphQL Data Queries
+
+**Canonical reference for the live `customer-portal/theme/` theme** (paths, deals-as-orders, HubDB via HubL, no locations route): **`theme/docs/README.md`**. Use it when this file still shows `src/` paths, `locations.graphql`, or HubDB-only examples in GraphQL that the portal does not expose.
 
 **CRITICAL PATTERN:** All queries that fetch per-customer data MUST use `request.contact.contact_vid` to scope data to the logged-in member. This is the HubSpot Memberships integration point.
 
@@ -1007,7 +1144,7 @@ query applications($contact_id: String!) {
 
 ## Summary
 
-Build **every single file** listed in the directory structure. No stubs. No placeholders. Production-ready HubL, GraphQL, CSS, and JS. The theme should be uploadable via `hs upload src hair-solutions-portal` and immediately functional once pages are created and access groups configured in HubSpot.
+Build **every single file** listed in the directory structure. No stubs. No placeholders. Production-ready HubL, GraphQL, CSS, and JS. The theme should be uploadable via **`cd theme && hs cms upload . customer-portal`** (or **`portal_task_complete.sh`**) and immediately functional once pages are created and access groups configured in HubSpot.
 
 **Execution:** Follow **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** for waves, agent splits, and GitHub Issues **#3–#57**; use **this document** as the build spec for each file you touch.
 

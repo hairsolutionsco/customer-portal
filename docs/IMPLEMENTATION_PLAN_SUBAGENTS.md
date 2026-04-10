@@ -13,8 +13,8 @@ This document ties **`master-plan`** (architecture + file layout) to **GitHub Is
 | Principle | Implication for implementation |
 |-----------|--------------------------------|
 | **Membership + GraphQL** | Every contact-scoped query uses `request.contact.contact_vid` (or equivalent) as in recruiting-agency theme; templates declare `dataQueryPath` matching `src/data-queries/*.graphql`. |
-| **Contact properties + native commerce first** | **Hair profile** and **saved templates** are **Contact properties**, not custom objects. **Orders** and **invoices** use HubSpot’s **native** Commerce CRM objects. **Custom objects are optional** — HubSpot documents CMS use of custom objects as **Content Hub Enterprise**; the theme **must compile and upload** with GraphQL stubs / contact-only queries when custom objects are absent. **Order status history** is **not** gated on a custom order object: use native order fields, **deals**, **tickets**, or workflows. HubDB (#12–14) runs after **target portal** is connected (#3–#4). Sandbox **recommended** — see **`HANDOFF_PROMPT.md`**. |
-| **Single theme upload surface** | Theme on disk: **`customer-portal/cms/`** (flat or `src/` layout → **`hs cms upload`** or legacy **`hs upload`** per #54); logical name matches `master-plan` tree (`hair-solutions-portal/`). |
+| **Contact properties + native commerce first** | **Hair profile** and **saved templates** are **Contact properties**, not custom objects. **Orders** and **invoices** use HubSpot’s **native** Commerce CRM objects. **Custom objects are optional** — HubSpot documents CMS use of custom objects as **Content Hub Enterprise**; the theme **must compile and upload** with GraphQL stubs / contact-only queries when custom objects are absent. **Order status history** is **not** gated on a custom order object: use native order fields, **deals**, **tickets**, or workflows. HubDB (#12–14) runs after **target portal** is connected (#3–#4). Sandbox **recommended** — see **`docs/AGENT_PROMPT.md`** (*Portal orchestration* → *HubSpot CLI and portal choice*). |
+| **Single theme upload surface** | Theme on disk: **`customer-portal/theme/`** (flat or `src/` layout → **`hs cms upload`** or legacy **`hs upload`** per #54); Design Manager destination defaults to **`customer-portal`** (`HUBSPOT_THEME_DEST`). Spec tree label `hair-solutions-portal/` in `master-plan` is historical. |
 | **Writes via HubSpot Forms** | No bespoke POST from HubL; forms (#43–48) embed with `{% form form_to_use='...' %}` per Phase 5 in `master-plan`. |
 | **Access group** | `/portal/*` and KB/support surfaces align with **Portal Customers** (#49–50, Phase 6–7 in `master-plan`). |
 
@@ -99,7 +99,7 @@ Each role is a **stable persona** you assign to a subagent. Give each agent: rep
 
 ### Wave 0 — Bootstrap (sequential start, then parallel)
 
-1. **Single agent A0** completes #3 → #4 → #5 (subdomain may wait on DNS; do not block schema file authoring in repo). **#4** means “development portal” — use a HubSpot sandbox if the account has one; otherwise the primary portal with the discipline described in **`HANDOFF_PROMPT.md`**.
+1. **Single agent A0** completes #3 → #4 → #5 (subdomain may wait on DNS; do not block schema file authoring in repo). **#4** means “development portal” — use a HubSpot sandbox if the account has one; otherwise the primary portal with the discipline described in **`docs/AGENT_PROMPT.md`** (*Portal orchestration*).
 2. **Parallel:** A1 starts #6 (independent); A1 prepares #7; A2 starts #12–#14 once the **target portal** is connected (#3) and you are ready to create HubDB there.
 
 **Handoff:** **`customer-portal/data/SCHEMA_REGISTRY.md`** (optional, repo-local) listing: object type IDs, association type names, HubDB table IDs — **required before A5/A6 run GraphQL**.
@@ -172,7 +172,7 @@ Use this verbatim shell for each subagent; replace placeholders.
 You are Agent {{AGENT_ID}} ({{ROLE_NAME}}) for hairsolutionsco/customer-portal.
 
 Read-only context:
-- Repository: **`hubspot/99-development/design-manager`** (git root is **`hubspot/`**; CMS theme **`customer-portal/cms/`**, models **`customer-portal/data/`**, Next **`customer-portal/app/`)
+- Repository: **`hubspot/99-development/design-manager`** (git root is **`hubspot/`**; CMS theme **`customer-portal/theme/`**, models **`customer-portal/data/`**, Next **`customer-portal/app/`)
 - Architecture: file `master-plan` (sections for Phase {{PHASE}})
 - GitHub Issues (acceptance criteria + steps): {{ISSUE_LIST}} — close by matching AC in issue body.
 
@@ -196,7 +196,7 @@ Done when:
 | Order | Step | How |
 |-------|------|-----|
 | 1 | **Refresh issue exports** | `npm run portal:issues` or **`bash customer-portal/ops/scripts/sync-github-exports.sh`** (from **design-manager** root) → updates **`customer-portal/ops/exports/github-issues.json`** and **`github-milestones.json`**. |
-| 2 | **Upload theme to Design Manager** | From **`customer-portal/cms/`** — use **`portal_task_complete.sh`** (handles `hs cms upload` vs `hs upload` and **`.` vs `src`**). CLI default account **`~/.hscli/config.yml`**; optional local **`customer-portal/cms/hubspot.config.yml`** (gitignored). |
+| 2 | **Upload theme to Design Manager** | From **`customer-portal/theme/`** — use **`portal_task_complete.sh`** (handles `hs cms upload` vs `hs upload` and **`.` vs `src`**). CLI default account **`~/.hscli/config.yml`**; optional local **`customer-portal/theme/hubspot.config.yml`** (gitignored). |
 | 3 | **Push git** | Commit all changes (including refreshed exports) and `git push` to `origin` (repo root is **`hubspot/`** when only that `.git` exists). |
 
 **Single command (preferred):** from **`99-development/design-manager/`**:
@@ -211,7 +211,7 @@ From **`hubspot/`** root (with secrets via 1Password):
 bash scripts/op_run.sh bash 99-development/design-manager/customer-portal/ops/scripts/portal_task_complete.sh "chore(portal): short description of the completed task"
 ```
 
-Flags / env: `--skip-hubspot`, `--skip-git`, `--issues-only`; `SKIP_HUBSPOT=1`, `SKIP_GIT=1`, `SKIP_ISSUES=1`, `HUBSPOT_THEME_DEST` (default `hair-solutions-portal`), `GITHUB_REPO` (default: `gh repo view`).
+Flags / env: `--skip-hubspot`, `--skip-git`, `--issues-only`; `SKIP_HUBSPOT=1`, `SKIP_GIT=1`, `SKIP_ISSUES=1`, `HUBSPOT_THEME_DEST` (default **`customer-portal`**), `GITHUB_REPO` (default: `gh repo view`).
 
 Orchestrators and solo agents run this after **each** merged PR slice, **each** wave, or **each** GitHub issue closed — whichever granularity matches the work batch.
 

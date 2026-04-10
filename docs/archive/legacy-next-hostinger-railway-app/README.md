@@ -4,7 +4,7 @@ This folder holds **historical documentation** for the pre–Portal 2.0 stack: a
 
 ## Current direction (source of truth)
 
-The live program is a **HubSpot CMS–hosted** membership portal: theme and GraphQL under **`hair-solutions-portal/`** (and related **`cms/`**), CRM contact properties + HubDB via API scripts, ship ritual under **`ops/`** and **`scripts/`**. Start from the repo root **`README.md`**, **`HANDOFF_PROMPT.md`**, and **`docs/AGENT_PROMPT.md`**.
+The live program is a **HubSpot CMS–hosted** membership portal: theme and GraphQL under **`hair-solutions-portal/`** (and related **`theme/`**), CRM contact properties + HubDB via API scripts, ship ritual under **`ops/`** and **`scripts/`**. Start from the repo root **`README.md`** and **`docs/AGENT_PROMPT.md`** (*Portal orchestration* + spec).
 
 ## What is here
 

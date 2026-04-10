@@ -6,7 +6,7 @@ Derived from `components/layout/Sidebar.tsx` (legacy Next app). **Order and labe
 
 | # | Label (UI) | Legacy path | CMS template | Notes |
 |---|------------|-------------|----------------|-------|
-| 1 | Dashboard | `/app` | `cms/templates/portal-dashboard.html` | Home after login. |
+| 1 | Dashboard | `/app` | `theme/templates/portal-dashboard.html` | Home after login. |
 | 2 | Hair Profile | `/app/profile-setup` | `portal-profile.html` | Onboarding + ongoing edits; maps to contact JSON (`portal_hair_profile_json`). |
 | 3 | Orders | `/app/orders` | `portal-orders.html` | List; detail → `portal-order-detail.html`. |
 | 4 | Invoices | `/app/invoices` | `portal-invoices.html` | Mirror / `portal_invoices_json` per registry. |
@@ -22,11 +22,11 @@ Derived from `components/layout/Sidebar.tsx` (legacy Next app). **Order and labe
 
 Sidebar chrome: `portal-sidebar.module`, `portal-header.module`.
 
-Feature modules (under `cms/modules/`): `dashboard-stats`, `production-alert`, `quick-actions`, `recent-orders`, `order-list`, `order-detail`, `status-badge`, `hair-profile-form`, `hair-profile-display`, `customization-grid`, `invoice-table`, `billing-current`, `billing-plans`, `product-grid`, `location-cards`, `settings-profile`, `settings-notifications`.
+Feature modules (under `theme/modules/`): `dashboard-stats`, `production-alert`, `quick-actions`, `recent-orders`, `order-list`, `order-detail`, `status-badge`, `hair-profile-form`, `hair-profile-display`, `customization-grid`, `invoice-table`, `billing-current`, `billing-plans`, `product-grid`, `location-cards`, `settings-profile`, `settings-notifications`.
 
 ## Auth routes (Next-only; CMS uses membership templates)
 
-Legacy paths under `app/(auth)/`: login, signup, forgot-password, error. **CMS equivalent:** `cms/templates/system/membership-*.html` (login, register, reset password).
+Legacy paths under `app/(auth)/`: login, signup, forgot-password, error. **CMS equivalent:** `theme/templates/system/membership-*.html` (login, register, reset password).
 
 ## Deep links called out in components
 

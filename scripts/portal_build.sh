@@ -9,8 +9,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-if [[ -f "$ROOT/cms/theme.json" ]]; then
-  SRC="$ROOT/cms"
+if [[ -f "$ROOT/theme/theme.json" ]]; then
+  SRC="$ROOT/theme"
 elif [[ -f "$ROOT/hair-solutions-portal/src/theme.json" ]]; then
   SRC="$ROOT/hair-solutions-portal/src"
 else

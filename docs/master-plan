@@ -343,8 +343,8 @@ Week 5: Phase 5 (forms) + Phase 7 (KB + support) + Phase 8 (deploy + QA)
 | **CMS Theme Boilerplate** (structure/conventions) | `github.com/HubSpot/cms-theme-boilerplate` |
 | **Elevate Theme** (latest HubSpot conventions) | `github.com/HubSpot/cms-elevate-theme-public` |
 | **Custom Objects API** | `developers.hubspot.com/docs/guides/api/crm/objects/custom-objects` |
-| **GraphQL Queries** | `developers.hubspot.com/docs/cms/.../graphql/query-hubspot-data-using-graphql` |
-| **GraphQL in Pages** | `developers.hubspot.com/docs/cms/.../graphql/use-graphql-data-in-your-website-pages` |
+| **GraphQL Queries** | `developers.hubspot.com/docs/theme/.../graphql/query-hubspot-data-using-graphql` |
+| **GraphQL in Pages** | `developers.hubspot.com/docs/theme/.../graphql/use-graphql-data-in-your-website-pages` |
 | **HubSpot CLI** | `github.com/HubSpot/hubspot-cli` |
 
 The **recruiting-agency-graphql-theme** is your exact blueprint — it does membership-gated pages, GraphQL queries scoped to `request.contact.contact_vid`, custom objects with associations, dynamic pages, and forms. Your portal follows the same pattern but with hair-industry data instead of job applications.
@@ -867,8 +867,8 @@ Week 5: Phase 5 (forms) + Phase 7 (KB + support) + Phase 8 (deploy + QA)
 | **CMS Theme Boilerplate** (structure/conventions) | `github.com/HubSpot/cms-theme-boilerplate` |
 | **Elevate Theme** (latest HubSpot conventions) | `github.com/HubSpot/cms-elevate-theme-public` |
 | **Custom Objects API** | `developers.hubspot.com/docs/guides/api/crm/objects/custom-objects` |
-| **GraphQL Queries** | `developers.hubspot.com/docs/cms/.../graphql/query-hubspot-data-using-graphql` |
-| **GraphQL in Pages** | `developers.hubspot.com/docs/cms/.../graphql/use-graphql-data-in-your-website-pages` |
+| **GraphQL Queries** | `developers.hubspot.com/docs/theme/.../graphql/query-hubspot-data-using-graphql` |
+| **GraphQL in Pages** | `developers.hubspot.com/docs/theme/.../graphql/use-graphql-data-in-your-website-pages` |
 | **HubSpot CLI** | `github.com/HubSpot/hubspot-cli` |
 
 The **recruiting-agency-graphql-theme** is your exact blueprint — it does membership-gated pages, GraphQL queries scoped to `request.contact.contact_vid`, custom objects with associations, dynamic pages, and forms. Your portal follows the same pattern but with hair-industry data instead of job applications.

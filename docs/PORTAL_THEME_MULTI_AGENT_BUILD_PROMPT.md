@@ -9,7 +9,7 @@ Use this document when you spin up **multiple agents on separate git worktrees**
 
 ## 1. Mission
 
-Deliver a **production HubSpot CMS theme** under `customer-portal/cms/` that implements:
+Deliver a **production HubSpot CMS theme** under `customer-portal/theme/` that implements:
 
 1. **Customer (membership) portal** — all end-user pages and flows listed in section 4.1–4.2.
 2. **Admin portal** — all administrative pages listed in section 4.3 (same theme, different templates/modules and **server-side permission model** — see section 6).
@@ -25,19 +25,19 @@ Deliver a **production HubSpot CMS theme** under `customer-portal/cms/` that imp
 
 | Area                            | Path                                                                                                                    |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Theme root                      | `customer-portal/cms/`                                                                                                  |
-| Theme fields / `theme.json`     | `customer-portal/cms/fields.json`, `customer-portal/cms/theme.json`                                                     |
-| Global CSS                      | `customer-portal/cms/css/main.css`, `portal-layout.css`, `css/components/*`                                             |
-| JS                              | `customer-portal/cms/js/main.js`                                                                                        |
-| Layouts / partials              | `customer-portal/cms/templates/layouts/*`, `templates/partials/*`                                                       |
-| Page templates                  | `customer-portal/cms/templates/*.html`                                                                                  |
-| Modules                         | `customer-portal/cms/modules/**/*.module/`                                                                              |
-| GraphQL                         | `customer-portal/cms/data-queries/*.graphql`                                                                            |
+| Theme root                      | `customer-portal/theme/`                                                                                                  |
+| Theme fields / `theme.json`     | `customer-portal/theme/fields.json`, `customer-portal/theme/theme.json`                                                     |
+| Global CSS                      | `customer-portal/theme/css/main.css`, `portal-layout.css`, `css/components/*`                                             |
+| JS                              | `customer-portal/theme/js/main.js`                                                                                        |
+| Layouts / partials              | `customer-portal/theme/templates/layouts/*`, `templates/partials/*`                                                       |
+| Page templates                  | `customer-portal/theme/templates/*.html`                                                                                  |
+| Modules                         | `customer-portal/theme/modules/**/*.module/`                                                                              |
+| GraphQL                         | `customer-portal/theme/data-queries/*.graphql`                                                                            |
 | Reference screenshots (IA)      | `customer-portal/docs/desired-layout-screenshots/`                                                                      |
 | BASE token reference (optional) | `customer-portal/reference-themes/base-child-marketplace-base/_fetched-from-hubspot/css/` (variables + main top matter) |
 
 
-**Upload name in HubSpot Design Manager:** default `**hair-solutions-portal`** (or orchestrator-defined); agents must not rename without coordination.
+**Upload name in HubSpot Design Manager:** default **`customer-portal`** (`HUBSPOT_THEME_DEST` / `portal_task_complete.sh`); agents must not rename without coordination.
 
 ---
 
@@ -78,7 +78,7 @@ From the **Branding Customization** reference and BASE variable patterns, treat 
 
 ### 3.4 Optional BASE parent reference
 
-A **child-of-BASE** theme exists in HubSpot at `@marketplace/SmartAcre_Inc_/BASE` for SmartAcre updates. **This build** targets a **standalone** `hair-solutions-portal` theme that **visually aligns** with BASE; agents should not depend on uploading a child theme unless the orchestrator switches strategy.
+A **child-of-BASE** theme exists in HubSpot at `@marketplace/SmartAcre_Inc_/BASE` for SmartAcre updates. **This build** targets a **standalone** Design Manager theme folder **`customer-portal`** that **visually aligns** with BASE; agents should not depend on uploading a child theme unless the orchestrator switches strategy.
 
 ---
 
@@ -241,7 +241,7 @@ Each agent works in **their own git worktree** from the same repo. **One branch 
 - **Inter** only for UI type; weights/sizes create hierarchy.  
 - Colors match **section 3.2** defaults or controlled theme fields.  
 - Mobile: navigable without horizontal scroll on core pages.  
-- `hs upload` / `hs cms upload` succeeds for `customer-portal/cms/` on default account.  
+- `hs upload` / `hs cms upload` succeeds for `customer-portal/theme/` on default account.  
 - No PAKs or secrets committed; no `hubspot.config.yml` in git.
 
 ---

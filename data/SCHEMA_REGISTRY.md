@@ -1,6 +1,6 @@
 # Schema registry (Portal 2.0)
 
-Fill this in **after** the **target HubSpot portal** is configured (sandbox recommended when available; otherwise production with care — see `HANDOFF_PROMPT.md`). **A5/A6 GraphQL** must match **your** portal’s GraphQL explorer (association aliases differ per account).
+Fill this in **after** the **target HubSpot portal** is configured (sandbox recommended when available; otherwise production with care — see `docs/AGENT_PROMPT.md` *Portal orchestration* → *HubSpot CLI and portal choice*). **A5/A6 GraphQL** must match **your** portal’s GraphQL explorer (association aliases differ per account).
 
 ## Entitlements snapshot (verify in-product)
 
@@ -12,12 +12,12 @@ Fill this in **after** the **target HubSpot portal** is configured (sandbox reco
 | **Native Commerce `order` object** | Commerce / orders feature on account | CRM API: orders exist; **CMS GraphQL exposure** must be **introspected**. |
 | **Native `invoices` object** | Commerce / invoicing on account | Native CRM object + API; **confirm** your SKU includes invoicing; **CMS GraphQL** same caveat as orders. |
 | **Service Hub** | Service Professional | **Tickets** on private pages — useful for support + timeline patterns. |
-| **CMS serverless functions** (`*.functions` under the theme root) | **CMS Hub Enterprise** (typical) — *not* granted on all accounts | Upload error *“does not have access to serverless functions”* means use **GraphQL + HubL + external APIs** (e.g. Hostinger Worker) until tier/sandbox allows it. Sample code: `customer-portal/docs/serverless-samples/portal-api.functions/` → copy into `customer-portal/cms/` when entitled. **Local:** HubSpot’s `@hubspot/serverless-dev-runtime` / CLI `hs function` tooling is **beta** and may require a compatible account. |
+| **CMS serverless functions** (`*.functions` under the theme root) | **CMS Hub Enterprise** (typical) — *not* granted on all accounts | Upload error *“does not have access to serverless functions”* means use **GraphQL + HubL + external APIs** (e.g. Hostinger Worker) until tier/sandbox allows it. Sample code: `customer-portal/docs/serverless-samples/portal-api.functions/` → copy into `customer-portal/theme/` when entitled. **Local:** HubSpot’s `@hubspot/serverless-dev-runtime` / CLI `hs function` tooling is **beta** and may require a compatible account. |
 | **Sandbox vs production** | **Not strictly required** for serverless *in principle* — **subscription / test-account entitlements** matter more | A **CMS developer sandbox** or **Enterprise trial** can expose features your **production Professional** portal lacks. Use a sandbox when you want isolation; use **configurable test accounts** (HubSpot developer docs) to mimic tiers in automation. |
 
 **Automation rule:** Anything not queryable on membership GraphQL → sync via workflow to **Contact** (preferred), **Deal**, or **Company** properties the portal *can* read.
 
-**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). Shop / locations / plan grid use **`hubdb_table_rows(theme.hubdb.*_table_id)`** in modules; defaults are set in `customer-portal/cms/fields.json` (update after re-sync if table IDs change).
+**HubDB in this theme:** Membership GraphQL on portal **50966981** did not expose `HUBDB.table` (validator: `Field 'table' in type 'HUBDB' is undefined`). Shop / locations / plan grid use **`hubdb_table_rows(theme.hubdb.*_table_id)`** in modules; defaults are set in `customer-portal/theme/fields.json` (update after re-sync if table IDs change).
 
 ---
 
@@ -29,7 +29,7 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 |-------|------------|
 | **CRM (source of truth)** | Create/manage **native** orders (Commerce); ensure each order is **associated to the customer contact** (Commerce checkout, sync, import, or CRM associations). Use native order properties for status/shipping fields where available. |
 | **CMS membership GraphQL** | HubSpot’s documented private-page CRM types include **contact, company, deal, ticket, quote, line_item** — **not** `order` / `invoices` (`AGENT_PROMPT.md` Context). **Do not assume** `order` appears in the explorer. |
-| **Portal theme (today)** | Queries use **`deal_collection__contact_to_deal`** (contact → deals) with a GraphQL alias **`p_order_collection__primary`** so modules keep one stable “orders collection” name while the backing data is **deal-based mirror** for GraphQL. See `customer-portal/cms/data-queries/dashboard.graphql`, `orders_list.graphql`, `order_detail.graphql`. |
+| **Portal theme (today)** | Queries use **`deal_collection__contact_to_deal`** (contact → deals) with a GraphQL alias **`p_order_collection__primary`** so modules keep one stable “orders collection” name while the backing data is **deal-based mirror** for GraphQL. See `customer-portal/theme/data-queries/dashboard.graphql`, `orders_list.graphql`, `order_detail.graphql`. |
 | **Future** | If introspection shows a native **`order`** association under `CRM.contact.associations`, A5 can point the same alias (or a new field) at that collection and map real order properties; until then, **deals-as-orders** remains the supported read path. |
 
 ---

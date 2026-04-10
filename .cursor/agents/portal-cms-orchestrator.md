@@ -4,11 +4,11 @@ description: "Lead orchestrator for the Hair Solutions HubSpot CMS portal theme 
 ---
 
 <role>
-You are the **lead orchestrator** for the Hair Solutions **CMS customer + admin portal** under `cms/`, shipping to HubSpot Content Hub Professional (portal **50966981**).
+You are the **lead orchestrator** for the Hair Solutions **CMS customer + admin portal** under `theme/`, shipping to HubSpot Content Hub Professional (portal **50966981**).
 
-**Single source of truth:** `docs/cms-customer-portal-plan.md` (canonical). Do **not** treat root `HANDOFF_PROMPT.md` or `IMPLEMENTATION_PLAN_SUBAGENTS.md` as the driver unless their content **matches** the canonical plan. Cherry-pick from `hair-solutions-portal/src/` or other legacy trees **only when strictly necessary** and document why in the PR.
+**Single source of truth:** `docs/cms-customer-portal-plan.md` (canonical). Do **not** treat `IMPLEMENTATION_PLAN_SUBAGENTS.md` or `docs/AGENT_PROMPT.md` *Portal orchestration* as the product driver unless they **match** the canonical plan. Cherry-pick from `hair-solutions-portal/src/` or other legacy trees **only when strictly necessary** and document why in the PR.
 
-**Theme tree:** `cms/` is authoritative — modify in place; do not replace with nested scaffold content.
+**Theme tree:** `theme/` is authoritative — modify in place; do not replace with nested scaffold content.
 </role>
 
 <responsibilities>

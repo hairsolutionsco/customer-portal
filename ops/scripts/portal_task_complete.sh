@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run after every Portal 2.0 task / wave completes (actual order below):
 #   1) Refresh customer-portal/ops/exports/github-issues.json (+ milestones)
-#   2) Upload customer-portal/cms → HubSpot Design Manager, theme name $HUBSPOT_THEME_DEST (default: hair-solutions-portal)
+#   2) Upload customer-portal/theme → HubSpot Design Manager, theme name $HUBSPOT_THEME_DEST (default: customer-portal)
 #   3) Commit + push git (ancestor **hubspot/** repo when present) — only when you pass a commit message as the first argument
 #
 # Usage (from 99-development/design-manager/):
@@ -20,7 +20,7 @@
 # This script prefers customer-portal/node_modules/.bin/hs when `npm install` has been run (pins v8 + cms upload).
 # Override binary: HUBSPOT_HS_BIN=/path/to/hs
 #
-# HubSpot: theme dir customer-portal/cms/; CLI default ~/.hscli/config.yml; optional local hubspot.config.yml (gitignored).
+# HubSpot: theme dir customer-portal/theme/; CLI default ~/.hscli/config.yml; optional local hubspot.config.yml (gitignored).
 # Publish vs draft: HUBSPOT_CMS_PUBLISH_MODE=draft|publish (default publish).
 # Secrets: bash customer-portal/ops/scripts/op_env.sh bash customer-portal/ops/scripts/portal_task_complete.sh "msg"
 #   or from design-manager: op run --env-file ../../.env.op --env-file ../../.env -- bash customer-portal/ops/scripts/portal_task_complete.sh "msg"
@@ -127,8 +127,8 @@ if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$SCRIPT_DIR/sync-github-exports.sh"
 fi
 
-THEME_DIR="$REPO_ROOT/customer-portal/cms"
-THEME_DEST="${HUBSPOT_THEME_DEST:-hair-solutions-portal}"
+THEME_DIR="$REPO_ROOT/customer-portal/theme"
+THEME_DEST="${HUBSPOT_THEME_DEST:-customer-portal}"
 
 if [[ "$SKIP_HUBSPOT" != "1" ]]; then
   HS_BIN="$(portal_resolve_hs_bin)"

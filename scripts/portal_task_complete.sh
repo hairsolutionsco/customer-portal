@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run after every Portal 2.0 task / wave completes (actual order below):
 #   1) Refresh exports/github-issues.json (+ milestones)
-#   2) Upload theme → HubSpot Design Manager (canonical: ./cms/; fallback: hair-solutions-portal)
+#   2) Upload theme → HubSpot Design Manager (canonical: ./theme/; fallback: legacy hair-solutions-portal tree)
 #   3) Commit + push git (this repo) — only when you pass a commit message as the first argument
 #
 # Usage:
@@ -119,14 +119,14 @@ if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$ROOT/scripts/sync-github-exports.sh"
 fi
 
-if [[ -f "$ROOT/cms/theme.json" ]]; then
-  THEME_DIR="$ROOT/cms"
+if [[ -f "$ROOT/theme/theme.json" ]]; then
+  THEME_DIR="$ROOT/theme"
 elif [[ -f "$ROOT/hair-solutions-portal/src/theme.json" ]] || [[ -d "$ROOT/hair-solutions-portal/src" ]]; then
   THEME_DIR="$ROOT/hair-solutions-portal"
 else
   THEME_DIR="$ROOT/hair-solutions-portal"
 fi
-THEME_DEST="${HUBSPOT_THEME_DEST:-hair-solutions-portal}"
+THEME_DEST="${HUBSPOT_THEME_DEST:-customer-portal}"
 
 if [[ "$SKIP_HUBSPOT" != "1" ]]; then
   HS_BIN="$(portal_resolve_hs_bin)"

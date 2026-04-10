@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'cms/**'
+      - 'theme/**'
 
   workflow_dispatch:
 
@@ -36,4 +36,5 @@ jobs:
               authType: personalaccesskey
               personalAccessKey: ${HUBSPOT_PERSONAL_ACCESS_KEY}
           EOF
-          hs theme upload cms hair-solutions-portal
+          cd theme
+          hs cms upload . customer-portal -m publish

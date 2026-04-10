@@ -23,8 +23,8 @@
     "portal:automation": "bash scripts/portal_automation_full.sh",
     "portal:automation:continue": "bash scripts/portal_automation_full.sh --continue-on-error",
     "portal:hubspot-cli-version": "node -e \"console.log('@hubspot/cli', require('./node_modules/@hubspot/cli/package.json').version)\"",
-    "portal:cms-upload-draft": "cd cms && hs cms upload . hair-solutions-portal -m draft",
-    "portal:cms-upload-publish": "cd cms && hs cms upload . hair-solutions-portal -m publish"
+    "portal:cms-upload-draft": "cd theme && hs cms upload . customer-portal -m draft",
+    "portal:cms-upload-publish": "cd theme && hs cms upload . customer-portal -m publish"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",

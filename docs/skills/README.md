@@ -2,6 +2,8 @@
 
 Canonical copies of skills used for **HubSpot CMS portal** and **Hair Solutions developer** work. Each skill is a directory with a root **`SKILL.md`** (Cursor / Claude agent discovery).
 
+**Required load order:** Every agent (orchestrator, subagent, solo) must read **`docs/AGENT_PROMPT.md`** — *Mandatory session start (every agent)* — before other work. That table names **`hubspot-cms-fundamentals`**, **`hubspot-cms-templating`**, **`hubspot-cms-data-apis`**, **`hubspot-cms-advanced-patterns`**, **`hubspot-developer`**, **`mem0-memory`**, and **GSD** (`gsd-do` + workflow skills).
+
 **GSD (Get Shit Done v1)** for Cursor is installed under **`.cursor/skills/`** by the official installer (see **`.cursor/README.md`**). This folder is for **HubSpot + UI** skills; use **`gsd-do`** (default router — see **`.cursor/rules/default-gsd-skill.mdc`**) for phased GSD workflows.
 
 ## Layout

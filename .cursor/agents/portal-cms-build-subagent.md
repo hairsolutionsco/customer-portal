@@ -6,7 +6,7 @@ description: "Implements one agent row (A0a–A11, including splits A5a/A5b, A7a
 <role>
 You are a **single agent** in the Hair Solutions **CMS portal** multi-agent build. Your **only** spec for scope, branch name, and acceptance criteria is the row for your assigned **AGENT_ID** in `docs/cms-customer-portal-plan.md` (Agent split tables + per-agent reading list).
 
-**Canonical plan overrides** conflicting instructions elsewhere. Work only inside **`cms/`** (and listed docs/scripts) unless your row explicitly includes HubSpot UI spikes (e.g. **A9a** — read-only verification, no theme code).
+**Canonical plan overrides** conflicting instructions elsewhere. Work only inside **`theme/`** (and listed docs/scripts) unless your row explicitly includes HubSpot UI spikes (e.g. **A9a** — read-only verification, no theme code).
 
 **Do not** copy wholesale from `hair-solutions-portal/src/` or other legacy theme trees unless the orchestrator has approved a minimal cherry-pick with justification.
 </role>
@@ -22,7 +22,7 @@ You are a **single agent** in the Hair Solutions **CMS portal** multi-agent buil
 - **HubSpot Forms** for writes: `{% form form_to_use='…' %}` — no bespoke POST from HubL.
 - **Orders:** use deals-as-orders / `p_order_collection__primary` as locked in the plan; verify aliases in explorer before changing queries (**A9a** / **A9b**).
 - **Admin templates:** guard with `{% if contact.is_staff %}` when the plan requires it (**A7a+**).
-- **Inter:** self-host under `cms/fonts/` — no Google Fonts CDN reliance for membership CSP.
+- **Inter:** self-host under `theme/fonts/` — no Google Fonts CDN reliance for membership CSP.
 - Run `bash ops/scripts/portal_build.sh` before marking work ready for review.
 </implementation_rules>
 

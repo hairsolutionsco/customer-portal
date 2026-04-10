@@ -7,7 +7,7 @@ This folder captures **product and vocabulary context** from the old **Next.js**
 | Source | Role |
 |--------|------|
 | `data/SCHEMA_REGISTRY.md` | **Authoritative** HubSpot storage, GraphQL paths, HubDB, contact JSON contracts. |
-| `cms/` (theme, `data-queries/*.graphql`) | **Authoritative** for what ships in the portal theme. |
+| `theme/` (theme, `data-queries/*.graphql`) | **Authoritative** for what ships in the portal theme. |
 | **This folder** | **Non-authoritative** UX labels, nav order, Prisma-era enums, and API-route intent. If anything conflicts, fix the theme or registry—not these notes. |
 
 ## Files
