@@ -38,6 +38,11 @@ portal_hs_theme_upload() {
   else
     upload_path="."
   fi
+  # Prefer top-level `hs upload` when available (many CLI builds list `hs cms` without a working `hs cms upload`).
+  if hs upload --help 2>&1 | grep -qE 'Upload a folder|Positionals:'; then
+    (cd "$theme_dir" && hs upload "$upload_path" "$dest" -m "$mode")
+    return
+  fi
   help="$(cd "$theme_dir" && hs cms upload --help 2>&1)" || true
   if echo "$help" | grep -qE 'Upload a folder|Positionals:|\[src\]'; then
     (cd "$theme_dir" && hs cms upload "$upload_path" "$dest" -m "$mode")

@@ -125,6 +125,25 @@ Paste **real** names from your portal after introspection. Examples only — you
 | Contact → Invoices | *(introspect)* | Same caveat as orders |
 | Order detail dynamic page | `request.contact.contact_vid` + slug | Today: detail query uses same deal association + filters by slug/`hs_object_id` — see `order_detail.graphql` |
 
+### A9a verification log (portal **50966981**) — fill after explorer run
+
+Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **seeded test contact** with at least one deal on the orders mirror. Record **exact** association field names from autocomplete / introspection (they vary by portal).
+
+| Check | Status | Result (field names, notes) |
+|-------|--------|-----------------------------|
+| `dashboard.graphql` runs | ☐ | |
+| `orders_list.graphql` runs | ☐ | |
+| `order_detail.graphql` runs | ☐ | |
+| Contact → deals: `deal_collection__contact_to_deal` (or actual name) | ☐ | |
+| Alias `p_order_collection__primary` still valid in queries | ☐ | |
+| Contact → tickets collection name | ☐ | |
+| Contact → quotes collection name | ☐ | |
+| Contact → documents / files (if any) | ☐ | |
+| Contact → meetings / custom events (if used for “events”) | ☐ | |
+| **G5b:** staff-only **membership** access group feasible on this tier | ☐ | |
+
+**Last updated:** *(date / initials after A9a completes)*
+
 ### Verification steps (GraphQL explorer)
 
 1. In **Design Manager**, open or create a **membership (private)** page template that has access to `request.contact.contact_vid`.
