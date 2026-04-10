@@ -27,3 +27,19 @@ Use it in the **terminal** for `/gsd`-style flows there; it does not replace `.c
 ## HubSpot / portal skills
 
 Authoritative copies for CMS work live in **`docs/skills/`** (committed). Symlink into `~/.cursor/skills/` per `docs/skills/README.md` if you want them in every project.
+
+## Persistent memory — Mem0 (recommended)
+
+This repo includes **`.cursor/mcp.json`** with the official **Mem0** HTTP MCP server (semantic long-term memory across sessions). Docs: https://docs.mem0.ai/integrations/cursor
+
+1. Create an account and API key at https://app.mem0.ai/ (key prefix `m0-`).
+2. Export the key where Cursor inherits env (shell profile, 1Password Desktop env injection, or Cursor’s env settings):
+
+   ```bash
+   export MEM0_API_KEY="m0-…"
+   ```
+
+3. Restart Cursor (or reload the window). Confirm **mem0** appears under MCP and tools like `search_memories` work.
+4. Optional: install the **Mem0** plugin from the **Cursor Marketplace** for lifecycle hooks + richer behavior (MCP-only still works with this file).
+
+Companion agent skill: **`.cursor/skills/mem0-memory/`** — when to call memory tools and what not to store.

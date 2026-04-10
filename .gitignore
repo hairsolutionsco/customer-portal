@@ -42,6 +42,7 @@ __pycache__/
 !.cursor/get-shit-done/
 !.cursor/agents/
 !.cursor/gsd-file-manifest.json
+!.cursor/mcp.json
 !.cursor/README.md
 .idea/
 *.swp
