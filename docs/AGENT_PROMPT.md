@@ -78,7 +78,7 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 #### Blockers / do not launch until
 
 - **Design Manager full upload:** HubSpot may return **HTTP internal error** on the **final** `hs cms upload` post after per-file OK (**`-m publish` and `-m draft` both observed** on account **50966981**) — wait and retry, try smaller batches, or open a **HubSpot Support** ticket if it persists.
-- **Commit hygiene:** **`a1161d5`** mixed **`docs(schema): #8`** with **`lib/auth.ts`** + **`types/next-auth.d.ts`** + plan edits — if those were meant for a **separate PR**, follow up with **revert/split** on those paths or keep as-is and document.
+- **Commit hygiene (resolved on `main`):** former mixed batch was **split** into **`7ea6c78`** (auth only: `lib/auth.ts` + remove `types/next-auth.d.ts`) and **`71333f7`** (schema registry, exports, `locations.graphql`, theme docs). NextAuth restore stays on branch **`feature/next-auth-types`** for an optional PR.
 - **A5/A6:** **`data/SCHEMA_REGISTRY.md`** + live GraphQL explorer names aligned (G3).
 - **Parallel A8–A12:** **A7** (#30–#31) merged first.
 
