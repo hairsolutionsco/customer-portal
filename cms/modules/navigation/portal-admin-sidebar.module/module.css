@@ -1,0 +1,15 @@
+.portal-admin-sidebar__badge {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.portal-admin-sidebar .portal-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

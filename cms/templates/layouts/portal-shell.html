@@ -1,0 +1,38 @@
+<!--
+  Shared portal chrome: sidebar + header + main.
+
+  shell_mode block: literal "customer" or "admin" — used for layout modifier class
+  portal-layout--shell-{mode}. Override shell_sidebar to swap in the admin sidebar module.
+
+  Customer pages extend layouts/portal.html. Admin templates (A7+) extend this layout,
+  set {% block shell_mode %}admin{% endblock %}, and override {% block shell_sidebar %}.
+-->
+{% extends "./base.html" %}
+{% block head %}
+  {{ require_css(get_asset_url("../../css/portal-layout.css")) }}
+  {{ require_css(get_asset_url("../../css/components/cards.css")) }}
+  {{ require_css(get_asset_url("../../css/components/tables.css")) }}
+  {{ require_css(get_asset_url("../../css/components/badges.css")) }}
+  {{ require_css(get_asset_url("../../css/components/buttons.css")) }}
+  {{ require_css(get_asset_url("../../css/components/forms.css")) }}
+  {{ require_css(get_asset_url("../../css/components/portal-partials.css")) }}
+{% endblock %}
+{% block body %}
+<div class="portal-layout portal-layout--shell-{% block shell_mode %}customer{% endblock %}">
+  <div class="portal-overlay" data-portal-overlay aria-hidden="true"></div>
+  {% block shell_sidebar %}
+    {% module "sidebar" path="../modules/portal-sidebar.module" %}
+  {% endblock %}
+  <div class="portal-main">
+    {% block portal_header %}
+      {% module "header" path="../modules/portal-header.module" %}
+    {% endblock %}
+    <main class="portal-content" id="main-content">
+      {% block portal_content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+  {{ require_js(get_asset_url("../../js/main.js")) }}
+{% endblock %}

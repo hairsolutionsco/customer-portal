@@ -1,4 +1,4 @@
-<header class="portal-header-bar">
+<header class="portal-header-bar{% if module.admin_header %} portal-header-bar--admin{% endif %}">
   <div class="portal-header-bar__inner">
     <button type="button" class="portal-header-bar__menu" data-sidebar-toggle aria-expanded="false" aria-controls="portal-sidebar">
       <span class="hs-sr-only">Open menu</span>
@@ -10,8 +10,16 @@
       {% endif %}
       <p class="portal-header-bar__greeting">
         Hello{% if request.contact.firstname %}, {{ request.contact.firstname }}{% endif %}
+        {% if module.admin_header %}
+        <span class="portal-header-bar__context-tag" aria-hidden="true">· Admin</span>
+        {% endif %}
       </p>
     </div>
-    <a class="portal-header-bar__logout" href="{{ member_logout_url }}">Log out</a>
+    <nav class="portal-header-bar__actions" aria-label="Account">
+      {% if module.admin_header %}
+      <a class="portal-header-bar__link" href="/portal">Customer portal</a>
+      {% endif %}
+      <a class="portal-header-bar__logout" href="{{ member_logout_url }}">Log out</a>
+    </nav>
   </div>
 </header>

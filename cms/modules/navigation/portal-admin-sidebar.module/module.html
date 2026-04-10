@@ -1,0 +1,21 @@
+<aside id="portal-sidebar" class="portal-sidebar portal-admin-sidebar" data-portal-sidebar aria-label="Admin navigation">
+  <div class="portal-sidebar__brand">
+    {% if theme.portal.logo.src %}
+    <img src="{{ theme.portal.logo.src }}" alt="Hair Solutions" class="portal-sidebar__logo">
+    {% else %}
+    <span class="portal-sidebar__title">Hair Solutions</span>
+    {% endif %}
+    <span class="portal-admin-sidebar__badge">Admin</span>
+  </div>
+  <nav class="portal-sidebar__nav" aria-label="Admin primary">
+    <a class="portal-sidebar__link" data-nav-link href="#">Dashboard</a>
+    <a class="portal-sidebar__link" data-nav-link href="#">CRM</a>
+    <a class="portal-sidebar__link" data-nav-link href="#">Commerce</a>
+    <a class="portal-sidebar__link" data-nav-link href="#">Service</a>
+    <a class="portal-sidebar__link" data-nav-link href="#">Settings</a>
+  </nav>
+  <div class="portal-sidebar__footer">
+    <a class="portal-sidebar__link portal-sidebar__link--muted" href="/portal">Customer portal</a>
+    <a class="portal-sidebar__link portal-sidebar__link--muted" href="{{ member_logout_url }}">Log out</a>
+  </div>
+</aside>

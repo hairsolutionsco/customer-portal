@@ -1,0 +1,26 @@
+{#
+  Optional parent scope before include:
+    {% set breadcrumb_items = [
+      { "label": "Dashboard", "url": "/portal" },
+      { "label": "Current page", "url": "" }
+    ] %}
+  Last item is treated as the current page (no link). Items with empty url are also non-links.
+#}
+{% if breadcrumb_items %}
+<nav class="portal-breadcrumbs" aria-label="Breadcrumb">
+  <ol class="portal-breadcrumbs__list">
+    {% for item in breadcrumb_items %}
+    <li class="portal-breadcrumbs__item">
+      {% if loop.last or not item.url %}
+      <span class="portal-breadcrumbs__current" {% if loop.last %}aria-current="page"{% endif %}>{{ item.label }}</span>
+      {% else %}
+      <a class="portal-breadcrumbs__link" href="{{ item.url }}">{{ item.label }}</a>
+      {% endif %}
+    </li>
+    {% if not loop.last %}
+    <li class="portal-breadcrumbs__sep" aria-hidden="true"><span>/</span></li>
+    {% endif %}
+    {% endfor %}
+  </ol>
+</nav>
+{% endif %}

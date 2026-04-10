@@ -1,0 +1,16 @@
+{#
+  Optional: empty_title, empty_message, empty_action_label, empty_action_url
+#}
+<div class="portal-empty-state" role="status">
+  {% if empty_title %}
+  <h2 class="portal-empty-state__title">{{ empty_title }}</h2>
+  {% endif %}
+  {% if empty_message %}
+  <p class="portal-empty-state__message">{{ empty_message }}</p>
+  {% endif %}
+  {% if empty_action_label and empty_action_url %}
+  <p class="portal-empty-state__action">
+    <a class="portal-empty-state__btn" href="{{ empty_action_url }}">{{ empty_action_label }}</a>
+  </p>
+  {% endif %}
+</div>

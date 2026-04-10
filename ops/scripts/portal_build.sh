@@ -35,7 +35,7 @@ while IFS= read -r -d '' mod; do
     echo "portal_build: ERROR: missing module.html in $mod" >&2
     exit 1
   fi
-done < <(find "$SRC/modules" -maxdepth 1 -mindepth 1 -type d -name '*.module' -print0 2>/dev/null || true)
+done < <(find "$SRC/modules" -type d -name '*.module' -print0 2>/dev/null || true)
 
 echo "portal_build: required templates..."
 REQUIRED_TEMPLATES=(

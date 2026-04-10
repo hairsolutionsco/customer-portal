@@ -4,5 +4,12 @@
     "label": "Page title",
     "type": "text",
     "default": ""
+  },
+  {
+    "name": "admin_header",
+    "label": "Admin portal header",
+    "type": "boolean",
+    "default": false,
+    "help_text": "When enabled, shows admin context label and a link back to the customer portal."
   }
 ]

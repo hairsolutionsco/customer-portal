@@ -1,0 +1,111 @@
+/* Shared styles for templates/partials (breadcrumbs, empty-state, pagination). */
+
+.portal-breadcrumbs {
+  margin-bottom: var(--hs-space-4, 1rem);
+  font-size: 0.875rem;
+  color: var(--hs-color-muted, #64748b);
+}
+
+.portal-breadcrumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.portal-breadcrumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.portal-breadcrumbs__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portal-breadcrumbs__link:hover {
+  text-decoration: underline;
+}
+
+.portal-breadcrumbs__current {
+  font-weight: 600;
+  color: var(--hs-color-text, #0f172a);
+}
+
+.portal-breadcrumbs__sep {
+  color: var(--hs-color-muted, #94a3b8);
+  user-select: none;
+}
+
+.portal-empty-state {
+  text-align: center;
+  padding: var(--hs-space-8, 2rem) var(--hs-space-4, 1rem);
+  border: 1px dashed var(--hs-color-border, #e2e8f0);
+  border-radius: var(--hs-radius, 8px);
+  background: var(--hs-color-surface, #f8fafc);
+}
+
+.portal-empty-state__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.portal-empty-state__message {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  color: var(--hs-color-muted, #64748b);
+}
+
+.portal-empty-state__btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--hs-radius, 8px);
+  text-decoration: none;
+  color: #fff;
+  background: var(--hs-color-brand, #0f766e);
+}
+
+.portal-empty-state__btn:hover {
+  filter: brightness(1.05);
+  text-decoration: none;
+}
+
+.portal-pagination {
+  margin-top: var(--hs-space-6, 1.5rem);
+}
+
+.portal-pagination__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.portal-pagination__link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--hs-color-brand, #0f766e);
+}
+
+.portal-pagination__link:hover:not(.portal-pagination__link--disabled) {
+  text-decoration: underline;
+}
+
+.portal-pagination__link--disabled {
+  color: var(--hs-color-muted, #94a3b8);
+  cursor: not-allowed;
+}
+
+.portal-pagination__status {
+  font-size: 0.875rem;
+  color: var(--hs-color-muted, #64748b);
+}
