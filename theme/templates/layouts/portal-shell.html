@@ -1,11 +1,7 @@
 <!--
   Shared portal chrome: sidebar + header + main.
-
-  shell_mode block: literal "customer" or "admin" — used for layout modifier class
-  portal-layout--shell-{mode}. Override shell_sidebar to swap in the admin sidebar module.
-
-  Customer pages extend layouts/portal.html. Admin templates (A7+) extend this layout,
-  set {% block shell_mode %}admin{% endblock %}, and override {% block shell_sidebar %}.
+  Nested block-in-body patterns fail HubSpot upload validation; sidebar/header are inline modules.
+  Admin chrome (A7+): separate layout or override the body block in a child template.
 -->
 {% extends "./base.html" %}
 {% block head %}
@@ -18,18 +14,15 @@
   {{ require_css(get_asset_url("../../css/components/portal-partials.css")) }}
 {% endblock %}
 {% block body %}
-<div class="portal-layout portal-layout--shell-{% block shell_mode %}customer{% endblock %}">
+<div class="portal-layout portal-layout--shell-customer">
   <a class="portal-skip-link" href="#main-content">Skip to main content</a>
   <div class="portal-overlay" data-portal-overlay aria-hidden="true"></div>
-  {% block shell_sidebar %}
-    {% module "sidebar" path="../modules/portal-sidebar.module" %}
-  {% endblock %}
+  {% module "sidebar" path="../modules/portal-sidebar.module" %}
   <div class="portal-main">
-    {% block portal_header %}
-      {% module "header" path="../modules/portal-header.module" %}
-    {% endblock %}
+    {% module "header" path="../modules/portal-header.module" %}
     <main class="portal-content" id="main-content">
-      {% block portal_content %}{% endblock %}
+      {% block portal_content %}
+      {% endblock %}
     </main>
   </div>
 </div>

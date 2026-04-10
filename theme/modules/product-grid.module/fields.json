@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "name": "support_portal_url",
+    "label": "Support / customer portal URL",
+    "type": "text",
+    "default": "/customer-portal",
+    "help_text": "Match the Native customer portal URL on the global Portal sidebar module."
+  }
+]

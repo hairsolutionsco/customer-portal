@@ -45,30 +45,30 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 - **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`)
 - **CLI:** Default account **50966981** (`hs accounts list` OK). Test account **51315176** also configured.
-- **Plan file:** **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** lives at **repo root** next to **`package.json`** (same folder as **`theme/`** and **`docs/`**). If a subagent checkout is missing it, use monorepo path or sparse checkout fix — do not assume absent.
-- **Wave 1 (G1/G2):** **Done in repo + GitHub** for the slices below. **#3–#4, #6–#11, #8, #12–#14 CLOSED** (exports + comments as of last agent batch). **#5 OPEN** — live membership **custom domain / DNS / SSL** still **deferred** to **#54–#57** (A0 documented on #5).
-- **Optional follow-ups:** **`portal_billing_json`** — confirm in HubSpot or re-run **`./scripts/op_env.sh npm run portal:hubspot-props`** when PAT/1Password flows so the script does not skip creation. **HubDB:** when 1Password flows, run **`./scripts/op_env.sh npm run portal:hubdb-sync`** once and confirm printed table IDs still match **`theme/fields.json`** defaults **241666863** (products), **241666864** (subscription_plans), **241636157** (affiliated_locations); **`data/SCHEMA_REGISTRY.md`** edit only if IDs drift. **#14:** issue body may still list **old** product category options; **seed + registry** use **Hair Systems, Adhesives, Maintenance, Accessories** (see closing comment on #14).
-- **Data model:** **Hair profile + saved templates → Contact properties.** **Orders → native Commerce `order`.** **Invoices → native `invoices`.** **Custom objects not required** for go-live. **GraphQL** on membership pages may list `contact`, `company`, `deal`, `ticket`, `quote`, `line_item` — **confirm** whether `order` / invoices appear in **your** explorer; if not, use **Deal/Contact mirror** via workflows.
-- **Baseline:** GraphQL in repo targets **deals-as-orders** (`deal_collection__contact_to_deal` — verify in explorer), **HubDB** via **`hubdb_table_rows(theme.hubdb.*_table_id)`**. **Next wave focus:** **G3 GraphQL** (**#20–#29**), **A7** global chrome before wide page parallelization, or **A3** membership (**#49–#50**) per **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4.
+- **Integration branch:** **`feature/next-auth-types`** (on GitHub) carries the latest **A3 + A5 + A6 + A7** batch: Phase 6 membership runbook in **`data/SCHEMA_REGISTRY.md`**, CRM GraphQL G3 (**`687a651`** area), HubSpot-valid **theme/module fields** (**`22cffcc`**), **global chrome** (partial **`portal-primary-nav.html`**, sidebar/header a11y, **`hs cms upload -m draft`** reported succeeding where **publish** flaked). **`main`** is behind this branch until **PR / merge**.
+- **Issues (exports refreshed):** **#20–#29 CLOSED** (G3 CRM + HubDB read model documented; **#27–#28** closed with **HubL `hubdb_table_rows`** + CRM-only **`.graphql` stubs**, not fake `HUBDB.table` fragments). **#30–#31 still OPEN** on GitHub — do **human UAT** (login, nav, Support/KB hrefs, mobile menu) against **draft** theme, then **comment + close** when AC match implementation (issue text may still mention Quotes/theme URL fields; canonical = pruned IA + **module** text fields for URLs — HubSpot disallows some **theme `fields.json`** types for portal/KB URLs).
+- **Wave 1:** **#3–#4, #6–#11, #8, #12–#14 CLOSED**. **#5 OPEN** (DNS/SSL → **#54–#57**).
+- **Phase 6 (A3):** **#49–#50 OPEN** — **registry + issue comments** document **UI vs API** split; **live gating + workflows** are **human HubSpot UI**; treat **#50** body as **superseded** vs custom objects (contact JSON + **`is_portal_customer`** + access group per registry).
+- **Data model:** Unchanged north star — contact JSON mirrors, deals-as-orders, HubDB via **`hubdb_table_rows`**. **`portal_billing_json`:** not on **`crm_contact`** GraphQL on **50966981** — omit from **`dashboard.graphql`** (per A5 upload validation).
+- **Next focus:** **Merge `feature/next-auth-types` → `main`** after review → **Wave 4** pages **#32–#42** (A8–A12), **#30–#31** closure, then **forms (A13)** / **release (A15)**.
 
 #### Lead agent — run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
-1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 (**Wave 3** GraphQL / **Wave 2** membership as applicable) and §7 **G3** onward.
-2. Run **`npm run portal:issues`** if the GitHub snapshot may be stale.
-3. **Subagents:** Execute **Subagents to launch** — **one subagent per row**, respecting **Parallel group**.
-4. **HubSpot upload:** If **`hs cms upload`** returns **internal error** after many successful file posts, retry later (both **publish** and **draft** have hit this on **50966981**), try HubSpot Support, or proceed repo-only with **`SKIP_HUBSPOT=1`** until the API succeeds — **do not** treat partial per-file success as a full publish until the CLI exits 0.
-5. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** (or **`./scripts/op_env.sh ./scripts/portal_task_complete.sh …`** per **`1password-op-env.mdc`**). **Before running the ritual:** **`git status`** must be clean or you must **`git add` only intentional paths** — `portal_task_complete.sh` uses **`git add -A`**; unrelated dirty files (e.g. **`lib/auth.ts`**, Next types) get swept into the same commit. Use a clean worktree or partial staging policy if you need separate PRs.
+1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 **Wave 4–5** and §7 **G4–G7** as applicable.
+2. Run **`npm run portal:issues`** after any GitHub comment/close batch (exports should match **`exports/github-issues.json`**).
+3. **Merge:** Open/review **PR `feature/next-auth-types` → `main`**, or **`git merge`** / **`cherry-pick`** after diff review — do not leave the branch as the only source of truth indefinitely.
+4. **Subagents:** Use **Subagents to launch** for the next wave (**A8–A12**); keep **`git status`** clean or **`git add` paths explicitly** — subagents avoided **`portal_task_complete.sh`** because it runs **`git add -A`**. For doc/issue-only batches: **`SKIP_HUBSPOT=1`** and/or **`SKIP_GIT=1`** with manual **`git add`**, or fix the script to stage intentionally.
+5. **Upload:** Prefer **`hs cms upload … -m draft`** if **publish** returns internal error; retry publish later.
 
 #### Subagents to launch *(trim rows per session)*
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|-------|
-| — | **A0** | Platform bootstrap (residual) | **#5 only** | Human/UI: membership **DNS + SSL** for go-live; rest of A0 scope **closed** (#3–#4) |
-| *later* | **A3** | Membership & access | #49–#50 | After subdomain/plan clear |
-| *later* | **A5** + **A6** | GraphQL CRM + HubDB | #20–#29 | **G3** — explorer-validate every query; registry aliases must match portal |
-| *later* | **A7** | Global chrome | #30–#31 | **Before** wide A8–A12 |
-| *later* | **A8–A12** | Pages / system UI | #32–#42 | Parallel per plan §4 after A7 |
+| — | **Human** | Chrome UAT + issue hygiene | **#30–#31** | Log in on **draft** theme; verify nav, Support/KB URLs, skip link, mobile; close issues or note gaps |
+| — | **A0** | Platform bootstrap (residual) | **#5 only** | DNS/SSL go-live |
+| 1 | **A8–A12** | Pages / system UI | **#32–#42** | **After** merge to **`main`** and **#30–#31** verified (or static nav acceptable per plan) |
+| 2 | **A3** | Membership UI (human-heavy) | **#49–#50** | Execute HubSpot **access group + page gates + workflows** per **`data/SCHEMA_REGISTRY.md`** Phase 6 section |
 | *later* | **A13** | Forms | #43–#48 | |
 | *later* | **A14** | Service / KB | #51–#53 | |
 | *later* | **A15** | Release | #54–#57 | |
@@ -77,10 +77,10 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 #### Blockers / do not launch until
 
-- **Design Manager full upload:** HubSpot may return **HTTP internal error** on the **final** `hs cms upload` post after per-file OK (**`-m publish` and `-m draft` both observed** on account **50966981**) — wait and retry, try smaller batches, or open a **HubSpot Support** ticket if it persists.
-- **Commit hygiene (resolved on `main`):** former mixed batch was **split** into **`7ea6c78`** (auth only: `lib/auth.ts` + remove `types/next-auth.d.ts`) and **`71333f7`** (schema registry, exports, `locations.graphql`, theme docs). NextAuth restore stays on branch **`feature/next-auth-types`** for an optional PR.
-- **A5/A6:** **`data/SCHEMA_REGISTRY.md`** + live GraphQL explorer names aligned (G3).
-- **Parallel A8–A12:** **A7** (#30–#31) merged first.
+- **Branch drift:** **`main`** must absorb **`feature/next-auth-types`** (PR) before wide **A8–A12** work targets the wrong tip.
+- **Design Manager upload:** **Draft** upload path reported working; **publish** may still **internal-error** — retry or Support.
+- **`theme/fields.json`:** HubSpot upload rejects some **URL/text** field shapes at **theme** level — keep **native portal / KB URLs** on **modules** (**`portal-sidebar.module`**, **`support_portal_url`** on CTA modules) per A7.
+- **Parallel A8–A12:** **#30–#31** verified or explicitly waived after merge.
 
 ### Subagent prompt *(copy once per spawn; replace placeholders)*
 

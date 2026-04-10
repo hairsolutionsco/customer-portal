@@ -1,5 +1,5 @@
 # label: "Customization Templates"
-# description: "Contact core fields. Re-add `portal_saved_templates_json` once property exists in CMS GraphQL schema."
+# description: "Contact + portal_saved_templates_json. Validated upload 50966981 2026-04-10."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query customization_templates($contact_id: String!) {
   CRM {
@@ -7,6 +7,7 @@ query customization_templates($contact_id: String!) {
       firstname
       lastname
       email
+      portal_saved_templates_json
     }
   }
 }

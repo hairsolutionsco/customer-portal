@@ -1,5 +1,5 @@
 # label: "Hair Profile"
-# description: "Contact core fields. `portal_hair_profile_json` exists on the Contact in CRM — add here once CMS GraphQL explorer lists it on `crm_contact` (can lag after property create)."
+# description: "Contact + portal_hair_profile_json. Validated hs cms upload draft 50966981 2026-04-10."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query hair_profile($contact_id: String!) {
   CRM {
@@ -7,6 +7,7 @@ query hair_profile($contact_id: String!) {
       firstname
       lastname
       email
+      portal_hair_profile_json
     }
   }
 }

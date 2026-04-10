@@ -1,17 +1,31 @@
 [
   {
+    "name": "customer_portal_url",
+    "label": "Native customer portal URL",
+    "type": "text",
+    "default": "/customer-portal",
+    "help_text": "HubSpot Service customer portal: path (e.g. /customer-portal) or full URL."
+  },
+  {
+    "name": "knowledge_base_url",
+    "label": "Native knowledge base URL",
+    "type": "text",
+    "default": "/knowledge-base",
+    "help_text": "Knowledge base home: path or full URL for this account."
+  },
+  {
     "name": "support_label",
-    "label": "Native customer portal link label",
+    "label": "Customer portal link label",
     "type": "text",
     "default": "Support",
-    "help_text": "Uses Portal brand → Native customer portal URL from theme settings."
+    "help_text": "Sidebar label for the native customer portal link above."
   },
   {
     "name": "knowledge_base_label",
     "label": "Knowledge base link label",
     "type": "text",
     "default": "Knowledge base",
-    "help_text": "Uses Portal brand → Native knowledge base URL from theme settings."
+    "help_text": "Sidebar label for the knowledge base link above."
   },
   {
     "name": "brand_title",

@@ -129,7 +129,7 @@ Issue **[#8](https://github.com/hairsolutionsco/customer-portal/issues/8)** titl
 
 **Reference grouping in `schemas/hair_profile.json`:** properties use `groupName` `hair_profile_information` for documentation alignment with the old custom-object plan; on **Contact**, the live storage for the portal is the single field above in group **`portal`**.
 
-**GraphQL:** `theme/data-queries/hair_profile.graphql` uses core contact fields only until **CMS GraphQL** introspection confirms **`portal_hair_profile_json`** (or the explorer’s exact field name) on `crm_contact`. **Do not** add that field to the query without verification — upload validation rejects undefined GraphQL fields even when the CRM property exists in Settings.
+**GraphQL:** **`portal_hair_profile_json`** is **present on `crm_contact`** for portal **50966981** — validated by **`hs cms upload`** (draft) **2026-04-10** (`hair_profile.graphql`, `dashboard.graphql`). **`portal_billing_json`** is **not** exposed on **`crm_contact`** in membership GraphQL for this portal (upload error: `FieldUndefined`); dashboard **does not** select it — use **`billing.graphql`** subscription_plan fields (`current_plan`, etc.) for plan row; JSON billing snapshot remains a future path if HubSpot exposes the property on GraphQL.
 
 | Artifact | HubSpot ID / name | Notes |
 |----------|-------------------|--------|
@@ -181,7 +181,7 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 
 | Check | Repo / orchestrator (2026-04-10) | Design Manager GraphQL |
 |-------|-----------------------------------|-------------------------|
-| `dashboard.graphql` runs | ☑ Query + `#` headers + `contact_id` variable; `p_order_collection__primary: deal_collection__contact_to_deal` block present | ☐ Run with test `contact_id` |
+| `dashboard.graphql` runs | ☑ Same + **`portal_hair_profile_json`** on contact (upload-validated **50966981** **2026-04-10**); **`portal_billing_json`** omitted (undefined on `crm_contact` GraphQL) | ☐ Run with test `contact_id` in explorer |
 | `orders_list.graphql` runs | ☑ Same association alias + deal field selections as `dashboard.graphql` | ☐ Run with test `contact_id` |
 | `order_detail.graphql` runs | ☑ `deal(uniqueIdentifier: "hs_object_id")` + contact association subset; HubL allow-list in `order-detail.module` | ☐ Run with test `contact_id` + `order_number` (slug) |
 | Contact → deals: `deal_collection__contact_to_deal` (or actual name) | ☑ Used consistently in all three queries (replace portal-wide if explorer shows a different generated name) | ☐ Confirm autocomplete / introspection on `CRM.contact.associations` |
@@ -191,11 +191,14 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 | Contact → documents / files (if any) | ☐ Not recorded | ☐ Introspect if needed |
 | Contact → meetings / custom events (if used for “events”) | ☐ Not recorded | ☐ Introspect if needed |
 | **G5b:** staff-only **membership** access group feasible on this tier | ☐ | ☐ Confirm in HubSpot **Memberships** / access groups UI |
-| **`hair_profile.graphql`:** `portal_hair_profile_json` (or explorer name) on `CRM.contact` | ☑ Repo keeps name/email-only until explorer lists the property (**no** `portal_hair_profile_json` in query yet) | ☐ When field appears in explorer, extend query; then consider **A5/A6** work |
+| **`hair_profile.graphql`:** `portal_hair_profile_json` | ☑ In query; upload **50966981** **2026-04-10** | ☐ Explorer spot-check |
+| **`customization_templates.graphql`:** `portal_saved_templates_json` | ☑ In query; upload **2026-04-10** | ☐ Explorer |
+| **`invoices.graphql`:** `portal_invoices_json` | ☑ In query; upload **2026-04-10** | ☐ Explorer |
+| **`settings.graphql`:** notify + address | ☑ `notify_order_updates`, `notify_production_reminders`, `notify_marketing`, `phone`, `address`, `city`, `state`, `zip` | ☐ Explorer |
 
-**Last updated:** 2026-04-10 — orchestrator repo pass; Design Manager cells remain **☐** until a human runs the GraphQL tool and updates this table (or opens a PR with pasted explorer results).
+**Last updated:** 2026-04-10 — A5 CRM GraphQL validated via **`hs cms upload`** on **50966981**.
 
-**A5 / A6 spawn rule:** Spawn **A5/A6** only after **Design Manager** confirms `portal_hair_profile_json` on `CRM.contact` (or another agreed read path). Until then, do **not** extend `hair_profile.graphql` with that field.
+**A5 / A6:** A6 owns HubDB **#27–#28**.
 
 ### Verification steps (GraphQL explorer)
 
@@ -206,6 +209,10 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
    - Search for any **`order`**-related collection (e.g. patterns like `*_order_*` / `*order*contact*`). If none, **membership GraphQL does not expose native orders** — keep deals-as-orders.
 4. Run `dashboard` / `orders_list` queries; fix association spelling before merge if the explorer shows a different deals field name.
 5. **Optional:** CRM **Associations API** (private app) — list association types between object type **order** and **contact** to document CRM-side type IDs (not printed in repo); helps automations that attach orders to contacts.
+
+### Theme `fields.json` (native portal / KB URLs)
+
+HubSpot **theme** `fields.json` does not support **`text`**, **`link`**, or **`url`** for marketer-editable paths. Any such fields were **removed**; **`portal-sidebar.module`** uses **module** URL fields (see `fields.json` / module defaults) or hardcoded fallbacks **`/customer-portal`** and **`/knowledge-base`**.
 
 ### Blockers
 
@@ -243,3 +250,56 @@ Create via **Settings → Properties → Contact**, CRM Properties API, or:
 |------|----------|--------|
 | 2026-04-10 | `npm run portal:hubspot-props` (CLI-resolved token; no `op_env` wait) | All groups + properties **exist** (idempotent `property ok (exists)` / `group ok (exists)`). **`portal_billing_json`:** skipped with **403** — create via UI or re-run with a Private App PAT that has **`crm.schemas.contacts.write`** (`HUBSPOT_PRIVATE_APP__CRM_SCHEMA__ACCESS_TOKEN` / `HUBSPOT_PRIVATE_APP__OPS__ACCESS_TOKEN` in 1Password). |
 | 2026-04-10 | GitHub **#6, #7, #9, #10, #11** | **Closed** with comments pointing to this file + `docs/AGENT_PROMPT.md` §1 (custom-object AC superseded by contact properties + native Commerce + deals/invoice mirrors). |
+
+---
+
+## Phase 6 — Membership access & workflows (GitHub **#49–#50**, Agent **A3**)
+
+**Quality gate:** **G5** in `IMPLEMENTATION_PLAN_SUBAGENTS.md` — logged-out user cannot read gated portal content; member in **Portal Customers** can. **G5** in `docs/cms-customer-portal-plan.md` — same intent for `/portal/*` after system templates + gates exist.
+
+### Target portals (UI work)
+
+| Portal | Role |
+|--------|------|
+| **50966981** | Primary build / verification account (see *Portal orchestration* in `docs/AGENT_PROMPT.md`). |
+| **51315176** | Optional second CLI account — use only if configured and entitlements (private content / memberships) match; do **not** assume sandbox features. |
+
+### Already specified in repo (avoid duplicate work)
+
+| Item | Where |
+|------|--------|
+| **Contact property** `is_portal_customer` (group **`portal`**, booleancheckbox) | `scripts/hubspot_create_portal_contact_properties.py` → **`./scripts/op_env.sh npm run portal:hubspot-props`** (CRM Properties API — **hubspot-api-first**). |
+| **Onboarding completion** | **`onboarding_completed`** is documented as a **key inside** `portal_hair_profile_json` (see table above). Prefer **form #43** + workflows that set **contact properties**, not custom objects. |
+| **Customer page templates** to gate | `theme/templates/portal-*.html` (dashboard, orders, order detail, profile, customization, shop, billing, invoices, settings). **Canonical IA** (`docs/cms-customer-portal-plan.md`, `docs/AGENT_PROMPT.md`) **removed** custom CMS **Help / Support / Locations** pages — do **not** recreate `/portal/help`, `/portal/support`, `/portal/locations` for gating; use native **Knowledge Base** + **Customer Portal** links from nav. |
+| **System / membership templates** | `theme/templates/system/membership-login.html`, `membership-register.html`, `membership-reset-password-request.html`, `membership-reset-password.html`, plus `404.html` / `500.html`. Issue **#49** text that says `password-reset.html` is **obsolete** — HubSpot UI should point at the **theme filenames above**. |
+
+### HubSpot **UI** steps (no stable automation in repo — exception to API-first)
+
+Perform in **Design Manager / CMS** for the **same portal** you upload the theme to (**50966981** unless you intentionally use **51315176**):
+
+1. **Enable private (membership) content** for the website — HubSpot: **Settings → Website → Private content** (wording may vary by product bundle).
+2. Create membership **access group** named **Portal Customers** (match issue **#49**).
+3. **Gate pages:** For every **published** website page that uses a portal template (routes under your chosen URL structure, typically `/portal/...`), set access so only **Portal Customers** (and staff as needed) can view. Re-check after new pages are created.
+4. **Assign system templates** for login, registration, and password reset flows to the **`customer-portal`** theme files listed above (login → `membership-login.html`, registration → `membership-register.html`, password reset request → `membership-reset-password-request.html`, password reset → `membership-reset-password.html`).
+5. **Test:** logged-out visitor → redirected to login; contact **in** group → can load gated pages; contact **not** in group → denied or redirected per HubSpot behavior.
+
+Optional: **active lists** + workflows to **add contacts to the access group** when `is_portal_customer` is true (or when a registration form is submitted), so CRM and membership stay aligned.
+
+### Dev-testable now vs production-only (**#5**, release **#54–#57**)
+
+| Topic | Dev / test now (no custom domain) | Production-only / deferred |
+|--------|-----------------------------------|----------------------------|
+| Access groups, page-level gates, system template assignment | **Yes** on **50966981** using HubSpot’s **default / connected** CMS hostname (and theme **`customer-portal`** upload). | Same mechanics; cutover checklist in **#54–#57**. |
+| **Custom membership domain + DNS + SSL** | **Not required** to validate G5-style behavior on the HubSpot-provisioned host. | **#5** — vanity domain, DNS, SSL for **brand** URL; coordinate with A0 / A15. |
+| End-to-end “customer bookmarks **brand** portal URL” | **Partial** until **#5** (and release issues) complete. | Full production URL + monitoring per **#54–#57**. |
+
+### GitHub **#50** — workflow content (supersede custom-object AC)
+
+Issue **#50** still mentions **HairProfile** and **CustomerPlan** **custom objects**. For Portal 2.0 go-live, **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** and **`AGENT_PROMPT.md` §1** **supersede** that: **no** custom objects for hair profile or “customer plan” — use **`portal_hair_profile_json`**, **`portal_saved_templates_json`**, subscription/billing contact fields, and **native** commerce where applicable.
+
+**Recommended workflows (high level):**
+
+1. **Registration:** Trigger on membership registration / agreed form submit → **add to Portal Customers** access group → set **`is_portal_customer`** = true → welcome email → internal notification (optional).
+2. **Profile completed:** Trigger on hair profile form submit (**#43**) → ensure **`onboarding_completed`** is true inside **`portal_hair_profile_json`** (via form mapping or a workflow step that updates the property — avoid maintaining duplicate boolean fields unless ops require it).
+
+Close **#49 / #50** when UI checklists above are done **or** tick “dev complete on 50966981” and leave “production domain” explicitly tracked on **#5** / **#54–#57**.
