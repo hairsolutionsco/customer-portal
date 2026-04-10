@@ -18,6 +18,8 @@
 .hs-badge--cancelled { background: #fee2e2; color: #991b1b; }
 
 .hs-badge--paid { background: #dcfce7; color: #166534; }
+.hs-badge--unpaid { background: #fef3c7; color: #92400e; }
 .hs-badge--overdue { background: #fee2e2; color: #991b1b; }
 .hs-badge--active { background: #dcfce7; color: #166534; }
+.hs-badge--trialing { background: #dbeafe; color: #1e40af; }
 .hs-badge--past_due { background: #fef3c7; color: #92400e; }

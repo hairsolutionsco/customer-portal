@@ -47,6 +47,12 @@
         "responsive": true,
         "show_loading": false,
         "default": { "size_type": "auto", "src": "", "alt": "Hair Solutions" }
+      },
+      {
+        "label": "Support portal URL",
+        "name": "support_portal_url",
+        "type": "text",
+        "default": "/customer-portal"
       }
     ]
   },

@@ -1,8 +1,9 @@
 {% set hubdb_tid = theme.hubdb.products_table_id %}
 {% set items = hubdb_table_rows(hubdb_tid) if hubdb_tid else [] %}
+{% set support_href = theme.portal.support_portal_url if theme.portal.support_portal_url else '/customer-portal' %}
 <section class="product-grid" aria-label="Shop" data-product-root>
   <h1 class="hs-page-title">Shop</h1>
-  <div class="product-grid__tabs" role="tablist">
+  <div class="product-grid__tabs" role="tablist" aria-label="Filter by category">
     <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" data-cat="all" aria-selected="true">All</button>
     <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Hair Systems">Hair systems</button>
     <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Adhesives">Adhesives</button>
@@ -10,18 +11,37 @@
     <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-cat="Accessories">Accessories</button>
   </div>
   {% if items %}
-  <div class="product-grid__cards">
+  <div class="product-grid__sort" role="group" aria-label="Sort products">
+    <span class="product-grid__sort-label">Sort</span>
+    <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" data-product-sort="display_order" aria-pressed="true">Featured</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-product-sort="name" aria-pressed="false">Name</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-product-sort="price" aria-pressed="false">Price</button>
+  </div>
+  <div class="product-grid__cards" data-product-cards>
     {% for p in items %}
-    <article class="hs-card" data-product-cat="{{ p.category.name|default(p.category.label)|default(p.category) }}">
-      <h3 style="margin-top:0;">{{ p.name }}</h3>
-      <span class="hs-badge">{{ p.category.name|default(p.category.label)|default(p.category) }}</span>
-      <p style="font-size:0.875rem;">{{ p.short_description }}</p>
-      <p>
-        <strong>${{ p.price }}</strong>
-        {% if p.compare_at_price %}<s style="color:var(--hs-color-muted);margin-left:0.35rem;">${{ p.compare_at_price }}</s>{% endif %}
-        {{ p.currency }}
-      </p>
-      <a class="hs-btn hs-btn--outline hs-btn--sm" href="/portal/support">Inquire</a>
+    {% set cat_label = p.category.name|default(p.category.label)|default(p.category) %}
+    <article
+      class="hs-card product-grid__card"
+      data-product-cat="{{ cat_label }}"
+      data-price="{{ p.price|default(0) }}"
+      data-order="{{ p.display_order|default(0) }}"
+    >
+      {% if p.primary_image %}
+      <div class="product-grid__media">
+        <img src="{{ p.primary_image }}" alt="" loading="lazy" width="480" height="320" class="product-grid__img">
+      </div>
+      {% endif %}
+      <div class="product-grid__body">
+        <h3 class="product-grid__title">{{ p.name }}</h3>
+        <span class="hs-badge">{{ cat_label }}</span>
+        <p class="product-grid__desc">{{ p.short_description|default(p.description)|striptags|truncate(160) }}</p>
+        <p class="product-grid__price-row">
+          <strong>${{ p.price }}</strong>
+          {% if p.compare_at_price %}<s class="product-grid__compare">${{ p.compare_at_price }}</s>{% endif %}
+          <span class="product-grid__currency">{{ p.currency }}</span>
+        </p>
+        <a class="hs-btn hs-btn--outline hs-btn--sm" href="{{ support_href }}">Inquire</a>
+      </div>
     </article>
     {% endfor %}
   </div>
@@ -30,20 +50,79 @@
     var sec = document.querySelector('[data-product-root]');
     if (!sec) return;
     var tabs = sec.querySelectorAll('[data-cat]');
-    var cards = sec.querySelectorAll('[data-product-cat]');
-    if (!tabs.length || !cards.length) return;
+    var cardsRoot = sec.querySelector('[data-product-cards]');
+    var sortBtns = sec.querySelectorAll('[data-product-sort]');
+    if (!cardsRoot) return;
+    var cards = function () {
+      return Array.prototype.slice.call(cardsRoot.querySelectorAll('.product-grid__card'));
+    };
+    var currentCat = 'all';
+    var sortKey = 'display_order';
+    var sortDir = 1;
+
     function setCat(cat) {
+      currentCat = cat;
       tabs.forEach(function (t) {
-        t.setAttribute('aria-selected', t.getAttribute('data-cat') === cat ? 'true' : 'false');
+        var on = t.getAttribute('data-cat') === cat;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.classList.toggle('hs-btn--secondary', on);
+        t.classList.toggle('hs-btn--ghost', !on);
       });
-      cards.forEach(function (c) {
-        var ok = cat === 'all' || c.getAttribute('data-product-cat') === cat;
+      applyVisibility();
+    }
+    function parseNum(el, attr) {
+      var v = parseFloat(String(el.getAttribute(attr) || '0'), 10);
+      return isNaN(v) ? 0 : v;
+    }
+    function sortCards() {
+      var list = cards();
+      list.sort(function (a, b) {
+        var cmp = 0;
+        if (sortKey === 'price') cmp = parseNum(a, 'data-price') - parseNum(b, 'data-price');
+        else if (sortKey === 'name') {
+          var ta = a.querySelector('.product-grid__title');
+          var tb = b.querySelector('.product-grid__title');
+          cmp = (ta ? ta.textContent : '').localeCompare(tb ? tb.textContent : '', undefined, { sensitivity: 'base' });
+        }
+        else cmp = parseNum(a, 'data-order') - parseNum(b, 'data-order');
+        return cmp * sortDir;
+      });
+      list.forEach(function (c) {
+        cardsRoot.appendChild(c);
+      });
+    }
+    function applyVisibility() {
+      cards().forEach(function (c) {
+        var ok = currentCat === 'all' || c.getAttribute('data-product-cat') === currentCat;
         c.style.display = ok ? '' : 'none';
+      });
+    }
+    function updateSortUi() {
+      sortBtns.forEach(function (b) {
+        var on = b.getAttribute('data-product-sort') === sortKey;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.classList.toggle('hs-btn--secondary', on);
+        b.classList.toggle('hs-btn--ghost', !on);
       });
     }
     tabs.forEach(function (t) {
       t.addEventListener('click', function () { setCat(t.getAttribute('data-cat')); });
     });
+    sortBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var key = b.getAttribute('data-product-sort');
+        if (key === sortKey) sortDir *= -1;
+        else {
+          sortKey = key;
+          sortDir = key === 'name' ? 1 : 1;
+        }
+        updateSortUi();
+        sortCards();
+        applyVisibility();
+      });
+    });
+    sortCards();
+    applyVisibility();
   })();
   </script>
   {% else %}

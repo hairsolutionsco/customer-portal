@@ -1,34 +1,151 @@
 {% set contact = data_query.data.CRM.contact %}
 {% set raw = contact.portal_invoices_json if contact else none %}
 {% set rows = raw|fromjson if raw else [] %}
-<section class="invoice-table" aria-label="Invoices">
+<section class="invoice-table" aria-label="Invoices" data-invoice-root>
   <h1 class="hs-page-title">Invoices</h1>
   {% if rows and rows|length > 0 %}
+  <div class="invoice-table__summary hs-card" data-invoice-summary aria-live="polite">
+    <div class="invoice-table__stat">
+      <span class="invoice-table__stat-label">Total outstanding</span>
+      <strong class="invoice-table__stat-value" data-outstanding>—</strong>
+    </div>
+    <div class="invoice-table__stat">
+      <span class="invoice-table__stat-label">Last payment</span>
+      <strong class="invoice-table__stat-value" data-last-paid>—</strong>
+    </div>
+  </div>
+  <div class="invoice-table__toolbar" role="group" aria-label="Filter by status">
+    <span class="invoice-table__toolbar-label">Status</span>
+    <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" data-inv-filter="all" aria-pressed="true">All</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-inv-filter="paid" aria-pressed="false">Paid</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-inv-filter="unpaid" aria-pressed="false">Unpaid</button>
+    <button type="button" class="hs-btn hs-btn--ghost hs-btn--sm" data-inv-filter="overdue" aria-pressed="false">Overdue</button>
+  </div>
   <div class="hs-table-wrap">
-    <table class="hs-table">
+    <table class="hs-table" data-invoice-table>
       <thead>
         <tr>
           <th scope="col">Invoice</th>
-          <th scope="col">Issued</th>
-          <th scope="col">Amount</th>
+          <th scope="col">
+            <button type="button" class="invoice-table__th-btn" data-sort="issue_date" aria-label="Sort by date">Issued</button>
+          </th>
+          <th scope="col">
+            <button type="button" class="invoice-table__th-btn" data-sort="total" aria-label="Sort by amount">Amount</button>
+          </th>
           <th scope="col">Status</th>
+          <th scope="col">Description</th>
           <th scope="col">PDF</th>
         </tr>
       </thead>
       <tbody>
         {% for inv in rows %}
-        <tr>
-          <td>{{ inv.invoice_number }}</td>
-          <td>{{ inv.issue_date }}</td>
-          <td>${{ inv.total }} {{ inv.currency }}</td>
-          <td><span class="hs-badge hs-badge--{{ inv.status }}">{{ inv.status }}</span></td>
+        {% set st = (inv.status|default('')|lower)|replace(' ', '_') %}
+        {% set badge = st if st in ['paid','unpaid','overdue'] else 'pending' %}
+        <tr
+          data-invoice-row
+          data-status="{{ st }}"
+          data-issued="{{ inv.issue_date|default('') }}"
+          data-amount="{{ inv.total|default(0) }}"
+        >
+          <td>{{ inv.invoice_number|default('—') }}</td>
+          <td>{{ inv.issue_date|default('—') }}</td>
+          <td>${{ inv.total|default('0') }} {{ inv.currency|default('') }}</td>
+          <td><span class="hs-badge hs-badge--{{ badge }}">{{ inv.status|default('—') }}</span></td>
+          <td>{{ inv.description|default('—') }}</td>
           <td>{% if inv.pdf_url %}<a href="{{ inv.pdf_url }}" target="_blank" rel="noopener">View PDF</a>{% else %}—{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+  <script>
+  (function () {
+    var root = document.querySelector('[data-invoice-root]');
+    if (!root) return;
+    var rows = Array.prototype.slice.call(root.querySelectorAll('[data-invoice-row]'));
+    var tbody = root.querySelector('[data-invoice-table] tbody');
+    var filterBtns = root.querySelectorAll('[data-inv-filter]');
+    var sortBtns = root.querySelectorAll('[data-sort]');
+    var outEl = root.querySelector('[data-outstanding]');
+    var lastPaidEl = root.querySelector('[data-last-paid]');
+    var currentFilter = 'all';
+    var sortKey = 'issue_date';
+    var sortDir = -1;
+
+    function parseAmount(tr) {
+      var v = parseFloat(String(tr.getAttribute('data-amount') || '0'), 10);
+      return isNaN(v) ? 0 : v;
+    }
+    function parseDate(tr) {
+      var s = tr.getAttribute('data-issued') || '';
+      var t = Date.parse(s);
+      return isNaN(t) ? 0 : t;
+    }
+    function computeSummary() {
+      var outstanding = 0;
+      var lastPaid = '';
+      rows.forEach(function (tr) {
+        var st = (tr.getAttribute('data-status') || '').toLowerCase();
+        if (st === 'unpaid' || st === 'overdue') outstanding += parseAmount(tr);
+        if (st === 'paid') {
+          var d = tr.getAttribute('data-issued') || '';
+          if (d && (!lastPaid || d > lastPaid)) lastPaid = d;
+        }
+      });
+      if (outEl) outEl.textContent = outstanding > 0 ? ('$' + outstanding.toFixed(2)) : '$0.00';
+      if (lastPaidEl) lastPaidEl.textContent = lastPaid || '—';
+    }
+    function rowVisible(tr) {
+      if (currentFilter === 'all') return true;
+      return (tr.getAttribute('data-status') || '').toLowerCase() === currentFilter;
+    }
+    function applyFilter() {
+      rows.forEach(function (tr) {
+        tr.style.display = rowVisible(tr) ? '' : 'none';
+      });
+      filterBtns.forEach(function (b) {
+        var on = b.getAttribute('data-inv-filter') === currentFilter;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.classList.toggle('hs-btn--secondary', on);
+        b.classList.toggle('hs-btn--ghost', !on);
+      });
+    }
+    function sortAllRows() {
+      var copy = rows.slice();
+      copy.sort(function (a, b) {
+        var cmp = 0;
+        if (sortKey === 'total') cmp = parseAmount(a) - parseAmount(b);
+        else cmp = parseDate(a) - parseDate(b);
+        return cmp * sortDir;
+      });
+      copy.forEach(function (tr) {
+        tbody.appendChild(tr);
+      });
+    }
+    filterBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        currentFilter = b.getAttribute('data-inv-filter') || 'all';
+        applyFilter();
+      });
+    });
+    sortBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var key = b.getAttribute('data-sort');
+        if (key === sortKey) sortDir *= -1;
+        else {
+          sortKey = key;
+          sortDir = key === 'issue_date' ? -1 : 1;
+        }
+        sortAllRows();
+        applyFilter();
+      });
+    });
+    computeSummary();
+    sortAllRows();
+    applyFilter();
+  })();
+  </script>
   {% else %}
-  <div class="hs-card"><p>No invoices yet.</p></div>
+  <div class="hs-card"><p>No invoices yet</p></div>
   {% endif %}
 </section>

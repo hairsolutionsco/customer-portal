@@ -1,4 +1,4 @@
-{% set customer_portal_url = module.customer_portal_url if module.customer_portal_url else '/customer-portal' %}
+{% set customer_portal_url = theme.portal.support_portal_url if theme.portal.support_portal_url else (module.customer_portal_url if module.customer_portal_url else '/customer-portal') %}
 {% set knowledge_base_url = module.knowledge_base_url if module.knowledge_base_url else '/knowledge-base' %}
 {% set support_label = module.support_label if module.support_label else 'Support' %}
 {% set knowledge_base_label = module.knowledge_base_label if module.knowledge_base_label else 'Knowledge base' %}

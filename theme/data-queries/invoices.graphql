@@ -1,5 +1,5 @@
 # label: "Portal Invoices"
-# description: "Contact + portal_invoices_json mirror. Validated upload 50966981 2026-04-10."
+# description: "Logged-in contact + portal_invoices_json (JSON array; invoice-table.module parses in HubL). Upload-validated 50966981 2026-04-10."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query invoices($contact_id: String!) {
   CRM {

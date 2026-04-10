@@ -1,19 +1,32 @@
 {% set hubdb_pid = theme.hubdb.subscription_plans_table_id %}
 {% set plans = hubdb_table_rows(hubdb_pid) if hubdb_pid else [] %}
-{% set customer_portal_url = module.support_portal_url if module.support_portal_url else "/customer-portal" %}
+{% set contact = data_query.data.CRM.contact if data_query and data_query.data and data_query.data.CRM and data_query.data.CRM.contact else none %}
+{% set cur_plan = contact.current_plan|trim if contact and contact.current_plan else '' %}
+{% set support_href = theme.portal.support_portal_url if theme.portal.support_portal_url else (module.support_portal_url if module.support_portal_url else '/customer-portal') %}
 <section id="plans" class="billing-plans" aria-label="Available plans">
-  <h2 class="hs-page-title">Plans</h2>
+  <h2 class="billing-plans__title">Plans</h2>
   {% if plans %}
   <div class="billing-plans__grid">
     {% for p in plans %}
     {% if p.is_active %}
-    <div class="hs-card">
-      <h3 style="margin-top:0;">{{ p.name }}</h3>
-      <p style="font-size:1.5rem;font-weight:700;">${{ p.price }}<span style="font-size:0.875rem;font-weight:400;">/{{ p.interval }}</span></p>
-      <p style="font-size:0.875rem;color:var(--hs-color-muted);">{{ p.systems_per_year }} systems / year</p>
-      <div style="font-size:0.9375rem;">{{ p.description }}</div>
-      <div style="margin-top:1rem;">{{ p.features }}</div>
-      <a class="hs-btn hs-btn--outline" style="margin-top:1rem;display:inline-flex;" href="{{ customer_portal_url }}">Open support portal</a>
+    {% set plan_name = p.name|default('')|trim %}
+    {% set is_current = cur_plan and plan_name and (plan_name == cur_plan) %}
+    <div class="hs-card billing-plans__card{% if is_current %} billing-plans__card--current{% endif %}">
+      <div class="billing-plans__card-head">
+        <h3 class="billing-plans__plan-name">{{ p.name }}</h3>
+        {% if is_current %}
+        <span class="hs-badge hs-badge--active">Current</span>
+        {% endif %}
+      </div>
+      <p class="billing-plans__price">${{ p.price }}<span class="billing-plans__interval">/{{ p.interval }}</span></p>
+      <p class="billing-plans__meta">{{ p.systems_per_year }} systems / year</p>
+      <div class="billing-plans__description">{{ p.description }}</div>
+      <div class="billing-plans__features">{{ p.features }}</div>
+      {% if is_current %}
+      <a class="hs-btn hs-btn--outline billing-plans__cta" href="{{ support_href }}">Change plan</a>
+      {% else %}
+      <a class="hs-btn hs-btn--primary billing-plans__cta" href="{{ support_href }}">Upgrade or downgrade</a>
+      {% endif %}
     </div>
     {% endif %}
     {% endfor %}

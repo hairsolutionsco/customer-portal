@@ -1,5 +1,5 @@
 # label: "Portal Invoices"
-# description: "Contact core fields. Re-add `portal_invoices_json` once property exists in CMS GraphQL schema."
+# description: "Logged-in contact + portal_invoices_json (JSON array of invoice rows mirrored from CRM/workflows). HubL parses JSON in invoice-table.module."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query invoices($contact_id: String!) {
   CRM {
@@ -7,6 +7,7 @@ query invoices($contact_id: String!) {
       firstname
       lastname
       email
+      portal_invoices_json
     }
   }
 }

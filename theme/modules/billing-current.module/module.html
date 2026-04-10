@@ -1,12 +1,43 @@
 {% set c = data_query.data.CRM.contact %}
+{% set support_href = theme.portal.support_portal_url if theme.portal.support_portal_url else '/customer-portal' %}
 <section class="billing-current hs-card" aria-label="Current plan">
-  <h2 style="margin-top:0;">Your plan</h2>
+  <h2 class="billing-current__heading">Your plan</h2>
   {% if c %}
-  <p><strong>{% if c.current_plan %}{{ c.current_plan }}{% else %}No plan on file{% endif %}</strong></p>
-  <p>Price: {% if c.plan_price %}${{ c.plan_price }}{% else %}—{% endif %} / {{ c.billing_interval if c.billing_interval else '—' }}</p>
-  <p>Period: {{ c.period_start if c.period_start else '—' }} — {{ c.period_end if c.period_end else '—' }}</p>
-  <p>Status: {% if c.plan_status %}<span class="hs-badge hs-badge--{{ c.plan_status }}">{{ c.plan_status|replace('_',' ') }}</span>{% else %}—{% endif %}</p>
-  <a class="hs-btn hs-btn--primary" href="#plans">Compare plans</a>
+  <div class="billing-current__grid">
+    <div>
+      <p class="billing-current__label">Plan</p>
+      <p class="billing-current__value">{% if c.current_plan %}{{ c.current_plan }}{% else %}No plan on file{% endif %}</p>
+    </div>
+    <div>
+      <p class="billing-current__label">Price</p>
+      <p class="billing-current__value">{% if c.plan_price %}${{ c.plan_price }}{% else %}—{% endif %} <span class="billing-current__muted">/ {{ c.billing_interval if c.billing_interval else '—' }}</span></p>
+    </div>
+    <div>
+      <p class="billing-current__label">Current period</p>
+      <p class="billing-current__value">{{ c.period_start if c.period_start else '—' }} — {{ c.period_end if c.period_end else '—' }}</p>
+    </div>
+    <div>
+      <p class="billing-current__label">Next billing date</p>
+      <p class="billing-current__value">{{ c.period_end if c.period_end else '—' }}</p>
+    </div>
+    <div>
+      <p class="billing-current__label">Status</p>
+      <p class="billing-current__value">
+        {% if c.plan_status %}
+        {% set ps = c.plan_status|lower|replace(' ', '_') %}
+        <span class="hs-badge hs-badge--{{ ps }}">{{ c.plan_status|replace('_', ' ') }}</span>
+        {% else %}—{% endif %}
+      </p>
+    </div>
+    <div>
+      <p class="billing-current__label">Payment method</p>
+      <p class="billing-current__value billing-current__muted">On file with Hair Solutions — contact us to update.</p>
+    </div>
+  </div>
+  <p class="billing-current__actions">
+    <a class="hs-btn hs-btn--primary" href="#plans">Compare plans</a>
+    <a class="hs-btn hs-btn--outline" href="{{ support_href }}">Billing help</a>
+  </p>
   {% else %}
   <p>Unable to load billing.</p>
   {% endif %}
