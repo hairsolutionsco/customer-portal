@@ -31,7 +31,9 @@ After the table above, read **Portal orchestration (lead agent)** below, then co
 - If **`./scripts/op_env.sh ./scripts/portal_task_complete.sh "…"`** was **backgrounded** or **hangs**, **`op run`** may be waiting for approval — **finish or cancel** that terminal job; do not assume it completed.
 - For **routine Design Manager uploads** when the HubSpot CLI is already authenticated (**`hs accounts list`** shows the intended default account; config in **`~/.hscli/config.yml`**), run from **`customer-portal/`**: **`bash scripts/portal_task_complete.sh --skip-git`**. That performs **GitHub issues export sync + theme upload** and **skips git** commit/push. **`op_env`** is still required for **private-app token** work (**`portal:hubspot-props`**, **`portal:hubdb-sync`**, etc.); it is **often unnecessary** for **`hs cms upload`** alone.
 
-**Handoff edits to this file:** When recording what the **next** agent should do, change **only** the heading **Next session — do this now** and its subsections below (**Snapshot**, **Lead agent — run in order**, **Subagents to launch**, **Blockers / do not launch until**). Leave the evergreen spec, Subagent prompt template, and long-form sections untouched unless this batch’s work was explicitly to update those.
+**Handoff edits to this file:** When recording what the **next** agent should do, change **only** the heading **Next session - do this now** and its subsections below (**Snapshot**, **Lead agent - run in order**, **Subagents to launch**, **Blockers / do not launch until**). Leave the evergreen spec, Subagent prompt template, and long-form sections untouched unless this batch’s work was explicitly to update those.
+
+**Find the handoff in this file:** search for **`ORCHESTRATOR_HANDOFF`**, **`Next session`**, or **`do this now`** (plain ASCII). The live block is the `###` heading and the four `####` subsections immediately below it.
 
 ### Mandatory: you must use subagents
 
@@ -44,18 +46,20 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 | **If the tool allows only one agent** | Still **structure** work as sequential subagent-sized tasks: finish one spawn’s scope, ritual, then the next — never “one giant unprompted refactor.” |
 | **Exception** | Tiny one-file fixes (e.g. typo in one module) may be direct; anything touching **GraphQL + HubL + upload**, **CRM/HubDB API**, or **≥2 concerns** → **subagent**. |
 
-### Next session — do this now *(edit this section each handoff)*
+<!-- ORCHESTRATOR_HANDOFF next-session-do-this-now (search: ORCHESTRATOR_HANDOFF | Next session | do this now) -->
+
+### Next session - do this now *(edit this section each handoff)*
 
 #### Snapshot
 
 - **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`) · account **50966981**
 - **CLI / upload:** **`portal_task_complete.sh`** probes **`hs cms upload`**. If **`op_env.sh … portal_task_complete`** is **backgrounded or stuck**, see **`KNOWN_ISSUES.md`** and **Portal orchestration** → **1Password (`op_env`) vs routine HubSpot upload**. Routine: **`bash scripts/portal_task_complete.sh --skip-git`** when **`hs accounts list`** is OK. **`publish`** may still **internal-error** — use **`HUBSPOT_CMS_PUBLISH_MODE=draft`** for UAT or retry publish.
-- **`main`:** Wave **4** (A8–A10, A9) + **A11** (#39) + **A12** (#42) + ops (**`e463938`**) + handoff/export commits; see git log for SHAs.
-- **GitHub (2026-04-10):** **Closed completed:** **#32–#37, #39–#41, #42** after orchestrator verification (**`npm run portal:build`** + merged theme). **#38** **not planned** (locations IA). **#30–#31** (global chrome) still **OPEN** for UAT if needed. **A13** landed **`fa69d51`** — form fields + **`{% form %}`** wiring in billing, customization, order-detail, settings, hair-profile copy; **#43–#48** stay **OPEN** until HubSpot **Forms** exist in the portal and are selected in module sidebars + workflows per each issue’s AC.
+- **`main`:** Wave **4** (A8–A10, A9) + **A11** (#39) + **A12** (#42) + **A13** (**`fa69d51`**, forms wiring **#43–#48**) + docs/handoff (**`d927ec3`**); see **`git log`** for latest SHAs.
+- **GitHub:** Refresh with **`npm run portal:issues`**. **Closed (representative):** **#32–#37, #39–#42** (includes **#37 / #40 / #41** commerce pages — do **not** reopen without new scope). **#38** deferred / not planned (locations IA). **Still OPEN (export):** **#5, #15–#19** (P2 scaffold/theme), **#30–#31** (global chrome UAT), **#43–#57** (forms through go-live). **#43–#48** need **live HubSpot Forms** + module field picks + workflows per AC before close (**theme** `{% form %}` wiring is in **`fa69d51`**).
 - **Layout:** **`portal-*.html`** → **`layouts/portal-shell.html`**. Orphan **`portal.html`** in DM may still need manual cleanup if present.
-- **Theme URLs:** Module-level portal/KB URLs — no invalid theme URL field shapes in **`theme/fields.json`**.
+- **Theme URLs:** **`theme/fields.json`** includes **`portal.support_portal_url`** (global default); sidebar + commerce modules prefer theme then module fields — see **`data/SCHEMA_REGISTRY.md`** / issue **#27–#28** (no membership **`HUBDB.table`** GraphQL).
 
-#### Lead agent — run in order
+#### Lead agent - run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
 1. **Upload:** **`bash scripts/portal_task_complete.sh --skip-git`** so **`fa69d51`** (A13) theme reaches Design Manager (use **`draft`** if **`publish`** errors).
