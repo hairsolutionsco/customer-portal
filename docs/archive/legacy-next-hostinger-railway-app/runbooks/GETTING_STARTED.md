@@ -112,7 +112,7 @@ STRIPE_PUBLISHABLE_KEY="pk_test_..."
 Once local testing works:
 
 ```bash
-export RAILWAY_TOKEN=34671678-b595-4866-a846-acc35e8a44cd
+export RAILWAY_TOKEN=<YOUR_RAILWAY_TOKEN>
 ./railway-deploy.sh
 ```
 

@@ -5,14 +5,14 @@ Get your Hair Solutions Customer Portal deployed to Railway in minutes!
 ## 🚀 Super Quick Deploy (5 Minutes)
 
 ### Prerequisites
-- Railway account with API token: `34671678-b595-4866-a846-acc35e8a44cd`
+- Railway account with API token: `<YOUR_RAILWAY_TOKEN>`
 - Stripe account (for payments)
 
 ### Option A: Automated Script Deployment
 
 ```bash
 # Set your Railway token
-export RAILWAY_TOKEN=34671678-b595-4866-a846-acc35e8a44cd
+export RAILWAY_TOKEN=<YOUR_RAILWAY_TOKEN>
 
 # Run the deployment script
 ./railway-deploy.sh
@@ -30,7 +30,7 @@ That's it! The script will:
 
 ```bash
 # 1. Set your Railway token
-export RAILWAY_TOKEN=34671678-b595-4866-a846-acc35e8a44cd
+export RAILWAY_TOKEN=<YOUR_RAILWAY_TOKEN>
 
 # 2. Login to Railway
 railway login

@@ -5,7 +5,7 @@ Use this checklist to ensure your Hair Solutions Customer Portal is properly dep
 ## ✅ Pre-Deployment Checklist
 
 - [ ] Railway account created
-- [ ] Railway API token available: `34671678-b595-4866-a846-acc35e8a44cd`
+- [ ] Railway API token available: `<YOUR_RAILWAY_TOKEN>`
 - [ ] Code pushed to GitHub repository
 - [ ] Stripe account set up with API keys
 - [ ] (Optional) Shopify store with Admin API access
@@ -21,7 +21,7 @@ Use this checklist to ensure your Hair Solutions Customer Portal is properly dep
 cd customer-portal
 
 # Set Railway token
-export RAILWAY_TOKEN=34671678-b595-4866-a846-acc35e8a44cd
+export RAILWAY_TOKEN=<YOUR_RAILWAY_TOKEN>
 
 # Run deployment script
 ./railway-deploy.sh
@@ -31,7 +31,7 @@ export RAILWAY_TOKEN=34671678-b595-4866-a846-acc35e8a44cd
 
 ```bash
 # 1. Login to Railway
-export RAILWAY_TOKEN=34671678-b595-4866-a846-acc35e8a44cd
+export RAILWAY_TOKEN=<YOUR_RAILWAY_TOKEN>
 railway login
 
 # 2. Initialize project
@@ -231,5 +231,5 @@ Once all items are checked:
 ---
 
 **Last Updated**: 2025-11-17
-**Railway Token**: `34671678-b595-4866-a846-acc35e8a44cd`
+**Railway Token**: `<YOUR_RAILWAY_TOKEN>`
 **Repository**: `hairsolutionsco/customer-portal`
