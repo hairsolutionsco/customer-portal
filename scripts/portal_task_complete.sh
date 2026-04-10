@@ -115,6 +115,16 @@ if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$ROOT/scripts/sync-github-exports.sh"
 fi
 
+# After exports refresh: warn if repo artifacts imply GitHub issues should be closed (avoids stale handoffs).
+if [[ "$SKIP_ISSUES" != "1" ]] && command -v python3 >/dev/null 2>&1; then
+  PORTAL_REPO_ROOT="$ROOT" python3 "$ROOT/scripts/portal_handoff_reality_check.py" || {
+    rc=$?
+    if [[ "${PORTAL_HANDOFF_STRICT:-0}" == "1" ]]; then
+      exit "$rc"
+    fi
+  }
+fi
+
 THEME_DIR="$ROOT/theme"
 if [[ ! -f "$THEME_DIR/theme.json" ]]; then
   echo "portal_task_complete: ERROR: missing canonical theme file $THEME_DIR/theme.json. Uploads only support ./theme." >&2
@@ -161,3 +171,4 @@ else
 fi
 
 echo "portal_task_complete.sh done."
+echo "Handoff: if you closed or reprioritized work, update only docs/AGENT_PROMPT.md → Next session - do this now; extend data/portal_issue_path_signals.json when new drift patterns appear."

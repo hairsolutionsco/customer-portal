@@ -35,6 +35,13 @@ After the table above, read **Portal orchestration (lead agent)** below, then co
 
 **Find the handoff in this file:** search for **`ORCHESTRATOR_HANDOFF`**, **`Next session`**, or **`do this now`** (plain ASCII). The live block is the `###` heading and the four `####` subsections immediately below it.
 
+**Handoff drift prevention (orchestrator — before spawning subagents or trusting “Next session” prose):**
+
+1. **Refresh issue exports:** **`npm run portal:issues`** (or run **`portal_task_complete.sh`**, which always syncs **`exports/github-issues.json`** first unless **`--skip-issues`**).
+2. Run **`npm run portal:handoff-check`** — compares **`exports/github-issues.json`** to on-disk paths in **`data/portal_issue_path_signals.json`**. If it warns that an issue is still **OPEN** but the repo already contains the deliverable, **close the issue on GitHub** (when AC is met), **`npm run portal:issues`** again, then edit **Next session — do this now** only if priorities changed.
+3. **Source of truth:** **GitHub issue state + refreshed `exports/`** defines what is “open”; **Next session** is *intent* for the next run — update it when work completes or is reprioritized (do not rely on memory or stale prose).
+4. **CI / strict gate:** **`PORTAL_HANDOFF_STRICT=1 npm run portal:handoff-check`** exits non-zero when drift is detected (optional pre-push or workflow).
+
 ### Mandatory: you must use subagents
 
 You are the **orchestrator**, not a solo implementer. **You must use subagents** (Task tool, background agents, or your environment’s equivalent) when parallel delegation is possible. **Do not** absorb the full scope of A0–A15, multi-file theme work, and HubSpot verification in a single thread.
@@ -54,28 +61,35 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 - **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`) · account **50966981**
 - **CLI / upload:** **`portal_task_complete.sh`** probes **`hs cms upload`**. If **`op_env.sh … portal_task_complete`** is **backgrounded or stuck**, see **`KNOWN_ISSUES.md`** and **Portal orchestration** → **1Password (`op_env`) vs routine HubSpot upload**. Routine: **`bash scripts/portal_task_complete.sh --skip-git`** when **`hs accounts list`** is OK. **`publish`** may still **internal-error** — use **`HUBSPOT_CMS_PUBLISH_MODE=draft`** for UAT or retry publish.
-- **`main`:** Wave **4** (A8–A10, A9) + **A11** (#39) + **A12** (#42) + **A13** (**`fa69d51`**, forms wiring **#43–#48**) + docs/handoff (**`d927ec3`**); see **`git log`** for latest SHAs.
-- **GitHub:** Refresh with **`npm run portal:issues`**. **Closed (representative):** **#32–#37, #39–#42** (includes **#37 / #40 / #41** commerce pages — do **not** reopen without new scope). **#38** deferred / not planned (locations IA). **Still OPEN (export):** **#5, #15–#19** (P2 scaffold/theme), **#30–#31** (global chrome UAT), **#43–#57** (forms through go-live). **#43–#48** need **live HubSpot Forms** + module field picks + workflows per AC before close (**theme** `{% form %}` wiring is in **`fa69d51`**).
+- **`main`:** Wave **4** page build **#32–#42** closed on GitHub; **A13** forms wiring **`fa69d51`**; **A14** Phase 7 registry doc **`df3e8bf`** — **`data/SCHEMA_REGISTRY.md`** § **Phase 7** (native KB categories, **`portal-sidebar`** URL fields + **`portal-primary-nav`**, **#52** pipeline name **Customer Support**, **#53** notification matrix + repo vs HubSpot split, G6/**#45**/**#49** before full **#53** E2E). **Theme unchanged** in **`df3e8bf`** → **no** upload required for that commit alone.
+- **GitHub vs reality — reconcile first:** **`gh issue list`** or **`exports/github-issues.json`** (**`npm run portal:issues`**). **`npm run portal:handoff-check`** for path-vs-issue drift. Close satisfied issues, re-sync exports. **Mem0** optional — **GitHub + repo** authoritative.
+- **A14 status:** **Repo / registry** work for **#51–#53** is **done** (**`df3e8bf`**). **Closing #51–#53** still needs **HubSpot admin** (KB, Service customer portal, pipeline, DM **`portal-sidebar`** live URLs, email/workflows/DKIM, E2E per Phase 7 table).
+- **Still typically OPEN until P8:** **#5**, **#15–#19** (audit vs `theme/`), **#49–#57** (confirm with **`gh`**).
 - **Layout:** **`portal-*.html`** → **`layouts/portal-shell.html`**. Orphan **`portal.html`** in DM may still need manual cleanup if present.
-- **Theme URLs:** **`theme/fields.json`** includes **`portal.support_portal_url`** (global default); sidebar + commerce modules prefer theme then module fields — see **`data/SCHEMA_REGISTRY.md`** / issue **#27–#28** (no membership **`HUBDB.table`** GraphQL).
+- **Theme URLs:** Sidebar KB + Support → **`portal-sidebar.module`** fields + **`portal-primary-nav.html`**; see **`data/SCHEMA_REGISTRY.md`** Phase 7 (no deprecated CMS **`portal-support`** / **`portal-help`** templates).
 
 #### Lead agent - run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
-1. **Upload:** **`bash scripts/portal_task_complete.sh --skip-git`** so **`fa69d51`** (A13) theme reaches Design Manager (use **`draft`** if **`publish`** errors).
-2. **Human HubSpot UI:** Create/map **Forms** for **#43–#48**, pick them in **Design Manager** module fields, add workflows per **`data/SCHEMA_REGISTRY.md`**; then **close** **#43–#48** when AC met.
-3. **`HUBSPOT_CMS_PUBLISH_MODE=publish`** retry when HubSpot transient errors clear.
-4. **Human spot-check** **#30–#31** on draft/published theme; close when AC met.
-5. Optional: align **`package.json`** **`portal:cms-upload-*`** with **`scripts/portal_task_complete.sh`** header.
+1. **Verify GitHub + drift:** **`gh issue list`** / **`jq`** on **`exports/github-issues.json`**; **`npm run portal:handoff-check`**. Close lagging issues when AC met; **`npm run portal:issues`**.
+2. **Human / HubSpot (Phase 7):** Execute **#51–#53** checklists using **`data/SCHEMA_REGISTRY.md`** Phase 7 — KB categories, Service portal, **Customer Support** pipeline, **`portal-sidebar`** URL picks in Design Manager, email + workflows; then **close #51–#53** when AC met.
+3. **Parallel:** **A3** **#49–#50** (membership) — still blocks much **#53** E2E and Service portal alignment per registry gate note.
+4. **Upload:** **`bash scripts/portal_task_complete.sh --skip-git`** only after **theme** changes (not needed for registry-only commits).
+5. **A15** **#54–#57** when membership + services + forms paths support release (**G7**).
+6. **`HUBSPOT_CMS_PUBLISH_MODE=publish`** retry when HubSpot transient errors clear.
+7. **Subdomain / DNS:** **#5** (human); note in **`SCHEMA_REGISTRY.md`** or issue.
+8. Optional: **`package.json`** **`portal:cms-upload-*`** vs **`portal_task_complete.sh`** header.
 
 #### Subagents to launch *(trim rows per session)*
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|-------|
-| — | **Human** | Forms + chrome UAT | **#30–#31**, **#43–#48** | Create forms in HubSpot; module field picks; workflows |
-| 2 | **A3** | Membership UI (human-heavy) | **#49–#50** | HubSpot UI per **`data/SCHEMA_REGISTRY.md`** Phase 6 |
-| *later* | **A14** | Service / KB | **#51–#53** | |
-| *later* | **A15** | Release | **#54–#57** | |
+| 2 | **A3** | Membership & access | **#49–#50** | Phase 6 in **`SCHEMA_REGISTRY.md`**; gates **#52**/**#53** E2E |
+| — | **Human** | Service Hub + email (Phase 7) | **#51–#53** | **A14 repo done (`df3e8bf`)** — HubSpot UI only per Phase 7 section |
+| 3 | **A15** | Release engineering | **#54–#57** | After **#49–#53** / forms stable; **G7** |
+| — | **Human** | DNS / subdomain | **#5** | **A0** scope |
+| *audit* | **A4** | Theme scaffold | **#15–#19** | Only if **`gh`** OPEN **and** `theme/` missing deliverables |
+| *done* | **A14** | Service Hub (repo) | **#51–#53** | Registry shipped **`df3e8bf`**; no respawn for doc-only unless AC gaps |
 
 **Delete or mark *later* rows** so the next agent only spawns what applies **this** session.
 
@@ -83,7 +97,8 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 
 - **HubSpot publish:** If **internal error** persists, use **`draft`** for UAT and contact Support or retry off-peak.
 - **`theme/fields.json`:** Do not add **theme-level portal/KB URL** fields without upload validation — **module** fields remain the safe pattern.
-- **Forms:** **#43–#48** require **live HubSpot Forms** + module picks + workflows before “done” in production (theme wiring in **`fa69d51`**).
+- **Issue hygiene:** Do not spawn **A7** / **A13** “build chrome” or “wire forms” if AC already met — **close issues** + **`npm run portal:issues`**.
+- **#53 E2E:** **`SCHEMA_REGISTRY.md`** Phase 7 — **G6** forms **#43–#48**, **#45**, **#49** before full **#53** verification; **G7** stays **A15**.
 
 ### Subagent prompt *(copy once per spawn; replace placeholders)*
 

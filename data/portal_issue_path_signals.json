@@ -1,0 +1,15 @@
+{
+  "$schema_comment": "Maps GitHub issue numbers to paths under repo root. If every path exists but the issue is OPEN in exports/github-issues.json, the handoff check warns: close the issue or fix the manifest.",
+  "signals": [
+    {
+      "issues": [30],
+      "paths": ["theme/modules/portal-sidebar.module/meta.json"],
+      "label": "P4 global sidebar module"
+    },
+    {
+      "issues": [31],
+      "paths": ["theme/modules/portal-header.module/meta.json"],
+      "label": "P4 global header module"
+    }
+  ]
+}
