@@ -39,6 +39,34 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 
 ---
 
+## GitHub issue #8 alignment (timeline / status — not custom `order_status_history`)
+
+Issue **[#8](https://github.com/hairsolutionsco/customer-portal/issues/8)** title/body still describe a **custom** Order Status History object (`schemas/order_status_history.json`, POST to CRM schemas, association to a custom Order object). For Portal 2.0, **`AGENT_PROMPT.md` §1** and **`IMPLEMENTATION_PLAN_SUBAGENTS.md` north star supersede that**, in the same way as **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** (see **GitHub issue #7 alignment** above): **no custom `order_status_history` object** is required for the theme, Wave 1, or **G1** timeline documentation.
+
+### Chosen pattern — portal **50966981** (documented read model)
+
+| Layer | What we use |
+|-------|-------------|
+| **Primary “order status / timeline” signal (today)** | **Deal pipeline** on the **deals-as-orders** mirror: contact → `p_order_collection__primary` → `deal_collection__contact_to_deal` (verify name in explorer). **Current** production/status = CRM **`dealstage`**, exposed in GraphQL as `status` and `production_stage` on the deal row (see `theme/data-queries/order_detail.graphql`). Timestamped **stage history** in CRM (deal stage properties, reports, workflows) is **standard HubSpot deal behavior**; the **portal UI** currently shows a **fixed ordered list** of stage internal IDs with the **current** stage highlighted — not a separate custom-object history table. |
+| **Optional second lane** | **Tickets** (Service Hub) associated to the **contact** (and/or company) for support-style timelines. Membership GraphQL documents **ticket** among private-page CRM types; **introspect** `contact → associations → …` for the generated collection name on portal **50966981** and record it in **GraphQL association aliases** below when adopted. |
+| **Native Commerce `order`** | **CRM** remains source of truth for real orders. If **membership GraphQL** later exposes **`order`** for this account, timeline/status fields can move to native order properties without introducing `order_status_history`. |
+
+### Theme modules (where stages / status appear)
+
+| Module | Path | Role |
+|--------|------|------|
+| Order detail + pipeline rail | `theme/modules/order-detail.module/module.html` | “Pipeline stage” / `order-detail__timeline`: compares `order.status` (mapped from `dealstage`) to a HubL list of stage internal names. **Human-required (HubSpot UI):** align **deal pipeline stages** and labels with what the business wants customers to see (**Settings → Objects → Deals → Pipelines**, or your account’s equivalent navigation). The module copy already states that deal stages reflect the account pipeline. |
+| Open-order / production alert | `theme/modules/production-alert.module/module.html` | Surfaces an **open** mirrored deal (same `p_order_collection__primary` collection) when `estimated_completion` is empty — complements order detail for at-a-glance “in progress” messaging. |
+| Supporting | `theme/modules/dashboard-stats.module/module.html`, `theme/modules/recent-orders.module/module.html`, `theme/modules/status-badge.module/module.html` | Counts, recency, and badge treatment on **deal-as-order** fields — not a separate history object. |
+
+### Legacy #8 checklist — interpret as “done” when
+
+- [x] **Timeline pattern documented** in this registry (deals-as-orders + optional tickets + native order when GraphQL allows) — **no** `order_status_history` custom object.
+- [ ] **Optional:** Introspect and fill **Contact → Tickets** association field name in **GraphQL association aliases** if the program adopts ticket-based timelines.
+- [ ] **Optional (human):** Rename/reorder deal pipeline stages so the static list in `order-detail.module` matches **your** pipeline’s internal stage IDs (or adjust the HubL `stages` array to match the mirror pipeline).
+
+---
+
 ## System of record (authoritative)
 
 | Domain | Where it lives | Portal read path |
@@ -48,7 +76,7 @@ Issue **[#7](https://github.com/hairsolutionsco/customer-portal/issues/7)** titl
 | **Orders — CRM** | **Native Commerce `order`**, associated to **contact** | CRM / Orders API; ops workflows |
 | **Orders — GraphQL (membership)** | **Deals** associated to contact (mirror for UI) | `associations { p_order_collection__primary: deal_collection__contact_to_deal { ... } }` — **confirm `deal_collection__contact_to_deal` in explorer** |
 | Invoices (this theme) | **`portal_invoices_json`** on contact | Workflow/automation mirrors rows; native `invoices` in GraphQL when available |
-| Order timeline / history | Native order fields, **deal** stage history, **tickets**, or **notes** | Prefer objects exposed on private pages |
+| Order timeline / history | **Deal** `dealstage` on deals-as-orders mirror + optional **tickets**; native order fields when GraphQL exposes `order` | **Authoritative:** **GitHub issue #8 alignment** above — **not** custom `order_status_history`. Theme: `order-detail.module`, `production-alert.module`. |
 | Catalog (plans, locations, products) | **HubDB** | HubDB GraphQL |
 
 ---
@@ -171,6 +199,7 @@ Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **
 | `deal_collection__contact_to_deal` missing or renamed on your account | Copy exact field name from explorer into all three queries (`dashboard`, `orders_list`, `order_detail`). |
 | No deals to mirror native orders | Create a workflow or integration that creates/updates a **deal per order** (or stage) for portal display, or wait for HubSpot to expose `order` on membership GraphQL. |
 | Team expects issue #7 “custom object” deliverable | Close #7 with comment pointing to this registry + native Commerce direction; optional custom object is **out of scope** for Professional CMS GraphQL. |
+| Team expects issue #8 **Order Status History** custom object | Close #8 with comment pointing to **GitHub issue #8 alignment** in this file; timeline uses **deal stages** (+ optional **tickets**), not `order_status_history`. |
 
 ---
 

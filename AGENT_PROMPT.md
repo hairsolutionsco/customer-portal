@@ -32,13 +32,14 @@ Build every file in the theme directory structure below. The **canonical theme o
 
 ### Task completion ritual (mandatory after each task / wave)
 
-Do **not** mark work done until all three are satisfied:
+Do **not** mark work done until all steps below are satisfied:
 
 | Step | Action |
 |------|--------|
 | **1. Git** | Commit and **push** this repo (`customer-portal`) with a clear message. |
 | **2. HubSpot Design Manager** | Upload from **`theme/`** via **`portal_task_complete.sh`** (uses **`hs cms upload . customer-portal`** when the local CLI supports it, else legacy **`hs upload`**). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **`docs/AGENT_PROMPT.md`** → *Portal orchestration* → *HubSpot CLI and portal choice*. |
 | **3. GitHub issues snapshot** | Refresh `exports/github-issues.json` (and milestones) so agents and CI use current issue text — e.g. run `npm run portal:issues` or `./scripts/sync-github-exports.sh`. Close/update issues on GitHub when AC are met (`gh issue close`, edit checklists, etc.) **before** or **as part of** the sync. |
+| **4. Next-step handoff in repo** | In **`docs/AGENT_PROMPT.md`** → *Portal orchestration* → **Next session — do this now**, update **only** that subsection (snapshot, **Lead agent — run in order**, **Subagents to launch**, **Blockers / do not launch until**) so the next agent knows what to do. Do **not** change other parts of **`docs/AGENT_PROMPT.md`** or this file solely for handoff text. |
 
 **One-shot automation (recommended):** from `00-engineering/repos/customer-portal`:
 

@@ -37,7 +37,7 @@ These **root `.md` files are different**: they describe the **current Portal 2.0
 ### Commands (CMS + automation)
 
 - **Theme build / verify:** `npm run portal:build`, `npm run portal:verify` (see `package.json` — may still typecheck legacy Next code).
-- **Ship / upload:** `./scripts/op_env.sh ./scripts/portal_task_complete.sh "type(scope): summary"` when secrets are required; otherwise `./scripts/portal_task_complete.sh` (see **`docs/AGENT_PROMPT.md`** *Portal orchestration* and **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §6a).
+- **Ship / upload:** `./scripts/op_env.sh ./scripts/portal_task_complete.sh "type(scope): summary"` when secrets are required; otherwise `./scripts/portal_task_complete.sh` (see **`docs/AGENT_PROMPT.md`** *Portal orchestration* and **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §6a). **Project default:** run this after every meaningful theme batch so Design Manager stays in sync with git — use `SKIP_HUBSPOT=1` only when the CLI is blocked or you intentionally skip upload.
 - **CRM properties / HubDB:** `./scripts/op_env.sh npm run portal:hubspot-props`, `portal:hubdb-sync`.
 
 ## Legacy custom app (archived docs + deploy configs)

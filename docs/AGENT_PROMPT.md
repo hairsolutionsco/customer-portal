@@ -24,6 +24,10 @@ After the table above, read **Portal orchestration (lead agent)** below, then co
 
 **Doc map:** **Canonical plan** → `docs/cms-customer-portal-plan.md`. **Waves, roster, gates, ritual** → `IMPLEMENTATION_PLAN_SUBAGENTS.md` §3–§7. **File-level build spec** → the rest of this document. **Paste for tools without Cursor rules:** share this file (or the **Subagent prompt** block below).
 
+**Ship policy (project default):** After every **meaningful batch** (theme HubL/CSS/JS/modules/templates, or material portal automation/docs that expect live HubSpot to match git), the lead agent **runs the full task-completion ritual** including **Design Manager upload** via **`portal_task_complete.sh`**, unless upload is impossible (`SKIP_HUBSPOT=1` after a documented CLI/auth failure) or the user said to skip upload for that batch. **Git push alone is not enough** when the batch changed the theme.
+
+**Handoff edits to this file:** When recording what the **next** agent should do, change **only** the heading **Next session — do this now** and its subsections below (**Snapshot**, **Lead agent — run in order**, **Subagents to launch**, **Blockers / do not launch until**). Leave the evergreen spec, Subagent prompt template, and long-form sections untouched unless this batch’s work was explicitly to update those.
+
 ### Mandatory: you must use subagents
 
 You are the **orchestrator**, not a solo implementer. **You must use subagents** (Task tool, background agents, or your environment’s equivalent) when parallel delegation is possible. **Do not** absorb the full scope of A0–A15, multi-file theme work, and HubSpot verification in a single thread.
@@ -50,7 +54,7 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 (current wave) and §7 (gate for that wave).
 2. Run **`npm run portal:issues`** if the GitHub snapshot may be stale.
 3. **Subagents:** Execute **Subagents to launch** — **one subagent per row**, respecting **Parallel group**. **Skipping subagents to “do it all yourself” is not allowed** for normal waves.
-4. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** (use **`SKIP_HUBSPOT=1`** only if upload must be skipped). Upload uses **`hs`** + **`~/.hscli/config.yml`**; optional **`theme/hubspot.config.yml`** (gitignored). See **`IMPLEMENTATION_PLAN_SUBAGENTS.md` §6a**. *If this repo is checked out inside `hubspot/` with nested paths, use the ritual path your workspace README gives (often `customer-portal/ops/scripts/…`).*
+4. After the batch: **`./scripts/portal_task_complete.sh "type(scope): what completed"`** — **include HubSpot upload** (default). Use **`SKIP_HUBSPOT=1`** only if CLI/auth is blocked after retry or the user asked to skip. Upload uses **`hs`** + **`~/.hscli/config.yml`**; optional **`theme/hubspot.config.yml`** (gitignored). See **`IMPLEMENTATION_PLAN_SUBAGENTS.md` §6a**. *If this repo is checked out inside `hubspot/` with nested paths, use the ritual path your workspace README gives (often `customer-portal/ops/scripts/…`).*
 
 #### Subagents to launch *(trim rows per session)*
 
