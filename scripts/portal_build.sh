@@ -9,7 +9,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SRC="$ROOT/hair-solutions-portal/src"
+if [[ -f "$ROOT/cms/theme.json" ]]; then
+  SRC="$ROOT/cms"
+elif [[ -f "$ROOT/hair-solutions-portal/src/theme.json" ]]; then
+  SRC="$ROOT/hair-solutions-portal/src"
+else
+  SRC="$ROOT/hair-solutions-portal/src"
+fi
 
 json_ok() {
   local f="$1"

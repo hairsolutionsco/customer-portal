@@ -1,52 +1,86 @@
 #!/usr/bin/env bash
 # Run after every Portal 2.0 task / wave completes (actual order below):
 #   1) Refresh exports/github-issues.json (+ milestones)
-#   2) Upload hair-solutions-portal/src → HubSpot Design Manager, theme name $HUBSPOT_THEME_DEST (default: hair-solutions-portal)
+#   2) Upload theme → HubSpot Design Manager (canonical: ./cms/; fallback: hair-solutions-portal)
 #   3) Commit + push git (this repo) — only when you pass a commit message as the first argument
 #
 # Usage:
-#   ./scripts/portal_task_complete.sh "chore(portal): describe the task"   # full ritual incl. git
-#   ./scripts/portal_task_complete.sh --build-first "chore(portal): msg"   # run portal_build.sh first
-#   PORTAL_BUILD_FIRST=1 ./scripts/portal_task_complete.sh "msg"            # same as --build-first
-#   ./scripts/portal_task_complete.sh   # issues + HubSpot only; git skipped (IDE-friendly)
+#   ./scripts/portal_task_complete.sh "chore(portal): describe the task"
+#   ./scripts/portal_task_complete.sh --build-first "chore(portal): msg"
+#   PORTAL_BUILD_FIRST=1 ./scripts/portal_task_complete.sh "msg"
+#   ./scripts/portal_task_complete.sh   # issues + HubSpot only; git skipped
 #   SKIP_HUBSPOT=1 ./scripts/portal_task_complete.sh "docs: ..."
-#   SKIP_GIT=1 ./scripts/portal_task_complete.sh "wip"   # issues + HubSpot only (explicit)
+#   SKIP_GIT=1 ./scripts/portal_task_complete.sh "wip"
 #
-# HubSpot: runs theme upload from hair-solutions-portal/ using the CLI default account
-# (~/.hscli/config.yml). Optional local hair-solutions-portal/hubspot.config.yml (gitignored)
-# is not required when global auth is configured.
-# Run via 1Password injection (secrets live in hubspot/.env — do not cat/commit):
+# HubSpot CLI v8+: `hs cms upload [src] [dest] -m draft|publish`
+# Legacy v7: `hs upload ... -m draft|publish`
+# Prefer repo-local: `npm install` adds @hubspot/cli → node_modules/.bin/hs
+# Override: HUBSPOT_HS_BIN=/path/to/hs
+#
+# Run via 1Password injection:
 #   ./scripts/op_env.sh ./scripts/portal_task_complete.sh "msg"
-# Manual equivalent from this directory:
-#   op run --env-file ../../.env.op --env-file ../../.env -- ./scripts/portal_task_complete.sh "msg"
 set -euo pipefail
 
-# HubSpot CLI: newer releases use `hs cms upload`; older use top-level `hs upload`.
-portal_hs_theme_upload() {
-  local theme_dir="$1" dest="$2"
-  local help errf
-  help="$(cd "$theme_dir" && hs cms upload --help 2>&1)" || true
-  if echo "$help" | grep -qE 'Upload a folder|Positionals:|\[src\]'; then
-    (cd "$theme_dir" && hs cms upload src "$dest")
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+portal_resolve_hs_bin() {
+  if [[ -n "${HUBSPOT_HS_BIN:-}" ]]; then
+    printf '%s\n' "$HUBSPOT_HS_BIN"
     return
   fi
-  errf="$(mktemp "${TMPDIR:-/tmp}/hs-upload.XXXXXX")"
-  if (cd "$theme_dir" && hs upload src "$dest" 2>"$errf"); then
-    rm -f "$errf"
-    return 0
+  local local_hs="$ROOT/node_modules/.bin/hs"
+  if [[ -x "$local_hs" ]]; then
+    printf '%s\n' "$local_hs"
+    return
   fi
-  if grep -qiE 'cms upload|Did you mean' "$errf" 2>/dev/null; then
-    cat "$errf" >&2
-    rm -f "$errf"
-    (cd "$theme_dir" && hs cms upload src "$dest")
-  else
-    cat "$errf" >&2
-    rm -f "$errf"
-    return 1
-  fi
+  printf '%s\n' "hs"
 }
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+portal_hs_has_cms_upload() {
+  local bin="$1"
+  "$bin" cms upload --help 2>&1 | grep -qE 'cms-publish-mode|\[src\].*\[dest\]'
+}
+
+portal_hs_version_line() {
+  local bin="$1"
+  local pkg="$ROOT/node_modules/@hubspot/cli/package.json"
+  if [[ "$bin" == "$ROOT/node_modules/.bin/hs" && -f "$pkg" ]]; then
+    node -e "console.log('npm @hubspot/cli ' + require(process.argv[1]).version)" "$pkg" 2>/dev/null || echo "npm @hubspot/cli (local)"
+    return
+  fi
+  "$bin" --version 2>/dev/null | head -1 || echo "version unknown"
+}
+
+portal_hs_theme_upload() {
+  local theme_dir="$1" dest="$2"
+  local upload_path mode hs_bin
+  mode="${HUBSPOT_CMS_PUBLISH_MODE:-publish}"
+  if [[ "$mode" != "publish" && "$mode" != "draft" ]]; then
+    echo "portal_task_complete: HUBSPOT_CMS_PUBLISH_MODE must be publish or draft (got: $mode)" >&2
+    exit 1
+  fi
+  if [[ -d "$theme_dir/src" ]]; then
+    upload_path="src"
+  else
+    upload_path="."
+  fi
+
+  hs_bin="$(portal_resolve_hs_bin)"
+  if portal_hs_has_cms_upload "$hs_bin"; then
+    echo "portal_task_complete: HubSpot CLI — $(portal_hs_version_line "$hs_bin"); using hs cms upload -m $mode"
+    (cd "$theme_dir" && "$hs_bin" cms upload "$upload_path" "$dest" -m "$mode")
+    return 0
+  fi
+
+  echo "portal_task_complete: no hs cms upload — falling back to hs upload (npm i -D @hubspot/cli@^8 for cms upload)" >&2
+  if ! "$hs_bin" upload --help 2>&1 | grep -qE 'Upload a folder|Positionals:'; then
+    echo "portal_task_complete: ERROR: neither hs cms upload nor hs upload available (bin=$hs_bin)" >&2
+    return 1
+  fi
+  (cd "$theme_dir" && "$hs_bin" upload "$upload_path" "$dest" -m "$mode")
+}
+
 cd "$ROOT"
 
 SKIP_ISSUES="${SKIP_ISSUES:-0}"
@@ -85,16 +119,23 @@ if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$ROOT/scripts/sync-github-exports.sh"
 fi
 
-THEME_DIR="$ROOT/hair-solutions-portal"
+if [[ -f "$ROOT/cms/theme.json" ]]; then
+  THEME_DIR="$ROOT/cms"
+elif [[ -f "$ROOT/hair-solutions-portal/src/theme.json" ]] || [[ -d "$ROOT/hair-solutions-portal/src" ]]; then
+  THEME_DIR="$ROOT/hair-solutions-portal"
+else
+  THEME_DIR="$ROOT/hair-solutions-portal"
+fi
 THEME_DEST="${HUBSPOT_THEME_DEST:-hair-solutions-portal}"
 
 if [[ "$SKIP_HUBSPOT" != "1" ]]; then
-  if ! command -v hs >/dev/null 2>&1; then
-    echo "warn: hs (HubSpot CLI) not in PATH — skipping Design Manager upload" >&2
-  elif ! (cd "$THEME_DIR" && hs accounts list >/dev/null 2>&1); then
-    echo "warn: HubSpot CLI has no working account (try: hs account auth) — skipping upload" >&2
+  HS_BIN="$(portal_resolve_hs_bin)"
+  if [[ ! -x "$HS_BIN" ]] && ! command -v "$HS_BIN" >/dev/null 2>&1; then
+    echo "warn: HubSpot CLI (hs) not found — run npm install in repo root or npm i -g @hubspot/cli@8 — skipping upload" >&2
+  elif ! (cd "$THEME_DIR" && "$HS_BIN" accounts list >/dev/null 2>&1); then
+    echo "warn: HubSpot CLI has no working account (try: $HS_BIN account auth) — skipping upload" >&2
   else
-    echo "Uploading theme to HubSpot ($THEME_DEST) ..."
+    echo "Uploading theme to HubSpot ($THEME_DEST) from $THEME_DIR ..."
     portal_hs_theme_upload "$THEME_DIR" "$THEME_DEST"
     echo "HubSpot upload finished."
   fi

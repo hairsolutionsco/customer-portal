@@ -21,7 +21,10 @@
     "portal:hubdb-sync": "python3 scripts/hubspot_sync_hubdb.py",
     "portal:op": "bash scripts/op_env.sh",
     "portal:automation": "bash scripts/portal_automation_full.sh",
-    "portal:automation:continue": "bash scripts/portal_automation_full.sh --continue-on-error"
+    "portal:automation:continue": "bash scripts/portal_automation_full.sh --continue-on-error",
+    "portal:hubspot-cli-version": "node -e \"console.log('@hubspot/cli', require('./node_modules/@hubspot/cli/package.json').version)\"",
+    "portal:cms-upload-draft": "cd cms && hs cms upload . hair-solutions-portal -m draft",
+    "portal:cms-upload-publish": "cd cms && hs cms upload . hair-solutions-portal -m publish"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -42,6 +45,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@hubspot/cli": "^8.3.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.11.5",
     "@types/react": "^18.2.48",

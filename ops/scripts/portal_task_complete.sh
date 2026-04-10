@@ -15,19 +15,44 @@
 # From hubspot/ root (1Password):
 #   bash scripts/op_run.sh bash 99-development/design-manager/customer-portal/ops/scripts/portal_task_complete.sh "msg"
 #
+# HubSpot CLI (@hubspot/cli v8+): `hs cms upload [src] [dest] -m draft|publish`
+# Legacy global v7.x: `hs upload [src] [dest] -m draft|publish`
+# This script prefers customer-portal/node_modules/.bin/hs when `npm install` has been run (pins v8 + cms upload).
+# Override binary: HUBSPOT_HS_BIN=/path/to/hs
+#
 # HubSpot: theme dir customer-portal/cms/; CLI default ~/.hscli/config.yml; optional local hubspot.config.yml (gitignored).
-# Publish vs draft: uploads use -m / --cms-publish-mode (default publish). Override with:
-#   HUBSPOT_CMS_PUBLISH_MODE=draft bash customer-portal/ops/scripts/portal_task_complete.sh
+# Publish vs draft: HUBSPOT_CMS_PUBLISH_MODE=draft|publish (default publish).
 # Secrets: bash customer-portal/ops/scripts/op_env.sh bash customer-portal/ops/scripts/portal_task_complete.sh "msg"
 #   or from design-manager: op run --env-file ../../.env.op --env-file ../../.env -- bash customer-portal/ops/scripts/portal_task_complete.sh "msg"
 set -euo pipefail
 
-# HubSpot CLI: newer releases use `hs cms upload`; older use top-level `hs upload`.
-# Theme may be flat (theme.json at root) or legacy layout with a `src/` folder.
-# Note: `hs theme` has no "publish" subcommand — publishing is upload with -m publish (HubSpot default).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PORTAL_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Resolve HubSpot CLI binary: explicit override → repo-local @hubspot/cli → PATH `hs`
+portal_resolve_hs_bin() {
+  if [[ -n "${HUBSPOT_HS_BIN:-}" ]]; then
+    printf '%s\n' "$HUBSPOT_HS_BIN"
+    return
+  fi
+  local local_hs="$PORTAL_ROOT/node_modules/.bin/hs"
+  if [[ -x "$local_hs" ]]; then
+    printf '%s\n' "$local_hs"
+    return
+  fi
+  printf '%s\n' "hs"
+}
+
+# v8+ exposes `hs cms upload` with --cms-publish-mode (alias -m).
+portal_hs_has_cms_upload() {
+  local bin="$1"
+  "$bin" cms upload --help 2>&1 | grep -qE 'cms-publish-mode|\[src\].*\[dest\]'
+}
+
 portal_hs_theme_upload() {
   local theme_dir="$1" dest="$2"
-  local upload_path help errf mode
+  local upload_path mode hs_bin
   mode="${HUBSPOT_CMS_PUBLISH_MODE:-publish}"
   if [[ "$mode" != "publish" && "$mode" != "draft" ]]; then
     echo "portal_task_complete: HUBSPOT_CMS_PUBLISH_MODE must be publish or draft (got: $mode)" >&2
@@ -38,34 +63,32 @@ portal_hs_theme_upload() {
   else
     upload_path="."
   fi
-  # Prefer top-level `hs upload` when available (many CLI builds list `hs cms` without a working `hs cms upload`).
-  if hs upload --help 2>&1 | grep -qE 'Upload a folder|Positionals:'; then
-    (cd "$theme_dir" && hs upload "$upload_path" "$dest" -m "$mode")
-    return
-  fi
-  help="$(cd "$theme_dir" && hs cms upload --help 2>&1)" || true
-  if echo "$help" | grep -qE 'Upload a folder|Positionals:|\[src\]'; then
-    (cd "$theme_dir" && hs cms upload "$upload_path" "$dest" -m "$mode")
-    return
-  fi
-  errf="$(mktemp "${TMPDIR:-/tmp}/hs-upload.XXXXXX")"
-  if (cd "$theme_dir" && hs upload "$upload_path" "$dest" -m "$mode" 2>"$errf"); then
-    rm -f "$errf"
+
+  hs_bin="$(portal_resolve_hs_bin)"
+  if portal_hs_has_cms_upload "$hs_bin"; then
+    echo "portal_task_complete: HubSpot CLI — $(portal_hs_version_line "$hs_bin"); using hs cms upload -m $mode"
+    (cd "$theme_dir" && "$hs_bin" cms upload "$upload_path" "$dest" -m "$mode")
     return 0
   fi
-  if grep -qiE 'cms upload|Did you mean' "$errf" 2>/dev/null; then
-    cat "$errf" >&2
-    rm -f "$errf"
-    (cd "$theme_dir" && hs cms upload "$upload_path" "$dest" -m "$mode")
-  else
-    cat "$errf" >&2
-    rm -f "$errf"
+
+  echo "portal_task_complete: no hs cms upload in this CLI — falling back to hs upload (install devDependency @hubspot/cli@^8 in customer-portal for hs cms upload)" >&2
+  if ! "$hs_bin" upload --help 2>&1 | grep -qE 'Upload a folder|Positionals:'; then
+    echo "portal_task_complete: ERROR: neither hs cms upload nor hs upload is available (bin=$hs_bin)" >&2
     return 1
   fi
+  (cd "$theme_dir" && "$hs_bin" upload "$upload_path" "$dest" -m "$mode")
 }
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+portal_hs_version_line() {
+  local bin="$1"
+  local pkg="$PORTAL_ROOT/node_modules/@hubspot/cli/package.json"
+  if [[ "$bin" == "$PORTAL_ROOT/node_modules/.bin/hs" && -f "$pkg" ]]; then
+    node -e "console.log('npm @hubspot/cli ' + require(process.argv[1]).version)" "$pkg" 2>/dev/null || echo "npm @hubspot/cli (local)"
+    return
+  fi
+  "$bin" --version 2>/dev/null | head -1 || echo "version unknown"
+}
+
 cd "$REPO_ROOT"
 
 SKIP_ISSUES="${SKIP_ISSUES:-0}"
@@ -108,10 +131,11 @@ THEME_DIR="$REPO_ROOT/customer-portal/cms"
 THEME_DEST="${HUBSPOT_THEME_DEST:-hair-solutions-portal}"
 
 if [[ "$SKIP_HUBSPOT" != "1" ]]; then
-  if ! command -v hs >/dev/null 2>&1; then
-    echo "warn: hs (HubSpot CLI) not in PATH — skipping Design Manager upload" >&2
-  elif ! (cd "$THEME_DIR" && hs accounts list >/dev/null 2>&1); then
-    echo "warn: HubSpot CLI has no working account (try: hs account auth) — skipping upload" >&2
+  HS_BIN="$(portal_resolve_hs_bin)"
+  if [[ ! -x "$HS_BIN" ]] && ! command -v "$HS_BIN" >/dev/null 2>&1; then
+    echo "warn: HubSpot CLI (hs) not found — install: (cd customer-portal && npm install) or npm i -g @hubspot/cli@8 — skipping Design Manager upload" >&2
+  elif ! (cd "$THEME_DIR" && "$HS_BIN" accounts list >/dev/null 2>&1); then
+    echo "warn: HubSpot CLI has no working account (try: $HS_BIN account auth) — skipping upload" >&2
   else
     echo "Uploading theme to HubSpot ($THEME_DEST) ..."
     portal_hs_theme_upload "$THEME_DIR" "$THEME_DEST"
