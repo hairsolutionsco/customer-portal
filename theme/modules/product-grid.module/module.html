@@ -1,6 +1,6 @@
 {% set hubdb_tid = theme.hubdb.products_table_id %}
 {% set items = hubdb_table_rows(hubdb_tid) if hubdb_tid else [] %}
-{% set customer_portal_url = theme.portal.customer_portal_url if theme.portal.customer_portal_url else "/customer-portal" %}
+{% set customer_portal_url = module.support_portal_url if module.support_portal_url else "/customer-portal" %}
 <section class="product-grid" aria-label="Shop" data-product-root>
   <h1 class="hs-page-title">Shop</h1>
   <div class="product-grid__tabs" role="tablist">

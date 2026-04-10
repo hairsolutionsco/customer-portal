@@ -1,4 +1,4 @@
-{% set customer_portal_url = theme.portal.customer_portal_url if theme.portal.customer_portal_url else "/customer-portal" %}
+{% set customer_portal_url = module.support_portal_url if module.support_portal_url else "/customer-portal" %}
 <section class="quick-actions hs-card" aria-label="Quick actions">
   <h2>Quick actions</h2>
   <div class="quick-actions__grid">
