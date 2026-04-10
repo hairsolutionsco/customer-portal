@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Run after every Portal 2.0 task / wave completes (actual order below):
-#   1) Refresh customer-portal/ops/exports/github-issues.json (+ milestones)
+#   1) Refresh customer-portal/exports/github-issues.json (+ milestones)
 #   2) Upload customer-portal/theme → HubSpot Design Manager, theme name $HUBSPOT_THEME_DEST (default: customer-portal)
-#   3) Commit + push git (ancestor **hubspot/** repo when present) — only when you pass a commit message as the first argument
+#   3) Commit + push git (customer-portal repo) — only when you pass a commit message as the first argument
 #
 # Usage (from 99-development/design-manager/):
 #   bash customer-portal/ops/scripts/portal_task_complete.sh "chore(portal): describe the task"
@@ -28,7 +28,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORTAL_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 # Resolve HubSpot CLI binary: explicit override → repo-local @hubspot/cli → PATH `hs`
 portal_resolve_hs_bin() {
@@ -58,11 +57,7 @@ portal_hs_theme_upload() {
     echo "portal_task_complete: HUBSPOT_CMS_PUBLISH_MODE must be publish or draft (got: $mode)" >&2
     exit 1
   fi
-  if [[ -d "$theme_dir/src" ]]; then
-    upload_path="src"
-  else
-    upload_path="."
-  fi
+  upload_path="."
 
   hs_bin="$(portal_resolve_hs_bin)"
   if portal_hs_has_cms_upload "$hs_bin"; then
@@ -89,7 +84,7 @@ portal_hs_version_line() {
   "$bin" --version 2>/dev/null | head -1 || echo "version unknown"
 }
 
-cd "$REPO_ROOT"
+cd "$PORTAL_ROOT"
 
 SKIP_ISSUES="${SKIP_ISSUES:-0}"
 SKIP_GIT="${SKIP_GIT:-0}"
@@ -127,7 +122,11 @@ if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$SCRIPT_DIR/sync-github-exports.sh"
 fi
 
-THEME_DIR="$REPO_ROOT/customer-portal/theme"
+THEME_DIR="$PORTAL_ROOT/theme"
+if [[ ! -f "$THEME_DIR/theme.json" ]]; then
+  echo "portal_task_complete: ERROR: missing canonical theme file $THEME_DIR/theme.json. Uploads only support customer-portal/theme." >&2
+  exit 1
+fi
 THEME_DEST="${HUBSPOT_THEME_DEST:-customer-portal}"
 
 if [[ "$SKIP_HUBSPOT" != "1" ]]; then

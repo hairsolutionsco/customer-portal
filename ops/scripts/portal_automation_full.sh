@@ -3,7 +3,7 @@
 #
 # Order:
 #   1) npm ci (if package-lock.json) else npm install
-#   2) npm run portal:verify   (theme build + eslint + tsc)
+#   2) npm run portal:verify   (CMS theme validation only)
 #   3) bash customer-portal/ops/scripts/op_env.sh npm run portal:hubspot-props   (needs hubspot/.env via 1Password)
 #   4) bash customer-portal/ops/scripts/op_env.sh npm run portal:hubdb-sync      (same token; private app needs **hubdb** scope)
 #   5) bash customer-portal/ops/scripts/portal_task_complete.sh   (GitHub exports + hs upload; git only if commit message given)
@@ -25,8 +25,8 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-cd "$REPO_ROOT"
+PORTAL_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$PORTAL_ROOT"
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH:-}"
 export CI="${CI:-true}"
@@ -89,9 +89,9 @@ step() {
 }
 
 # --- 1) Dependencies ---
-step "npm install (ci if lockfile present)" env REPO_ROOT="$REPO_ROOT" bash -c '
+step "npm install (ci if lockfile present)" env PORTAL_ROOT="$PORTAL_ROOT" bash -c '
   set -e
-  cd "$REPO_ROOT/customer-portal/app"
+  cd "$PORTAL_ROOT"
   if [[ -f package-lock.json ]]; then
     npm ci --no-audit
   else
@@ -99,10 +99,10 @@ step "npm install (ci if lockfile present)" env REPO_ROOT="$REPO_ROOT" bash -c '
   fi
 '
 
-# --- 2) Verify (theme + lint + tsc) ---
-step "portal:verify" env REPO_ROOT="$REPO_ROOT" bash -c '
+# --- 2) Verify (CMS theme validation only) ---
+step "portal:verify (CMS theme validation only)" env PORTAL_ROOT="$PORTAL_ROOT" bash -c '
   set -e
-  cd "$REPO_ROOT"
+  cd "$PORTAL_ROOT"
   npm run portal:verify
 '
 
@@ -113,10 +113,10 @@ else
   if [[ ! -f "$SCRIPT_DIR/op_env.sh" ]]; then
     bail "missing op_env.sh"
   fi
-  step "HubSpot contact properties (op_env + portal:hubspot-props)" env REPO_ROOT="$REPO_ROOT" SCRIPT_DIR="$SCRIPT_DIR" bash -c '
+  step "HubSpot contact properties (op_env + portal:hubspot-props)" env PORTAL_ROOT="$PORTAL_ROOT" SCRIPT_DIR="$SCRIPT_DIR" bash -c '
     set -e
-    cd "$REPO_ROOT"
-    bash "$SCRIPT_DIR/op_env.sh" npm run portal:hubspot-props
+    cd "$PORTAL_ROOT"
+    bash "$SCRIPT_DIR/op_env.sh" npm --prefix "$PORTAL_ROOT" run portal:hubspot-props
   '
 fi
 
@@ -124,10 +124,10 @@ fi
 if [[ "$SKIP_HUBDB" == "1" ]]; then
   echo "portal_automation_full: skipping HubDB sync (SKIP_HUBDB_SYNC=1)"
 else
-  step "HubDB sync (op_env + portal:hubdb-sync)" env REPO_ROOT="$REPO_ROOT" SCRIPT_DIR="$SCRIPT_DIR" bash -c '
+  step "HubDB sync (op_env + portal:hubdb-sync)" env PORTAL_ROOT="$PORTAL_ROOT" SCRIPT_DIR="$SCRIPT_DIR" bash -c '
     set -e
-    cd "$REPO_ROOT"
-    bash "$SCRIPT_DIR/op_env.sh" npm run portal:hubdb-sync
+    cd "$PORTAL_ROOT"
+    bash "$SCRIPT_DIR/op_env.sh" npm --prefix "$PORTAL_ROOT" run portal:hubdb-sync
   '
 fi
 

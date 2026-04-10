@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run after every Portal 2.0 task / wave completes (actual order below):
 #   1) Refresh exports/github-issues.json (+ milestones)
-#   2) Upload theme → HubSpot Design Manager (canonical: ./theme/; fallback: legacy hair-solutions-portal tree)
+#   2) Upload theme → HubSpot Design Manager (canonical: ./theme/ only)
 #   3) Commit + push git (this repo) — only when you pass a commit message as the first argument
 #
 # Usage:
@@ -60,11 +60,7 @@ portal_hs_theme_upload() {
     echo "portal_task_complete: HUBSPOT_CMS_PUBLISH_MODE must be publish or draft (got: $mode)" >&2
     exit 1
   fi
-  if [[ -d "$theme_dir/src" ]]; then
-    upload_path="src"
-  else
-    upload_path="."
-  fi
+  upload_path="."
 
   hs_bin="$(portal_resolve_hs_bin)"
   if portal_hs_has_cms_upload "$hs_bin"; then
@@ -119,12 +115,10 @@ if [[ "$SKIP_ISSUES" != "1" ]]; then
   bash "$ROOT/scripts/sync-github-exports.sh"
 fi
 
-if [[ -f "$ROOT/theme/theme.json" ]]; then
-  THEME_DIR="$ROOT/theme"
-elif [[ -f "$ROOT/hair-solutions-portal/src/theme.json" ]] || [[ -d "$ROOT/hair-solutions-portal/src" ]]; then
-  THEME_DIR="$ROOT/hair-solutions-portal"
-else
-  THEME_DIR="$ROOT/hair-solutions-portal"
+THEME_DIR="$ROOT/theme"
+if [[ ! -f "$THEME_DIR/theme.json" ]]; then
+  echo "portal_task_complete: ERROR: missing canonical theme file $THEME_DIR/theme.json. Uploads only support ./theme." >&2
+  exit 1
 fi
 THEME_DEST="${HUBSPOT_THEME_DEST:-customer-portal}"
 

@@ -6,7 +6,7 @@ This repository’s **product** is a **HubSpot CMS–hosted** customer portal: t
 
 This project **began as a custom customer portal application** (Next.js, Prisma/PostgreSQL, auth, Stripe/Shopify integrations) with deployment experiments on **Railway**, **Vercel**, and a **Hostinger VPS** (Docker). That stack is **no longer the direction of the product**.
 
-The program **pivoted to Portal 2.0**: a **full HubSpot CMS** membership experience (uploadable theme, native CRM/HubDB alignment, ship ritual and API scripts). You should treat **`theme/`** + **`data/`** + **`scripts/`** / **`ops/`** as the **source of truth** for what we ship. Remaining **Next.js** layout at the repo root (`app/`, `package.json`, `prisma/`, etc.) is **legacy scaffolding** kept mainly for shared `npm run portal:*` tooling and optional local experiments — not for production CMS delivery.
+The program **pivoted to Portal 2.0**: a **full HubSpot CMS** membership experience (uploadable theme, native CRM/HubDB alignment, ship ritual and API scripts). You should treat **`theme/`** + **`data/`** + **`scripts/`** / **`ops/`** as the **source of truth** for what we ship. The archived **Next.js** tree (`app/`, `components/`, `lib/`, `prisma/`, `middleware.ts`, `next-env.d.ts`) is **legacy-only** and should be touched via explicit **`legacy:*`** commands, not the default CMS workflow.
 
 ## Where to work
 
@@ -16,6 +16,7 @@ The program **pivoted to Portal 2.0**: a **full HubSpot CMS** membership experie
 | **`hair-solutions-portal/`** | Older theme scaffold; do **not** treat as the primary upload surface. |
 | **`data/`** | `SCHEMA_REGISTRY.md`, HubDB seed JSON, optional schema reference — synced via API, not theme upload. |
 | **`scripts/`** · **`ops/`** | Ship ritual, GitHub issue export, HubSpot props/HubDB Python, `op_env.sh`. |
+| **`app/` · `components/` · `lib/` · `prisma/`** | Archived Next.js + next-auth app. Available only through explicit **`legacy:*`** commands. |
 | **`.hubspot-theme-fetch/`** | Optional mirror of fetched theme assets (if used in your workflow). |
 | **`docs/`** | Agent prompts, plans, skills, layout references, **`docs/cms-legacy-context/`** (IA/copy from the old app). |
 
@@ -36,8 +37,11 @@ These **root `.md` files are different**: they describe the **current Portal 2.0
 
 ### Commands (CMS + automation)
 
-- **Theme build / verify:** `npm run portal:build`, `npm run portal:verify` (see `package.json` — may still typecheck legacy Next code).
+- **Theme build / verify:** `npm run portal:build`, `npm run portal:verify` (CMS theme validation only; no `next lint`, root `tsc`, or next-auth types).
+- **Default wrappers:** `npm run build` and `npm run lint` both run CMS validation. `npm run dev` / `npm run start` print CMS guidance instead of starting the archived app.
+- **Legacy app:** use `npm run legacy:dev`, `npm run legacy:build`, `npm run legacy:lint`, `npm run legacy:typecheck`, and `npm run legacy:prisma:generate` only when intentionally working on the archived Next.js app.
 - **Ship / upload:** `./scripts/op_env.sh ./scripts/portal_task_complete.sh "type(scope): summary"` when secrets are required; otherwise `./scripts/portal_task_complete.sh` (see **`docs/AGENT_PROMPT.md`** *Portal orchestration* and **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §6a). **Project default:** run this after every meaningful theme batch so Design Manager stays in sync with git — use `SKIP_HUBSPOT=1` only when the CLI is blocked or you intentionally skip upload.
+- **Fetch live theme for comparison:** `npm run portal:fetch`.
 - **CRM properties / HubDB:** `./scripts/op_env.sh npm run portal:hubspot-props`, `portal:hubdb-sync`.
 
 ## Legacy custom app (archived docs + deploy configs)

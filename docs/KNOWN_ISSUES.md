@@ -18,7 +18,7 @@ Living log of problems that tend to recur. Update when a new failure mode appear
 | `list groups HTTP 401` / `EXPIRED_AUTHENTICATION` / expire time `1970-01-01` | Placeholder, revoked, or expired private app token in env | HubSpot → Settings → Integrations → Private Apps → create/rotate token. Required scopes: `crm.schemas.contacts.write` (props); add **`hubdb`** for `portal:hubdb-sync`. Update 1Password; never paste tokens into shell history. |
 | `hs upload` / theme upload: GraphQL `FieldUndefined` on `crm_contact` (e.g. `portal_hair_profile_json`) | Custom contact property not created yet or not exposed to CMS GraphQL for that portal | Run portal contact props with a valid token (see row 1). Confirm field appears in HubSpot GraphQL explorer. Until then, theme may use **stub** queries (core `firstname`/`lastname`/`email` only) — see comments in `customer-portal/theme/data-queries/*.graphql`. |
 | Upload fails: `FieldUndefined` on `HUBDB.products_collection` (or other `*_collection`) | HubDB table not created/published in that account | Run `portal:hubdb-sync` (needs **hubdb** scope). Restore full HUBDB blocks in `.graphql` after tables exist. |
-| `npm ci` → `ENOTEMPTY` / `rmdir node_modules/...` | Parallel installs or interrupted `npm` left `node_modules` inconsistent | `rm -rf node_modules && npm ci` from `customer-portal/app`. |
+| `npm ci` → `ENOTEMPTY` / `rmdir node_modules/...` | Parallel installs or interrupted `npm` left `node_modules` inconsistent | `rm -rf node_modules && npm ci` from `customer-portal/`. |
 | `portal_automation_full` stops after verify | `SKIP_CONTACT_PROPS` / `SKIP_HUBDB_SYNC` set, or earlier step failed | Unset skip vars; fix failing step (usually token). Use `PORTAL_AUTOMATION_CONTINUE=1` or `--continue-on-error` only for diagnosis. |
 | `op_env: missing .../.env` | 1Password Desktop Environment not linked at `hubspot/.env` | Per `AGENTS.md`: use 1Password Developer Environments; do not commit secrets. |
 | HubSpot CLI upload works but API scripts fail | CLI uses `hs account auth`; API uses PAT from env — different credentials | Align: use a private app PAT with correct scopes in `op` env; CLI account must target the same portal if you expect one account. |
@@ -31,7 +31,7 @@ From **`hubspot/`** (monorepo root for this workspace):
 ```bash
 bash scripts/op_run.sh npm run portal:hubspot-props
 bash scripts/op_run.sh npm run portal:hubdb-sync
-bash scripts/op_run.sh npm run portal:verify
+bash scripts/op_run.sh npm run portal:verify       # CMS theme validation only
 SKIP_GIT=1 bash scripts/op_run.sh bash 99-development/design-manager/customer-portal/ops/scripts/portal_task_complete.sh --skip-git
 ```
 
@@ -40,9 +40,11 @@ From **`99-development/design-manager/`** (Design Manager project root):
 ```bash
 bash customer-portal/ops/scripts/op_env.sh npm run portal:hubspot-props
 bash customer-portal/ops/scripts/op_env.sh npm run portal:hubdb-sync
-npm run portal:verify
+npm run portal:verify                              # CMS theme validation only
 SKIP_GIT=1 bash customer-portal/ops/scripts/portal_task_complete.sh --skip-git
 ```
+
+Archived Next.js tasks stay behind `legacy:*` commands such as `npm run legacy:typecheck`.
 
 ## Restoring “full” GraphQL after props + HubDB
 
@@ -52,4 +54,4 @@ Once properties exist in GraphQL and HubDB tables are published, re-add to queri
 - `notify_order_updates`, `notify_production_reminders`, `notify_marketing`
 - HUBDB blocks in `billing.graphql`, `products.graphql` as in git history or `SCHEMA_REGISTRY.md` (locations HubDB page removed per `docs/cms-customer-portal-plan.md` A0b)
 
-Then upload again via `portal_task_complete.sh` or `hs cms upload` (see `AGENT_PROMPT.md` — theme may use `.` or `src` as upload path; `portal_task_complete.sh` picks the correct one).
+Then upload again via `portal_task_complete.sh` or `hs cms upload`.

@@ -35,7 +35,7 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 | Rule | Detail |
 |------|--------|
 | **Spawn** | For each row in **Subagents to launch**, spawn **one dedicated subagent** with the **Subagent prompt** below (filled placeholders). Same **Parallel group** = launch together. |
-| **Stay orchestrator** | You coordinate, merge results, run gates (`portal:verify`, `portal_task_complete.sh`), and fix cross-cutting blockers — you do **not** replace subagents for their scoped issues. |
+| **Stay orchestrator** | You coordinate, merge results, run gates (`portal:verify` = CMS theme validation only, `portal_task_complete.sh`), and fix cross-cutting blockers — you do **not** replace subagents for their scoped issues. |
 | **If the tool allows only one agent** | Still **structure** work as sequential subagent-sized tasks: finish one spawn’s scope, ritual, then the next — never “one giant unprompted refactor.” |
 | **Exception** | Tiny one-file fixes (e.g. typo in one module) may be direct; anything touching **GraphQL + HubL + upload**, **CRM/HubDB API**, or **≥2 concerns** → **subagent**. |
 
@@ -44,43 +44,43 @@ You are the **orchestrator**, not a solo implementer. **You must use subagents**
 #### Snapshot
 
 - **Theme on disk:** **`theme/`** · **Design Manager folder:** **`customer-portal`** (override with `HUBSPOT_THEME_DEST`)
-- **CLI:** Default account **50966981** (`hs accounts list` OK). Test account **51315176** also configured.
-- **Integration branch:** **`feature/next-auth-types`** (on GitHub) carries the latest **A3 + A5 + A6 + A7** batch: Phase 6 membership runbook in **`data/SCHEMA_REGISTRY.md`**, CRM GraphQL G3 (**`687a651`** area), HubSpot-valid **theme/module fields** (**`22cffcc`**), **global chrome** (partial **`portal-primary-nav.html`**, sidebar/header a11y, **`hs cms upload -m draft`** reported succeeding where **publish** flaked). **`main`** is behind this branch until **PR / merge**.
-- **Issues (exports refreshed):** **#20–#29 CLOSED** (G3 CRM + HubDB read model documented; **#27–#28** closed with **HubL `hubdb_table_rows`** + CRM-only **`.graphql` stubs**, not fake `HUBDB.table` fragments). **#30–#31 still OPEN** on GitHub — do **human UAT** (login, nav, Support/KB hrefs, mobile menu) against **draft** theme, then **comment + close** when AC match implementation (issue text may still mention Quotes/theme URL fields; canonical = pruned IA + **module** text fields for URLs — HubSpot disallows some **theme `fields.json`** types for portal/KB URLs).
-- **Wave 1:** **#3–#4, #6–#11, #8, #12–#14 CLOSED**. **#5 OPEN** (DNS/SSL → **#54–#57**).
-- **Phase 6 (A3):** **#49–#50 OPEN** — **registry + issue comments** document **UI vs API** split; **live gating + workflows** are **human HubSpot UI**; treat **#50** body as **superseded** vs custom objects (contact JSON + **`is_portal_customer`** + access group per registry).
-- **Data model:** Unchanged north star — contact JSON mirrors, deals-as-orders, HubDB via **`hubdb_table_rows`**. **`portal_billing_json`:** not on **`crm_contact`** GraphQL on **50966981** — omit from **`dashboard.graphql`** (per A5 upload validation).
-- **Next focus:** **Merge `feature/next-auth-types` → `main`** after review → **Wave 4** pages **#32–#42** (A8–A12), **#30–#31** closure, then **forms (A13)** / **release (A15)**.
+- **CLI:** Default account **50966981** (`hs accounts list` OK). **`portal_task_complete.sh`** picks **`hs cms upload`** when the installed CLI advertises it, else **`hs upload`** (local **`@hubspot/cli` ^8** may use either path).
+- **`main` tip (Wave 4 subagent batch):** **`1aaeccb`** (A8 dashboard/orders + layout fix) on **`23124ac`** (A10 commerce/billing) on **`c5d3f70`** (A9 profile/customization) on **`93c262b`** (merge **PR #58** / `feature/next-auth-types`). **A9** uploaded **draft** successfully; **A8** reported **draft + publish** OK; **A10** did not run upload from their session — run a **consolidated ritual** so DM matches **`main`**.
+- **Layout:** All **`portal-*.html`** extend **`layouts/portal-shell.html`**; **`theme/templates/layouts/portal.html`** removed locally. **Orphan risk:** **`portal.html` may still exist in Design Manager** until deleted there or overwritten by a clean upload — pages no longer reference it.
+- **Theme field reconciliation:** **A10** had added **`portal.support_portal_url`** in **`theme/fields.json`**; **A8** removed it as invalid for theme upload and pointed sidebar/support CTAs at **module URLs** or **`/customer-portal`**. Current repo matches the **module-level URL** rule already documented for A7 — do **not** reintroduce that theme text field without re-validating upload.
+- **Legacy mirror:** **A10** updated **`hair-solutions-portal/src/`** to match commerce modules; **A9** left legacy tree **out of scope**. Follow up only if you want **strict parity** between **`theme/`** and **`hair-solutions-portal/src/`**.
+- **Issues (exports refreshed):** **`exports/github-issues.json`** still lists **#30–#42 OPEN** until GitHub is updated — close **#35–#36** (A9), **#37 / #40 / #41** (A10), **#32–#34** (A8) **after** UAT when AC match. **#43–#48** placeholders (forms/serverless). **#38 (locations):** live IA **pruned** `portal-locations` / `location-cards` per **`docs/cms-customer-portal-plan.md`** — decide **close / defer / re-scope** before spawning location work. **#39–#42** remain for later subagents.
+- **Special agent (operational):** **`docs/SPECIAL_AGENT_REPORT.md`** — CMS/legacy decoupling (**`npm run build` → `portal:build`**, **`legacy:*`**, **`tsconfig` split**, scripts/CI watch **`theme/**`**). Those edits are **still uncommitted** in the working tree alongside this handoff — **commit as a dedicated ops commit** (no mixed theme feature blobs).
 
 #### Lead agent — run in order
 
 0. **Mandatory session start:** this file, top section (skills table).
-1. Read **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** §4 **Wave 4–5** and §7 **G4–G7** as applicable.
-2. Run **`npm run portal:issues`** after any GitHub comment/close batch (exports should match **`exports/github-issues.json`**).
-3. **Merge:** Open/review **PR `feature/next-auth-types` → `main`**, or **`git merge`** / **`cherry-pick`** after diff review — do not leave the branch as the only source of truth indefinitely.
-4. **Subagents:** Use **Subagents to launch** for the next wave (**A8–A12**); keep **`git status`** clean or **`git add` paths explicitly** — subagents avoided **`portal_task_complete.sh`** because it runs **`git add -A`**. For doc/issue-only batches: **`SKIP_HUBSPOT=1`** and/or **`SKIP_GIT=1`** with manual **`git add`**, or fix the script to stage intentionally.
-5. **Upload:** Prefer **`hs cms upload … -m draft`** if **publish** returns internal error; retry publish later.
+1. **Commit + push** the **Special Agent** operational batch (and **`docs/SPECIAL_AGENT_REPORT.md`** if keeping it tracked) with a **`chore(portal): …`** message; keep **unrelated theme dirt** out of that commit.
+2. Run **`npm run portal:issues`**; on GitHub, **close or comment** **#32–#34, #35–#36, #37, #40, #41** when UAT satisfies AC.
+3. Run **`./scripts/op_env.sh ./scripts/portal_task_complete.sh "chore(portal): sync DM after Wave 4 batch (A8–A10)"`** (or equivalent message) so **issues sync + upload + git** align — use **`SKIP_HUBSPOT=1`** only if CLI/auth blocks after retry.
+4. **Remaining Wave 4 / system UI** (per **`IMPLEMENTATION_PLAN_SUBAGENTS.md`** and open issues in **`#38–#42`** range if any): spawn **A11–A12** (or plan-named successors) **after** #30–#31 UAT or explicit waiver.
+5. **`package.json`:** optional cleanup — **`portal:cms-upload-*`** still invoke **`hs cms upload`**; **`portal_task_complete.sh`** is authoritative for CLI detection. Align npm script wording with **`scripts/portal_task_complete.sh`** header if contributors get confused.
 
 #### Subagents to launch *(trim rows per session)*
 
 | Parallel group | Agent | Role (from plan §3) | Issues | Notes |
 |----------------|-------|---------------------|--------|-------|
-| — | **Human** | Chrome UAT + issue hygiene | **#30–#31** | Log in on **draft** theme; verify nav, Support/KB URLs, skip link, mobile; close issues or note gaps |
-| — | **A0** | Platform bootstrap (residual) | **#5 only** | DNS/SSL go-live |
-| 1 | **A8–A12** | Pages / system UI | **#32–#42** | **After** merge to **`main`** and **#30–#31** verified (or static nav acceptable per plan) |
-| 2 | **A3** | Membership UI (human-heavy) | **#49–#50** | Execute HubSpot **access group + page gates + workflows** per **`data/SCHEMA_REGISTRY.md`** Phase 6 section |
-| *later* | **A13** | Forms | #43–#48 | |
-| *later* | **A14** | Service / KB | #51–#53 | |
-| *later* | **A15** | Release | #54–#57 | |
+| — | **Human** | Chrome UAT + issue hygiene | **#30–#31**, **#32–#41** | Draft theme; nav, orders, invoices, billing, profile CTAs; close when AC met |
+| — | **Orchestrator / shell** | Ops commit + ritual | — | Land Special Agent diff; **`portal_task_complete.sh`** upload |
+| 1 | **A11–A12** | Remaining portal pages / system UI | **#38–#42** (if open per exports) | Only after UAT or waived |
+| 2 | **A3** | Membership UI (human-heavy) | **#49–#50** | HubSpot UI per **`data/SCHEMA_REGISTRY.md`** Phase 6 |
+| *later* | **A13** | Forms | **#43–#48** | |
+| *later* | **A14** | Service / KB | **#51–#53** | |
+| *later* | **A15** | Release | **#54–#57** | |
 
 **Delete or mark *later* rows** so the next agent only spawns what applies **this** session.
 
 #### Blockers / do not launch until
 
-- **Branch drift:** **`main`** must absorb **`feature/next-auth-types`** (PR) before wide **A8–A12** work targets the wrong tip.
-- **Design Manager upload:** **Draft** upload path reported working; **publish** may still **internal-error** — retry or Support.
-- **`theme/fields.json`:** HubSpot upload rejects some **URL/text** field shapes at **theme** level — keep **native portal / KB URLs** on **modules** (**`portal-sidebar.module`**, **`support_portal_url`** on CTA modules) per A7.
-- **Parallel A8–A12:** **#30–#31** verified or explicitly waived after merge.
+- **Uncommitted ops layer:** Special Agent **`package.json` / `tsconfig*` / scripts / CI / docs** should land **before** the next large theme wave so agents do not fight mixed working trees.
+- **Design Manager parity:** Run upload ritual after ops commit so **A10** + **A8** + **orphan `portal.html`** state matches git.
+- **`theme/fields.json`:** Do not add **theme-level portal/KB URL** fields without HubSpot upload validation — **module** fields remain the safe pattern (**`portal-sidebar.module`**, CTAs).
+- **Wide A11–A12:** Prefer **#30–#31** verified or explicitly waived.
 
 ### Subagent prompt *(copy once per spawn; replace placeholders)*
 
@@ -163,7 +163,7 @@ You are building **Customer Portal 2.0** for a hair replacement company called *
 
 ## What to Build
 
-Build every file in the theme directory structure below. The **canonical paths in this monorepo** are **`customer-portal/theme/`** (CMS theme), **`customer-portal/data/`** (schemas + HubDB JSON), and **`customer-portal/app/`** (Next.js app). The tree below uses `hair-solutions-portal/` as a **historical logical** layout name in the spec; on disk the canonical root is **`customer-portal/theme/`**. **Design Manager upload destination** defaults to **`customer-portal`** (`HUBSPOT_THEME_DEST`). Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
+Build every file in the theme directory structure below. The **canonical paths in this monorepo** are **`customer-portal/theme/`** (CMS theme), **`customer-portal/data/`** (schemas + HubDB JSON), and **`customer-portal/scripts/`** / **`customer-portal/ops/`** (automation). The archived Next.js app (`customer-portal/app/`, `components/`, `lib/`, `prisma/`, `middleware.ts`, `next-env.d.ts`) is **legacy-only** and should be entered via explicit **`legacy:*`** scripts. The tree below uses `hair-solutions-portal/` as a **historical logical** layout name in the spec; on disk the canonical root is **`customer-portal/theme/`**. **Design Manager upload destination** defaults to **`customer-portal`** (`HUBSPOT_THEME_DEST`). Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
 
 **Live-theme note:** the active `theme/` route set has already **pruned** the CMS templates `portal-locations`, `portal-support`, `portal-help`, and `location-cards.module`. Support/ticketing should route into **HubSpot’s native customer portal**, and help content should route into the **account’s native HubSpot knowledge base**, not custom CMS pages. If older sections below still mention those paths, defer to **`docs/cms-customer-portal-plan.md`** and **`theme/docs/README.md`** for the live scope.
 
@@ -176,7 +176,7 @@ Build every file in the theme directory structure below. The **canonical paths i
 | If you are… | You must… |
 |-------------|-----------|
 | **Orchestrator (human or lead agent)** | Run one wave at a time; enforce handoffs (especially **`customer-portal/data/SCHEMA_REGISTRY.md`** before GraphQL); merge **global chrome (#30–#31)** before most page work. **After every task or wave that changes code, config, or issue state, run the task-completion ritual below** (or equivalent commands). |
-| **A subagent** | Take **one role** from the table below; only implement files in scope for that role; use **`customer-portal/ops/exports/github-issues.json`** (or the live issue on GitHub) for acceptance criteria and checklists. **Before handing off, ask the orchestrator to run the task-completion ritual** so git, HubSpot, and exports stay current. |
+| **A subagent** | Take **one role** from the table below; only implement files in scope for that role; use **`customer-portal/exports/github-issues.json`** (or the live issue on GitHub) for acceptance criteria and checklists. **Before handing off, ask the orchestrator to run the task-completion ritual** so git, HubSpot, and exports stay current. |
 | **A single agent building solo** | Follow the **same wave order** in `IMPLEMENTATION_PLAN_SUBAGENTS.md` §4; this document (`AGENT_PROMPT.md`) remains the **technical spec** for file contents. **Run the task-completion ritual yourself after each logical task.** |
 
 ### Task completion ritual (mandatory after each task / wave)
@@ -186,8 +186,8 @@ Do **not** mark work done until all three are satisfied:
 | Step | Action |
 |------|--------|
 | **1. Git** | Commit and **push** the **`hubspot/`** git repo with a clear message (Design Manager + Next app live under `99-development/design-manager/`). |
-| **2. HubSpot Design Manager** | Upload the CMS theme from **`customer-portal/theme/`**. Use **`portal_task_complete.sh`** (handles `hs cms upload` vs `hs upload`, and **`.` vs `src`**). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`customer-portal/theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **Portal orchestration** → *HubSpot CLI and portal choice* above. |
-| **3. GitHub issues snapshot** | Refresh **`customer-portal/ops/exports/github-issues.json`** (and milestones) — e.g. `npm run portal:issues` or `bash customer-portal/ops/scripts/sync-github-exports.sh` from **design-manager** root. Close/update issues on GitHub when AC are met **before** or **as part of** the sync. |
+| **2. HubSpot Design Manager** | Upload the CMS theme from **`customer-portal/theme/`**. Use **`portal_task_complete.sh`** (always uploads the canonical theme root `.`; handles `hs cms upload` vs `hs upload`). Auth: HubSpot CLI default account (**`~/.hscli/config.yml`**) is enough; optional local **`customer-portal/theme/hubspot.config.yml`** (never commit it). Sandbox portal optional — see **Portal orchestration** → *HubSpot CLI and portal choice* above. |
+| **3. GitHub issues snapshot** | Refresh **`customer-portal/exports/github-issues.json`** (and milestones) — e.g. `npm run portal:issues` or `bash customer-portal/ops/scripts/sync-github-exports.sh` from **design-manager** root. Close/update issues on GitHub when AC are met **before** or **as part of** the sync. |
 
 **One-shot automation (recommended):** from **`99-development/design-manager/`**:
 

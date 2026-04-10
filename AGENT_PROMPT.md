@@ -16,7 +16,7 @@ You are building **Customer Portal 2.0** for a hair replacement company called *
 
 ## What to Build
 
-Build every file in the theme directory structure below. The **canonical theme on disk** is **`theme/`** (uploaded to Design Manager as **`customer-portal`** by default; set **`HUBSPOT_THEME_DEST`** to override). Treat **`hair-solutions-portal/src/`** only as legacy reference. Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
+Build every file in the theme directory structure below. The **canonical theme on disk** is **`theme/`** (uploaded to Design Manager as **`customer-portal`** by default; set **`HUBSPOT_THEME_DEST`** to override). Treat **`hair-solutions-portal/src/`** only as legacy reference. The archived Next.js app (`app/`, `components/`, `lib/`, `prisma/`, `middleware.ts`, `next-env.d.ts`) is **legacy-only** and should be run via explicit **`legacy:*`** commands. Every file must be production-ready — no placeholder comments, no TODO stubs, no "add your code here" blocks.
 
 **Live-theme note:** the active `theme/` route set has already **pruned** the CMS templates `portal-locations`, `portal-support`, `portal-help`, and `location-cards.module`. Support/ticketing should route into **HubSpot’s native customer portal**, and help content should route into the **account’s native HubSpot knowledge base**, not custom CMS pages. If older sections below still mention those paths, defer to **`docs/cms-customer-portal-plan.md`** and **`theme/docs/README.md`** for the live scope.
 
@@ -43,7 +43,7 @@ Do **not** mark work done until all steps below are satisfied:
 | **3. GitHub issues snapshot** | Refresh `exports/github-issues.json` (and milestones) so agents and CI use current issue text — e.g. run `npm run portal:issues` or `./scripts/sync-github-exports.sh`. Close/update issues on GitHub when AC are met (`gh issue close`, edit checklists, etc.) **before** or **as part of** the sync. |
 | **4. Next-step handoff in repo** | In **`docs/AGENT_PROMPT.md`** → *Portal orchestration* → **Next session — do this now**, update **only** that subsection (snapshot, **Lead agent — run in order**, **Subagents to launch**, **Blockers / do not launch until**) so the next agent knows what to do. Do **not** change other parts of **`docs/AGENT_PROMPT.md`** or this file solely for handoff text. |
 
-**One-shot automation (recommended):** from `00-engineering/repos/customer-portal`:
+**One-shot automation (recommended):** from `customer-portal/`:
 
 ```bash
 ./scripts/portal_task_complete.sh "type(scope): what you completed"

@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "lib": ["esnext"],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -11,17 +10,17 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "types": ["node"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["tailwind.config.ts"],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "app",
+    "components",
+    "lib",
+    "prisma",
+    "middleware.ts",
+    "next-env.d.ts"
+  ]
 }

@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
+const typescriptConfigPath = process.env.NEXT_TYPESCRIPT_TSCONFIG || 'tsconfig.json'
+
 const nextConfig = {
   output: 'standalone',
+  typescript: {
+    tsconfigPath: typescriptConfigPath,
+  },
   images: {
     remotePatterns: [
       {

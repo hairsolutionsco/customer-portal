@@ -4,12 +4,12 @@ name: Portal theme build
 on:
   push:
     paths:
-      - "hair-solutions-portal/**"
+      - "theme/**"
       - "scripts/portal_build.sh"
       - ".github/workflows/portal-theme-build.yml"
   pull_request:
     paths:
-      - "hair-solutions-portal/**"
+      - "theme/**"
       - "scripts/portal_build.sh"
       - ".github/workflows/portal-theme-build.yml"
 
