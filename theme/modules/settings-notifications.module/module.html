@@ -1,19 +1,52 @@
 {% set c = data_query.data.CRM.contact %}
-<section class="settings-notifications hs-card" aria-label="Notifications">
-  <h2 style="margin-top:0;">Notifications</h2>
+<section
+  id="portal-settings-panel-notifications"
+  class="settings-notifications hs-card"
+  role="tabpanel"
+  aria-labelledby="tab-settings-notifications"
+  data-tab-panel="notifications"
+  hidden
+  aria-hidden="true"
+>
+  <h2 class="hs-card__title" style="margin-top:0;">Notifications</h2>
   {% if c %}
-  <ul>
-    <li>Order updates: <strong>{% if c.notify_order_updates == 'true' %}On{% else %}Off{% endif %}</strong></li>
-    <li>Production reminders: <strong>{% if c.notify_production_reminders == 'true' %}On{% else %}Off{% endif %}</strong></li>
-    <li>Marketing: <strong>{% if c.notify_marketing == 'true' %}On{% else %}Off{% endif %}</strong></li>
+  {% set on_order = c.notify_order_updates == true or c.notify_order_updates == 'true' %}
+  {% set on_prod = c.notify_production_reminders == true or c.notify_production_reminders == 'true' %}
+  {% set on_mkt = c.notify_marketing == true or c.notify_marketing == 'true' %}
+  <p class="settings-notifications__desc" style="margin:0 0 1rem;font-size:0.9375rem;color:var(--hs-color-muted,#64748b);">Current values come from contact properties in group <strong>notification_preferences</strong> (<code>notify_order_updates</code>, <code>notify_production_reminders</code>, <code>notify_marketing</code>). Changes submit through the HubSpot form below when configured (issue #48).</p>
+  <ul class="settings-notifications__list">
+    <li class="settings-notifications__row">
+      <div>
+        <p class="settings-notifications__label">Order updates</p>
+        <p class="settings-notifications__desc">Email about order status and shipping updates.</p>
+      </div>
+      <span class="settings-toggle{% if on_order %} settings-toggle--on{% endif %}" role="img" aria-label="{% if on_order %}On{% else %}Off{% endif %}"></span>
+    </li>
+    <li class="settings-notifications__row">
+      <div>
+        <p class="settings-notifications__label">Production reminders</p>
+        <p class="settings-notifications__desc">Reminders about production and fulfillment milestones.</p>
+      </div>
+      <span class="settings-toggle{% if on_prod %} settings-toggle--on{% endif %}" role="img" aria-label="{% if on_prod %}On{% else %}Off{% endif %}"></span>
+    </li>
+    <li class="settings-notifications__row">
+      <div>
+        <p class="settings-notifications__label">Marketing</p>
+        <p class="settings-notifications__desc">Product news and promotional email (opt-in).</p>
+      </div>
+      <span class="settings-toggle{% if on_mkt %} settings-toggle--on{% endif %}" role="img" aria-label="{% if on_mkt %}On{% else %}Off{% endif %}"></span>
+    </li>
   </ul>
-  <div class="hs-form-wrap" style="margin-top:1.5rem;">
-    <h3>Update preferences</h3>
+  <div class="hs-form-wrap" style="margin-top:0;">
+    <h3 style="font-size:1rem;margin-bottom:0.75rem;">Save preferences</h3>
     {% if module.notification_form.form_id %}
     {% form form_to_use="{{ module.notification_form.form_id }}" %}
     {% else %}
     <p>Attach a HubSpot form in the module fields (issue #48).</p>
     {% endif %}
   </div>
+  <p class="settings-notifications__footnote">SMS and additional channels are not modeled on the contact in this portal slice; extend properties and forms when ops require them.</p>
+  {% else %}
+  <p class="portal-empty-state__message">We could not load your notification preferences.</p>
   {% endif %}
 </section>

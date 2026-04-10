@@ -1,5 +1,5 @@
 # label: "Portal Settings"
-# description: "Profile + notification_preferences (#11). Validated upload 50966981 2026-04-10."
+# description: "Profile + notification_preferences (#11). Settings page template + modules: GitHub #39. Validated upload 50966981 2026-04-10."
 # $contact_id: {{ request.contact.contact_vid || '' }}
 query settings($contact_id: String!) {
   CRM {

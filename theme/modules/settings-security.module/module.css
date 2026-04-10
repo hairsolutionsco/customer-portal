@@ -1,0 +1,4 @@
+/* Styles shared via portal-settings.css; keep module hook for upload parity. */
+.settings-security.hs-card {
+  margin-bottom: 0;
+}

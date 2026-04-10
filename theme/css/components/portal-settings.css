@@ -1,0 +1,192 @@
+/* Settings page: tabbed layout (main.js: [data-settings-tabs]). */
+
+.portal-settings {
+  max-width: 56rem;
+}
+
+.portal-settings__intro {
+  margin-bottom: var(--hs-space-6, 1.5rem);
+}
+
+.portal-page-title {
+  margin: 0 0 var(--hs-space-2, 0.5rem);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--hs-color-text, #0f172a);
+}
+
+.portal-settings__lede {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--hs-color-muted, #64748b);
+  max-width: 42rem;
+}
+
+.portal-settings__tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: var(--hs-space-6, 1.5rem);
+  padding: 0.25rem;
+  border-radius: var(--hs-radius, 8px);
+  background: var(--hs-color-surface, #f8fafc);
+  border: 1px solid var(--hs-color-border, #e2e8f0);
+}
+
+.portal-settings__tab {
+  appearance: none;
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: calc(var(--hs-radius, 8px) - 2px);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--hs-color-muted, #64748b);
+  background: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.portal-settings__tab:hover {
+  color: var(--hs-color-text, #0f172a);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.portal-settings__tab[aria-selected="true"] {
+  color: var(--hs-color-text, #0f172a);
+  background: #fff;
+  box-shadow: var(--hs-shadow, 0 1px 2px rgba(15, 23, 42, 0.06));
+}
+
+.settings-profile__actions {
+  margin-top: var(--hs-space-4, 1rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.settings-profile__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--hs-color-muted, #64748b);
+}
+
+.settings-notifications__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--hs-space-6, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--hs-space-3, 0.75rem);
+}
+
+.settings-notifications__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: var(--hs-space-3, 0.75rem) var(--hs-space-4, 1rem);
+  border: 1px solid var(--hs-color-border, #e2e8f0);
+  border-radius: var(--hs-radius, 8px);
+  background: var(--hs-color-bg, #fff);
+}
+
+.settings-notifications__label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.settings-notifications__desc {
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--hs-color-muted, #64748b);
+  flex: 1 1 100%;
+}
+
+.settings-toggle {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--hs-color-border, #e2e8f0);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.settings-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.5rem - 4px);
+  height: calc(1.5rem - 4px);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+  transition: transform 0.15s ease;
+}
+
+.settings-toggle--on {
+  background: var(--hs-color-accent, #0d9488);
+}
+
+.settings-toggle--on::after {
+  transform: translateX(1.25rem);
+}
+
+.settings-notifications__footnote {
+  margin: var(--hs-space-4, 1rem) 0 0;
+  font-size: 0.8125rem;
+  color: var(--hs-color-muted, #64748b);
+}
+
+.settings-security__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hs-space-4, 1rem);
+}
+
+.settings-security__item {
+  padding-bottom: var(--hs-space-4, 1rem);
+  border-bottom: 1px solid var(--hs-color-border, #e2e8f0);
+}
+
+.settings-security__item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.settings-security__item-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.settings-security__item-body {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--hs-color-muted, #64748b);
+}
+
+.settings-security__hint {
+  margin: var(--hs-space-2, 0.5rem) 0 0;
+  font-size: 0.8125rem;
+  color: var(--hs-color-muted, #64748b);
+}
+
+@media (max-width: 639px) {
+  .portal-settings__tablist {
+    flex-direction: column;
+  }
+
+  .portal-settings__tab {
+    width: 100%;
+    text-align: left;
+  }
+}

@@ -5,20 +5,40 @@
   screenshotPath: ../images/template-previews/portal-settings.png
   dataQueryPath: ../data-queries/settings
 -->
+{# GitHub #39: tabbed settings (profile, notifications, security). GraphQL file: settings.graphql (not legacy customer_settings path). #}
 {% extends "./layouts/portal-shell.html" %}
+{% block head %}
+  {{ super() }}
+  {{ require_css(get_asset_url("../../css/components/portal-settings.css")) }}
+{% endblock %}
 {% block portal_content %}
-{% dnd_area "portal_content" label="Main" %}
-  {% dnd_section %}
-    {% dnd_column %}
-      {% dnd_row %}
-        {% dnd_module path="../modules/settings-profile.module" %}
-        {% end_dnd_module %}
-      {% end_dnd_row %}
-      {% dnd_row %}
-        {% dnd_module path="../modules/settings-notifications.module" %}
-        {% end_dnd_module %}
-      {% end_dnd_row %}
-    {% end_dnd_column %}
-  {% end_dnd_section %}
-{% end_dnd_area %}
+<div class="portal-settings" data-settings-tabs>
+  <header class="portal-settings__intro">
+    <h1 class="portal-page-title">Settings</h1>
+    <p class="portal-settings__lede">Manage your profile, notification preferences, and account security. Updates to profile and preferences use HubSpot forms once configured in each module (issues #47–#48).</p>
+  </header>
+  <div class="portal-settings__tablist" role="tablist" aria-label="Settings sections">
+    <button type="button" class="portal-settings__tab" role="tab" id="tab-settings-profile" aria-controls="portal-settings-panel-profile" aria-selected="true" data-tab="profile">Profile</button>
+    <button type="button" class="portal-settings__tab" role="tab" id="tab-settings-notifications" aria-controls="portal-settings-panel-notifications" aria-selected="false" data-tab="notifications">Notifications</button>
+    <button type="button" class="portal-settings__tab" role="tab" id="tab-settings-security" aria-controls="portal-settings-panel-security" aria-selected="false" data-tab="security">Security</button>
+  </div>
+  {% dnd_area "portal_content" label="Main" %}
+    {% dnd_section %}
+      {% dnd_column %}
+        {% dnd_row %}
+          {% dnd_module path="../modules/settings-profile.module" %}
+          {% end_dnd_module %}
+        {% end_dnd_row %}
+        {% dnd_row %}
+          {% dnd_module path="../modules/settings-notifications.module" %}
+          {% end_dnd_module %}
+        {% end_dnd_row %}
+        {% dnd_row %}
+          {% dnd_module path="../modules/settings-security.module" %}
+          {% end_dnd_module %}
+        {% end_dnd_row %}
+      {% end_dnd_column %}
+    {% end_dnd_section %}
+  {% end_dnd_area %}
+</div>
 {% endblock %}

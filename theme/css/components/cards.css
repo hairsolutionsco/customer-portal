@@ -6,6 +6,12 @@
   border: 1px solid var(--hs-color-border);
 }
 
+.hs-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 0;
+}
+
 .hs-card:hover {
   box-shadow: var(--hs-shadow-lg);
 }

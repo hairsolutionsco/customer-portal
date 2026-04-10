@@ -1,0 +1,9 @@
+[
+  {
+    "name": "password_change_path",
+    "label": "Password / reset page path",
+    "type": "text",
+    "default": "",
+    "help_text": "Path or URL to the HubSpot membership “request password reset” page (system template membership-reset-password-request.html once published), e.g. /reset-password or full https URL."
+  }
+]

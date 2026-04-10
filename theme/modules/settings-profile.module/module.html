@@ -1,20 +1,50 @@
 {% set c = data_query.data.CRM.contact %}
-<section class="settings-profile hs-card" aria-label="Profile">
-  <h2 style="margin-top:0;">Profile</h2>
+<section
+  id="portal-settings-panel-profile"
+  class="settings-profile hs-card"
+  role="tabpanel"
+  aria-labelledby="tab-settings-profile"
+  data-tab-panel="profile"
+  aria-hidden="false"
+>
+  <h2 class="hs-card__title" style="margin-top:0;">Profile</h2>
   {% if c %}
   <dl>
-    <dt>Name</dt><dd>{{ c.firstname }} {{ c.lastname }}</dd>
-    <dt>Email</dt><dd>{{ c.email }}</dd>
-    <dt>Phone</dt><dd>{{ c.phone or '—' }}</dd>
-    <dt>Address</dt><dd>{{ c.address or c.shipping_address or '—' }}, {{ c.city }} {{ c.state }} {{ c.zip }}</dd>
+    <dt>Name</dt>
+    <dd>{{ c.firstname|default('') }} {{ c.lastname|default('') }}</dd>
+    <dt>Email</dt>
+    <dd>{{ c.email|default('—') }}</dd>
+    <dt>Phone</dt>
+    <dd>{{ c.phone|default('—') }}</dd>
+    <dt>Address</dt>
+    <dd>
+      {% set cityline = (c.city|default('') ~ ' ' ~ c.state|default('') ~ ' ' ~ c.zip|default(''))|trim %}
+      {% if c.address or cityline %}
+        {%- if c.address -%}{{ c.address }}{%- if cityline -%}, {{ cityline }}{%- endif -%}
+        {%- elif cityline -%}{{ cityline }}
+        {%- endif -%}
+      {% else %}
+        —
+      {% endif %}
+    </dd>
   </dl>
-  <div class="hs-form-wrap" style="margin-top:1.5rem;">
-    <h3>Update profile</h3>
+  <div class="settings-profile__actions">
+    {% if module.profile_form.form_id %}
+    <a class="hs-btn hs-btn--primary" href="#settings-profile-form">Edit profile</a>
+    {% else %}
+    <span class="hs-btn hs-btn--secondary" aria-disabled="true">Edit profile</span>
+    {% endif %}
+    <p class="settings-profile__hint">Profile edits submit through the HubSpot form below when a form is attached in the module fields (issue #47).</p>
+  </div>
+  <div class="hs-form-wrap" id="settings-profile-form" style="margin-top:1.5rem;">
+    <h3 style="font-size:1rem;margin-bottom:0.75rem;">Update profile</h3>
     {% if module.profile_form.form_id %}
     {% form form_to_use="{{ module.profile_form.form_id }}" %}
     {% else %}
     <p>Attach a HubSpot form in the module fields (issue #47).</p>
     {% endif %}
   </div>
+  {% else %}
+  <p class="portal-empty-state__message">We could not load your profile. Try refreshing the page or contact support if this continues.</p>
   {% endif %}
 </section>

@@ -101,7 +101,9 @@
           t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
         });
         panels.forEach(function (p) {
-          p.hidden = p.getAttribute('data-tab-panel') !== id;
+          var show = p.getAttribute('data-tab-panel') === id;
+          p.hidden = !show;
+          p.setAttribute('aria-hidden', show ? 'false' : 'true');
         });
       });
     });
