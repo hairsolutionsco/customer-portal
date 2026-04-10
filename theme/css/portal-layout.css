@@ -5,6 +5,28 @@
   display: flex;
   min-height: 100vh;
   background: var(--hs-color-bg);
+  position: relative;
+}
+
+.portal-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--hs-color-surface, #fff);
+  color: var(--hs-color-text, #0f172a);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--hs-radius, 6px);
+  box-shadow: var(--hs-shadow, 0 1px 3px rgba(0, 0, 0, 0.12));
+}
+
+.portal-skip-link:focus {
+  left: 0.75rem;
+  top: 0.75rem;
+  outline: 2px solid var(--hs-color-accent, #326edc);
+  outline-offset: 2px;
 }
 
 .portal-sidebar {

@@ -28,8 +28,17 @@
   function setSidebarOpen(open) {
     if (!sidebar) return;
     sidebar.classList.toggle('is-open', open);
-    if (overlay) overlay.classList.toggle('is-visible', open);
-    if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (overlay) {
+      overlay.classList.toggle('is-visible', open);
+      overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var label = toggle.querySelector('[data-sidebar-toggle-label]');
+      if (label) {
+        label.textContent = open ? 'Close navigation menu' : 'Open navigation menu';
+      }
+    }
   }
 
   if (toggle) {
@@ -64,6 +73,9 @@
     var href = link.getAttribute('href') || '';
     try {
       var u = new URL(href, window.location.origin);
+      if (u.origin !== window.location.origin) {
+        return;
+      }
       var p = u.pathname.replace(/\/+$/, '') || '/';
       if (p === path || (path !== '/portal' && path.indexOf(p) === 0 && p !== '/portal')) {
         link.setAttribute('aria-current', 'page');

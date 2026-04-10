@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "name": "support_label",
+    "label": "Native customer portal link label",
+    "type": "text",
+    "default": "Support",
+    "help_text": "Uses Portal brand → Native customer portal URL from theme settings."
+  },
+  {
+    "name": "knowledge_base_label",
+    "label": "Knowledge base link label",
+    "type": "text",
+    "default": "Knowledge base",
+    "help_text": "Uses Portal brand → Native knowledge base URL from theme settings."
+  },
+  {
+    "name": "brand_title",
+    "label": "Brand title (no logo)",
+    "type": "text",
+    "default": "Hair Solutions",
+    "help_text": "Shown when no logo is set in theme Portal brand → Logo."
+  }
+]

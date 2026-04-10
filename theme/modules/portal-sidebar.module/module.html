@@ -1,26 +1,18 @@
-{% set customer_portal_url = theme.portal.customer_portal_url if theme.portal.customer_portal_url else "/customer-portal" %}
-{% set knowledge_base_url = theme.portal.knowledge_base_url if theme.portal.knowledge_base_url else "/knowledge-base" %}
+{% set customer_portal_url = theme.portal.customer_portal_url if theme.portal.customer_portal_url else '/customer-portal' %}
+{% set knowledge_base_url = theme.portal.knowledge_base_url if theme.portal.knowledge_base_url else '/knowledge-base' %}
+{% set support_label = module.support_label if module.support_label else 'Support' %}
+{% set knowledge_base_label = module.knowledge_base_label if module.knowledge_base_label else 'Knowledge base' %}
+{% set brand_title = module.brand_title if module.brand_title else 'Hair Solutions' %}
 <aside id="portal-sidebar" class="portal-sidebar" data-portal-sidebar aria-label="Portal navigation">
   <div class="portal-sidebar__brand">
     {% if theme.portal.logo.src %}
-    <img src="{{ theme.portal.logo.src }}" alt="Hair Solutions" class="portal-sidebar__logo">
+    <img src="{{ theme.portal.logo.src }}" alt="{{ theme.portal.logo.alt|default('Hair Solutions') }}" class="portal-sidebar__logo">
     {% else %}
-    <span class="portal-sidebar__title">Hair Solutions</span>
+    <span class="portal-sidebar__title">{{ brand_title }}</span>
     {% endif %}
   </div>
   <nav class="portal-sidebar__nav" aria-label="Primary">
-    <a class="portal-sidebar__link" data-nav-link href="/portal">Dashboard</a>
-    <a class="portal-sidebar__link" data-nav-link href="{{ customer_portal_url }}">Tickets</a>
-    <a class="portal-sidebar__link" data-nav-link href="#">Quotes</a>
-    <a class="portal-sidebar__link" data-nav-link href="/portal/invoices">Invoices</a>
-    <a class="portal-sidebar__link" data-nav-link href="#">Documents</a>
-    <a class="portal-sidebar__link" data-nav-link href="#">Events</a>
-    <a class="portal-sidebar__link" data-nav-link href="{{ knowledge_base_url }}">Knowledge Base</a>
-    <a class="portal-sidebar__link" data-nav-link href="/portal/orders">Orders</a>
-    <a class="portal-sidebar__link" data-nav-link href="/portal/shop">Shop</a>
-    <a class="portal-sidebar__link" data-nav-link href="/portal/billing">Billing</a>
-    <a class="portal-sidebar__link" data-nav-link href="/portal/customization">Customization</a>
-    <a class="portal-sidebar__link" data-nav-link href="/portal/profile">My Profile</a>
+    {% include '../../templates/partials/portal-primary-nav.html' %}
   </nav>
   <div class="portal-sidebar__footer">
     <a class="portal-sidebar__link portal-sidebar__link--muted" href="{{ member_logout_url }}">Log out</a>

@@ -21,6 +21,22 @@
   overflow-y: auto;
 }
 
+.portal-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.portal-sidebar__item {
+  margin: 0;
+}
+
+.portal-sidebar__item--section-start {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 .portal-sidebar__link {
   display: block;
   padding: 0.625rem 1.25rem;

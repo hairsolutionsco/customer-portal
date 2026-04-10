@@ -19,6 +19,7 @@
 {% endblock %}
 {% block body %}
 <div class="portal-layout portal-layout--shell-{% block shell_mode %}customer{% endblock %}">
+  <a class="portal-skip-link" href="#main-content">Skip to main content</a>
   <div class="portal-overlay" data-portal-overlay aria-hidden="true"></div>
   {% block shell_sidebar %}
     {% module "sidebar" path="../modules/portal-sidebar.module" %}
