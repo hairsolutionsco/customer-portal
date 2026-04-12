@@ -1,5 +1,6 @@
 {% set c = data_query.data.CRM.contact %}
-{% set support_href = '/customer-portal' %}
+{% set support_href = theme.portal.native_customer_portal_url|default('/customer-portal')|trim %}
+{% set support_href_external = support_href and '://' in support_href %}
 <section class="billing-current hs-card" aria-label="Current plan">
   <h2 class="billing-current__heading">Your plan</h2>
   {% if c %}
@@ -39,7 +40,7 @@
     {% if module.plan_change_form.form_id %}
     <a class="hs-btn hs-btn--outline" href="#plan-change-request">Request plan change</a>
     {% endif %}
-    <a class="hs-btn hs-btn--outline" href="{{ support_href }}">Billing help</a>
+    <a class="hs-btn hs-btn--outline" href="{{ support_href }}"{% if support_href_external %} target="_blank" rel="noopener noreferrer"{% endif %}>Billing help</a>
   </p>
   <div id="plan-change-request" class="billing-current__plan-change hs-form-wrap">
     <h2 class="billing-current__plan-change-title">Request a plan change</h2>

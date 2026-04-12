@@ -159,56 +159,218 @@ Table **names** in HubSpot: `subscription_plans`, `affiliated_locations`, `produ
 
 ---
 
-## GraphQL association aliases (verify in explorer)
+## § GraphQL association aliases (portal **50966981**)
 
-Paste **real** names from your portal after introspection. Examples only — yours may differ (HubSpot-generated labels).
+Paste **verified** snake_case field names from the HubSpot **CMS GraphQL** explorer after you run the queries below. HubSpot generates association collection names per account; **`deal_collection__contact_to_deal`** matches theme `theme/data-queries/dashboard.graphql`, `orders_list.graphql`, and `order_detail.graphql` today — **confirm or replace in A9b**, not here (A9a records truth only).
 
-| Label / concept | Name to verify | Notes |
-|-----------------|----------------|-------|
-| **Contact → Deals** (portal “orders” today) | `deal_collection__contact_to_deal` | Used in theme `*.graphql`; if upload/validation errors, open explorer and match the **exact** deals association field on `contact`. |
-| **GraphQL alias only** | `p_order_collection__primary` | Not a HubSpot association ID — a **query alias** mapping the deals collection to a stable key for HubL/modules. |
-| Contact → Company | e.g. `company_collection__primary` | Pattern reference |
-| Contact → Tickets | *(introspect when adopted)* | For support / timeline; **#8 optional** — see checklist above (typical pattern to verify: `ticket_collection__contact_to_ticket`) |
-| Contact → **native Orders** | *(introspect)* | **Expected absent** on many portals per CMS docs; if present, document field name here and plan query swap |
-| Contact → Invoices | *(introspect)* | Same caveat as orders |
-| Order detail dynamic page | `request.contact.contact_vid` + slug | Today: detail query uses same deal association + filters by slug/`hs_object_id` — see `order_detail.graphql` |
+### Quick reference — record verified names here
 
-### A9a verification log (portal **50966981**) — Wave 0 GraphQL gate
+| Label / concept | Name to verify / verified value | Notes |
+|-----------------|----------------------------------|-------|
+| **Contact → Deals** (portal “orders” mirror) | `deal_collection__contact_to_deal` *(pending live confirm)* | Theme uses this inside `associations { … }`. If explorer autocomplete shows a different **contact → deal** collection, write the exact name here and hand off to **A9b**. |
+| **GraphQL alias only** | `p_order_collection__primary` | Client-side alias in queries — **not** introspected on the server. |
+| Contact → Company | e.g. `company_collection__primary` | Pattern reference for admin/list work later. |
+| Contact → Tickets | *(introspect — typical pattern `ticket_collection__contact_to_ticket`)* | **#8** optional lane; required before **`tickets.graphql`** (A9b). |
+| Contact → Quotes | *(introspect — typical pattern `quote_collection__contact_to_quote`)* | Required before **`quotes.graphql`** (A9b). |
+| Contact → **native Orders** | *(introspect)* | **Expected absent** on Content Hub Professional per plan; if present, document and plan native `order` read path. |
+| Contact → Invoices | *(introspect)* | Often absent on membership GraphQL; theme uses **`portal_invoices_json`** on contact today. |
+| Contact → **Documents / files** | **`___________________________`** *(placeholder)* | Naming varies by product + associations; use **G3a-Q5** steps; fill when CRM associations exist for the object you surface as “documents.” |
+| Contact → **Meetings / marketing events / custom “events”** | **`___________________________`** *(placeholder)* | Use **G3a-Q6** steps; pick the CRM object you will treat as “events” and record its collection field. |
+| Order detail dynamic page | `request.contact.contact_vid` + `dynamic_slug` | `order_detail.graphql` loads `deal(hs_object_id)` plus contact’s deal list for authorization in HubL — see `theme/docs/03-templates-and-data-query.md`. |
 
-Run the checks in `docs/cms-customer-portal-plan.md` Wave 0 (**A9a**) using a **seeded test contact** with at least one deal on the orders mirror. Record **exact** association field names from autocomplete / introspection (they vary by portal).
+### Explorer setup — membership context (≈2 minutes)
 
-**Column legend:** **Repo / orchestrator** = static review in git (query shape, variables, HubL guards). **Design Manager** = execute in HubSpot’s **GraphQL** tool on a membership-capable template (see **Verification steps** below) — required for **G3** and for trusting field names against the live schema.
+Do this in **portal 50966981** (cannot be completed from this repo alone — closes **G3a** in HubSpot UI):
 
-| Check | Repo / orchestrator (2026-04-10) | Design Manager GraphQL |
-|-------|-----------------------------------|-------------------------|
-| `dashboard.graphql` runs | ☑ Same + **`portal_hair_profile_json`** on contact (upload-validated **50966981** **2026-04-10**); **`portal_billing_json`** omitted (undefined on `crm_contact` GraphQL) | ☐ Run with test `contact_id` in explorer |
-| `orders_list.graphql` runs | ☑ Same association alias + deal field selections as `dashboard.graphql` | ☐ Run with test `contact_id` |
-| `order_detail.graphql` runs | ☑ `deal(uniqueIdentifier: "hs_object_id")` + contact association subset; HubL allow-list in `order-detail.module` | ☐ Run with test `contact_id` + `order_number` (slug) |
-| Contact → deals: `deal_collection__contact_to_deal` (or actual name) | ☑ Used consistently in all three queries (replace portal-wide if explorer shows a different generated name) | ☐ Confirm autocomplete / introspection on `CRM.contact.associations` |
-| Alias `p_order_collection__primary` still valid in queries | ☑ Present in `dashboard`, `orders_list`, `order_detail` (contact branch) | ☐ N/A (alias is client-side) |
-| Contact → tickets collection name | ☐ **Deferred** (#8 optional lane — not blocking; record when adopted or A9a runs) | ☐ Introspect if ticket timeline is adopted |
-| Contact → quotes collection name | ☐ Not recorded | ☐ Introspect if quotes are used in portal |
-| Contact → documents / files (if any) | ☐ Not recorded | ☐ Introspect if needed |
-| Contact → meetings / custom events (if used for “events”) | ☐ Not recorded | ☐ Introspect if needed |
-| **G5b:** staff-only **membership** access group feasible on this tier | ☐ | ☐ Confirm in HubSpot **Memberships** / access groups UI |
-| **`hair_profile.graphql`:** `portal_hair_profile_json` | ☑ In query; upload **50966981** **2026-04-10** | ☐ Explorer spot-check |
-| **`customization_templates.graphql`:** `portal_saved_templates_json` | ☑ In query; upload **2026-04-10** | ☐ Explorer |
-| **`invoices.graphql`:** `portal_invoices_json` | ☑ In query; upload **2026-04-10** | ☐ Explorer |
-| **`settings.graphql`:** notify + address | ☑ `notify_order_updates`, `notify_production_reminders`, `notify_marketing`, `phone`, `address`, `city`, `state`, `zip` | ☐ Explorer |
+1. **Design Manager** → website → open theme **`customer-portal`** → open **GraphQL** (or **Developer → GraphQL**, depending on your HubSpot nav) **in the context of a private/membership template** so variables like `request.contact.contact_vid` are meaningful.
+2. **Pick a test `contact_id`:** numeric **Contact record ID** (VID) for a contact that has at least one **Deal** on the orders-mirror pipeline **and** (optional) linked **Ticket** / **Quote** rows for ticket/quote probes.
+3. In the GraphQL editor, set **Query variables** (example): `{ "contact_id": "123456", "order_number": "789012345" }` — use a real deal `hs_object_id` for `order_number` when testing `order_detail`.
+4. **Prefer autocomplete** inside `associations { }` on `CRM.contact` — it is faster than raw introspection when enabled.
+5. If **`__type`** introspection returns null or errors, rely on **Docs** panel + autocomplete only (some HubSpot surfaces limit introspection).
 
-**Last updated:** 2026-04-10 — A5 CRM GraphQL validated via **`hs cms upload`** on **50966981**.
+### Copy-paste: explorer queries & introspection snippets
 
-**A5 / A6:** A6 owns HubDB **#27–#28**.
+#### G3a-Q1 — Contact → Deal (confirm `deal_collection__contact_to_deal` or replacement)
 
-### Verification steps (GraphQL explorer)
+```graphql
+# Variables: { "contact_id": "<VID>" }
+query G3a_ContactToDeal($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      _metadata { id }
+      associations {
+        p_order_collection__primary: deal_collection__contact_to_deal {
+          items {
+            hs_object_id
+            dealname
+            dealstage
+            amount
+            deal_currency_code
+            createdate
+            closedate
+          }
+          total
+        }
+      }
+    }
+  }
+}
+```
 
-1. In **Design Manager**, open or create a **membership (private)** page template that has access to `request.contact.contact_vid`.
-2. Open the **GraphQL** tool for that theme; use a **test contact** that has (a) native **orders** linked in CRM and (b) **deals** linked for the mirror pipeline.
-3. Under `CRM { contact(uniqueIdentifier: "id", uniqueIdentifierValue: "<vid>") { associations {` use autocomplete / introspection:
-   - Confirm **`deal_collection__contact_to_deal`** exists and returns the mirror deals.
-   - Search for any **`order`**-related collection (e.g. patterns like `*_order_*` / `*order*contact*`). If none, **membership GraphQL does not expose native orders** — keep deals-as-orders.
-4. Run `dashboard` / `orders_list` queries; fix association spelling before merge if the explorer shows a different deals field name.
-5. **Optional:** CRM **Associations API** (private app) — list association types between object type **order** and **contact** to document CRM-side type IDs (not printed in repo); helps automations that attach orders to contacts.
+- **Pass:** Data returns with no `FieldUndefined` / unknown field errors.
+- **Fail:** Replace `deal_collection__contact_to_deal` with the autocomplete field that represents **deals associated to this contact**, paste the working name into **Quick reference** above, and note **A9b** must update the three order-related `.graphql` files together.
+
+#### G3a-Q2 — Introspection: list fields on `crm_contact` (find `associations` target type)
+
+```graphql
+query G3a_IntrospectContactFields {
+  __type(name: "crm_contact") {
+    name
+    fields {
+      name
+      type {
+        kind
+        name
+        ofType {
+          kind
+          name
+        }
+      }
+    }
+  }
+}
+```
+
+- In the result, find the field **`associations`**. Note the **`ofType.name`** (inner named type) — call it **`$ASSOC_TYPE`**.
+- Then run **G3a-Q2b** (replace `crm_contact_associations` below if your `$ASSOC_TYPE` differs):
+
+```graphql
+query G3a_IntrospectContactAssociations {
+  __type(name: "crm_contact_associations") {
+    name
+    fields {
+      name
+    }
+  }
+}
+```
+
+- **Human action:** In the `fields` list, locate entries containing **`deal`**, **`ticket`**, **`quote`**, and any **document / file / meeting / event** collections; copy exact names into **Quick reference** and the **G3a verification log**.
+
+#### G3a-Q3 — Contact → Ticket (probe template)
+
+```graphql
+# Variables: { "contact_id": "<VID>" }
+# Replace ticket_collection__contact_to_ticket with the exact name from G3a-Q2 / autocomplete if different.
+query G3a_ContactToTicket($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      associations {
+        tickets: ticket_collection__contact_to_ticket {
+          items {
+            hs_object_id
+            subject
+          }
+          total
+        }
+      }
+    }
+  }
+}
+```
+
+- Adjust **`subject`** / item fields to valid ticket fields for your schema if the explorer errors (use autocomplete on `items { }`).
+
+#### G3a-Q4 — Contact → Quote (probe template)
+
+```graphql
+# Variables: { "contact_id": "<VID>" }
+# Replace quote_collection__contact_to_quote with the exact name from G3a-Q2 / autocomplete if different.
+query G3a_ContactToQuote($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      associations {
+        quotes: quote_collection__contact_to_quote {
+          items {
+            hs_object_id
+          }
+          total
+        }
+      }
+    }
+  }
+}
+```
+
+- Expand **`items { }`** using autocomplete for quote properties your portal exposes.
+
+#### G3a-Q5 — Documents / files (placeholder procedure)
+
+1. In the **G3a-Q2** association-type field list (or autocomplete under `associations`), search for candidates such as **`document`**, **`file`**, **`attachment`**, or company-specific custom object collections linked to **contact**.
+2. If nothing appears, **Verified absence** is a valid outcome — document “no contact-scoped document collection in membership GraphQL” in the log and plan **HubL / workflow mirror** (same automation rule as orders).
+3. When you identify the correct collection, add a **G3a-Q5** row to the log and paste a minimal `items { hs_object_id }` query here in internal notes or the **Notes** column.
+
+#### G3a-Q6 — Meetings / events (placeholder procedure)
+
+1. Decide which CRM surface the portal will treat as **“Events”** (e.g. **Meetings**, **Marketing events**, or a **custom object**).
+2. In the **G3a-Q2** field list / autocomplete, find the **contact → that object** collection name; if only **company**-scoped associations exist, record that gap (admin queries may differ from membership).
+3. Fill **Quick reference** “Meetings / marketing events / custom events” row with the exact collection field name or with **“not exposed on membership GraphQL.”**
+
+#### G3a-Q7 — Native `order` collection sanity check (expected negative on Pro)
+
+Inside `associations { }`, search autocomplete for **`order`** / **`commerce`**. If **no** contact→order collection exists, note **“native order not on membership GraphQL”** in the log — aligns with `docs/cms-customer-portal-plan.md` locked decision.
+
+### G3a verification log (portal **50966981**)
+
+**How to use:** After each HubSpot run, set **Status** to **Verified** and add **Date** (ISO). **Gate** is always **G3a** unless noted.
+
+| Gate | Check | Status (Pending / Verified) | Notes | Date |
+|------|-------|-----------------------------|-------|------|
+| G3a | **G3a-Q1** `deal_collection__contact_to_deal` resolves (or replacement name recorded) | Pending | Record exact field name in **Quick reference** | |
+| G3a | **`dashboard.graphql`** executes in explorer with test `contact_id` | Pending | Upload-validated draft **2026-04-10** in repo — explorer still required for **G3a** | |
+| G3a | **`orders_list.graphql`** executes in explorer | Pending | | |
+| G3a | **`order_detail.graphql`** executes with `contact_id` + `order_number` = deal `hs_object_id` | Pending | | |
+| G3a | **`p_order_collection__primary`** alias present in all three order queries (repo review) | Pending | N/A in explorer — tick **Verified** when git review done | |
+| G3a | **G3a-Q3** Contact → ticket collection name recorded (or “deferred / not used”) | Pending | | |
+| G3a | **G3a-Q4** Contact → quote collection name recorded (or “deferred / not used”) | Pending | | |
+| G3a | **G3a-Q5** Documents / files association recorded or absence documented | Pending | | |
+| G3a | **G3a-Q6** Events / meetings association recorded or absence documented | Pending | | |
+| G3a | **G3a-Q7** Native **order** collection absent (or name recorded if present) | Pending | | |
+| G3a | **`hair_profile.graphql`** — `portal_hair_profile_json` resolves | Pending | | |
+| G3a | **`customization_templates.graphql`** — `portal_saved_templates_json` resolves | Pending | | |
+| G3a | **`invoices.graphql`** — `portal_invoices_json` resolves | Pending | | |
+| G3a | **`settings.graphql`** — notification + address fields resolve | Pending | Fields per registry **Contact properties** section | |
+| G3a | **`billing.graphql`** (if used on live pages) — subscription fields resolve | Pending | Omit if no template binds it yet | |
+
+**Repo preflight (already done, does not replace explorer):** CRM GraphQL for **50966981** was **upload-validated** **2026-04-10** (`hs cms upload`); **`portal_billing_json`** is not on `crm_contact` GraphQL — dashboard query omits it. **A5 / A6:** A6 owns HubDB **#27–#28**.
+
+**Last updated (doc):** 2026-04-10 — Wave 0 **A9a** documentation pass; human must flip **Pending → Verified** in HubSpot.
+
+### G5b — Admin access path (staff membership group vs HubL guard)
+
+**Gate:** **G5b** in `docs/cms-customer-portal-plan.md` — blocks **A7a** and downstream admin waves until resolved.
+
+| Option | What it is | When to choose |
+|--------|------------|----------------|
+| **A — Staff membership access group** | Create a **second** private membership access group (e.g. **Portal Staff** / **Portal Admins**) and assign **only** staff contacts. Gate **`/portal/admin/*`** (and any staff-only customer pages) at the **page / membership** layer so non-members never receive HTML for those routes. | Choose when HubSpot UI confirms you can maintain **distinct customer vs staff** groups on this portal **without** entitlement blockers. |
+| **B — HubL `contact.is_staff` guard fallback** | Do **not** rely on a separate staff access group for admin templates. Every admin template wraps CRM output in `{% if contact.is_staff %}…{% else %}…{% endif %}` per plan (`docs/cms-customer-portal-plan.md` §Guiding principles) — **no** CRM data outside the guard. | Choose when a **dedicated staff membership group is unproven** on **Content Hub Professional** (limits, ops complexity, or UI uncertainty). This is the **recommended default** until **Option A** is explicitly verified. |
+
+**Recommendation (Content Hub Professional, staff group unproven):** Proceed with **Option B** as the **approved path** for **A7a** until the orchestrator verifies **Option A** in-product. Option A remains the **hardening upgrade** once staff group behavior is confirmed.
+
+**Orchestrator sign-off (G5b):** **Chosen path:** _Option A — staff membership access group_ **or** _Option B — HubL `contact.is_staff` guard only (fallback)_ — **Signed:** _________________________ **Date:** __________
+
+*(After sign-off, copy a one-line summary into the **Notes** column of any G5b row if you add staff-feasibility checks to the table below.)*
+
+| Gate | Check | Status (Pending / Verified) | Notes | Date |
+|------|-------|-----------------------------|-------|------|
+| G5b | Staff-only **membership** access group technically feasible (create group + assign test staff contact + confirm gated page behavior) | Pending | If **Verified**, Option A available; if **Blocked**, default to Option B with orchestrator sign-off above | |
+| G5b | Orchestrator recorded **Chosen path** for A7a | Pending | Paste sign-off line above | |
+
+### Verification checklist (GraphQL explorer — narrative)
+
+1. Complete **G3a verification log** rows using the **G3a-Q*** queries (variables from a seeded contact + deal).
+2. Under `CRM { contact(…) { associations {` confirm the **deal** collection; search autocomplete for any **`order`**-related collection — expect **none** on Pro; keep **deals-as-orders** until native `order` appears.
+3. **Optional (CRM API):** Private app **Associations API** — list association type IDs between **order** and **contact** for automation only (not required for G3a).
 
 ### Theme `fields.json` (native portal / KB URLs)
 

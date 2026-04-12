@@ -1,0 +1,28 @@
+# label: "Portal Quotes"
+# description: "Contact-associated CRM quotes for list UIs. Association name MUST be confirmed in portal 50966981 GraphQL explorer."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# VERIFY (50966981): Typical pattern is `quote_collection__contact_to_quote` (parallel to `deal_collection__contact_to_deal`).
+# Property internal names vary by account; drop or rename any field the explorer marks undefined.
+query quotes($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      associations {
+        p_quote_collection__primary: quote_collection__contact_to_quote {
+          items {
+            hs_object_id
+            title: hs_title
+            status: hs_status
+            expiration: hs_expiration_date
+            hs_createdate: createdate
+            hs_lastmodifieddate
+          }
+          total
+        }
+      }
+    }
+  }
+}

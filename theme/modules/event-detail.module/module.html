@@ -1,0 +1,42 @@
+{% set meeting = data_query.data.CRM.p_meeting %}
+{% set member = data_query.data.CRM.contact %}
+{% set rows = member.associations.p_event_collection__primary.items if member and member.associations.p_event_collection__primary else [] %}
+{% set ns = namespace(allowed=false) %}
+{% if meeting and member %}
+  {% for r in rows %}
+    {% if r.hs_object_id|string == meeting.hs_object_id|string %}
+      {% set ns.allowed = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% if meeting and ns.allowed %}
+<article class="event-detail">
+  <header class="event-detail__header">
+    <div>
+      <p class="event-detail__back"><a href="/portal/events">← All events</a></p>
+      <h1 class="hs-page-title event-detail__title">{{ meeting.title or ('Event ' ~ meeting.hs_object_id) }}</h1>
+      <p class="event-detail__subtitle">ID {{ meeting.hs_object_id }}</p>
+    </div>
+  </header>
+  <div class="hs-card event-detail__card">
+    <dl class="event-detail__dl">
+      <div><dt>Start</dt><dd>{{ meeting.start_at or '—' }}</dd></div>
+      <div><dt>End</dt><dd>{{ meeting.end_at or '—' }}</dd></div>
+      <div><dt>Outcome</dt><dd>{{ meeting.outcome or '—' }}</dd></div>
+      <div><dt>Created</dt><dd>{{ meeting.hs_createdate or '—' }}</dd></div>
+      <div><dt>Updated</dt><dd>{{ meeting.hs_lastmodifieddate or '—' }}</dd></div>
+    </dl>
+  </div>
+</article>
+{% elif meeting and not ns.allowed %}
+<div class="hs-empty-state" role="alert">
+  <p class="hs-empty-state__title">Access denied</p>
+  <p class="hs-empty-state__text">This event is not linked to your contact.</p>
+  <p><a class="hs-btn hs-btn--primary" href="/portal/events">Back to events</a></p>
+</div>
+{% else %}
+<div class="hs-empty-state">
+  <p class="hs-empty-state__title">Event not found</p>
+  <p><a class="hs-btn hs-btn--primary" href="/portal/events">Back to events</a></p>
+</div>
+{% endif %}

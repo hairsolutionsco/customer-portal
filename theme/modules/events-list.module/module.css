@@ -1,0 +1,15 @@
+.events-list__head {
+  margin-bottom: 1rem;
+}
+.events-list__title {
+  margin-bottom: 0.35rem;
+}
+.events-list__hint {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 0.875rem;
+  color: var(--hs-color-muted);
+}
+.events-list__empty {
+  margin-top: 0.5rem;
+}

@@ -1,0 +1,26 @@
+# label: "Portal Documents"
+# description: "Contact-associated notes as a document-style list (title/body preview/timestamps). Not a native File object — verify whether 50966981 should use notes vs another association."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# VERIFY (50966981): Many portals surface “shared files” via workflows or a custom object, not GraphQL.
+# Conservative default: **notes** engagement — association often `note_collection__contact_to_note` (parallel to contact→meeting).
+# If your account exposes contact→file or a custom document object, replace the collection name and item fields from explorer autocomplete.
+query documents($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      associations {
+        p_document_collection__primary: note_collection__contact_to_note {
+          items {
+            hs_object_id
+            preview: hs_note_body
+            hs_timestamp
+          }
+          total
+        }
+      }
+    }
+  }
+}

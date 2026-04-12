@@ -1,9 +1,16 @@
 [
   {
     "name": "support_portal_url",
-    "label": "Support / customer portal URL",
+    "label": "Customer portal URL (override)",
     "type": "text",
-    "default": "/customer-portal",
-    "help_text": "Match the Native customer portal URL on the global Portal sidebar module."
+    "default": "",
+    "help_text": "Optional. When empty, uses theme Portal → Native Customer Portal URL (tickets)."
+  },
+  {
+    "name": "knowledge_base_url",
+    "label": "Knowledge base URL (override)",
+    "type": "text",
+    "default": "",
+    "help_text": "Optional. When empty, uses theme Portal → Native Knowledge Base URL."
   }
 ]

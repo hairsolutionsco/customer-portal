@@ -1,0 +1,30 @@
+# label: "Quote Detail"
+# description: "Single CRM quote by hs_object_id (dynamic slug). Association + field names MUST match portal 50966981 explorer."
+# $quote_id: {{ request.path_param_dict.dynamic_slug || '' }}
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# VERIFY (50966981): `CRM.quote` and `quote_collection__contact_to_quote` — replace if explorer differs.
+query quote_detail($quote_id: String!, $contact_id: String!) {
+  CRM {
+    p_quote: quote(uniqueIdentifier: "hs_object_id", uniqueIdentifierValue: $quote_id) {
+      hs_object_id
+      title: hs_title
+      status: hs_status
+      expiration: hs_expiration_date
+      hs_createdate: createdate
+      hs_lastmodifieddate
+    }
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      associations {
+        p_quote_collection__primary: quote_collection__contact_to_quote {
+          items {
+            hs_object_id
+          }
+        }
+      }
+    }
+  }
+}

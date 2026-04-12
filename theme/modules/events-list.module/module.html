@@ -1,0 +1,39 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set meetings = contact.associations.p_event_collection__primary.items if contact and contact.associations.p_event_collection__primary else [] %}
+<section class="events-list" aria-label="Events">
+  <div class="events-list__head">
+    <h1 class="hs-page-title events-list__title">Events</h1>
+    <p class="events-list__hint">Meetings associated with your contact. Swap to marketing events in GraphQL if that is the product definition.</p>
+  </div>
+  {% if meetings %}
+  <div class="hs-table-wrap">
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th scope="col">Event</th>
+          <th scope="col">Title</th>
+          <th scope="col">Start</th>
+          <th scope="col">End</th>
+          <th scope="col">Outcome</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in meetings %}
+        <tr>
+          <td data-label="ID"><a href="/portal/events/{{ e.hs_object_id }}">{{ e.hs_object_id }}</a></td>
+          <td data-label="Title">{{ e.title or '—' }}</td>
+          <td data-label="Start">{{ e.start_at or '—' }}</td>
+          <td data-label="End">{{ e.end_at or '—' }}</td>
+          <td data-label="Outcome">{{ e.outcome or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="hs-empty-state events-list__empty">
+    <p class="hs-empty-state__title">No events yet</p>
+    <p class="hs-empty-state__text">Scheduled meetings will appear here when associated with your account.</p>
+  </div>
+  {% endif %}
+</section>

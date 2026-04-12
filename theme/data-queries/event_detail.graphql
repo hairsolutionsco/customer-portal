@@ -1,0 +1,31 @@
+# label: "Event Detail"
+# description: "Single meeting engagement by hs_object_id (dynamic slug). Swap to marketing events if product uses those instead."
+# $event_id: {{ request.path_param_dict.dynamic_slug || '' }}
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# VERIFY (50966981): `CRM.meeting` and `meeting_collection__contact_to_meeting` — replace if explorer differs.
+query event_detail($event_id: String!, $contact_id: String!) {
+  CRM {
+    p_meeting: meeting(uniqueIdentifier: "hs_object_id", uniqueIdentifierValue: $event_id) {
+      hs_object_id
+      title: hs_meeting_title
+      start_at: hs_meeting_start_time
+      end_at: hs_meeting_end_time
+      outcome: hs_meeting_outcome
+      hs_createdate: createdate
+      hs_lastmodifieddate
+    }
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      associations {
+        p_event_collection__primary: meeting_collection__contact_to_meeting {
+          items {
+            hs_object_id
+          }
+        }
+      }
+    }
+  }
+}

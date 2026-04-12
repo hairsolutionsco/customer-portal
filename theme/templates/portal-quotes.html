@@ -1,0 +1,20 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: "Portal - Quotes"
+  screenshotPath: ../images/template-previews/portal-dashboard.png
+  dataQueryPath: ../data-queries/quotes
+-->
+{% extends "./layouts/portal-shell.html" %}
+{% block portal_content %}
+{% dnd_area "portal_content" label="Main" %}
+  {% dnd_section %}
+    {% dnd_column %}
+      {% dnd_row %}
+        {% dnd_module path="../modules/quote-list.module" %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+{% end_dnd_area %}
+{% endblock %}

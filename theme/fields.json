@@ -89,6 +89,34 @@
         "responsive": true,
         "show_loading": false,
         "default": { "size_type": "auto", "src": "", "alt": "Hair Solutions" }
+      },
+      {
+        "label": "Native Customer Portal URL (tickets)",
+        "name": "native_customer_portal_url",
+        "type": "text",
+        "default": "/customer-portal",
+        "help_text": "HubSpot Service Hub customer portal: site path (e.g. /customer-portal) or full https URL. Absolute URLs open in a new tab from nav and CTAs."
+      },
+      {
+        "label": "Native Knowledge Base URL",
+        "name": "native_knowledge_base_url",
+        "type": "text",
+        "default": "/knowledge-base",
+        "help_text": "Knowledge Base home: path or full https URL. Absolute URLs open in a new tab from nav and CTAs."
+      },
+      {
+        "label": "Customer Portal sidebar label",
+        "name": "native_customer_portal_label",
+        "type": "text",
+        "default": "Tickets",
+        "help_text": "Nav label for the native Customer Portal link (e.g. Tickets)."
+      },
+      {
+        "label": "Knowledge Base sidebar label",
+        "name": "native_knowledge_base_label",
+        "type": "text",
+        "default": "Knowledge Base",
+        "help_text": "Nav label for the Knowledge Base link."
       }
     ]
   },

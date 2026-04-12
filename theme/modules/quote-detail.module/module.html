@@ -1,0 +1,41 @@
+{% set quote = data_query.data.CRM.p_quote %}
+{% set member = data_query.data.CRM.contact %}
+{% set rows = member.associations.p_quote_collection__primary.items if member and member.associations.p_quote_collection__primary else [] %}
+{% set ns = namespace(allowed=false) %}
+{% if quote and member %}
+  {% for r in rows %}
+    {% if r.hs_object_id|string == quote.hs_object_id|string %}
+      {% set ns.allowed = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% if quote and ns.allowed %}
+<article class="quote-detail">
+  <header class="quote-detail__header">
+    <div>
+      <p class="quote-detail__back"><a href="/portal/quotes">← All quotes</a></p>
+      <h1 class="hs-page-title quote-detail__title">{{ quote.title or ('Quote ' ~ quote.hs_object_id) }}</h1>
+      <p class="quote-detail__subtitle">ID {{ quote.hs_object_id }}</p>
+    </div>
+  </header>
+  <div class="hs-card quote-detail__card">
+    <dl class="quote-detail__dl">
+      <div><dt>Status</dt><dd>{{ quote.status or '—' }}</dd></div>
+      <div><dt>Expires</dt><dd>{{ quote.expiration or '—' }}</dd></div>
+      <div><dt>Created</dt><dd>{{ quote.hs_createdate or '—' }}</dd></div>
+      <div><dt>Updated</dt><dd>{{ quote.hs_lastmodifieddate or '—' }}</dd></div>
+    </dl>
+  </div>
+</article>
+{% elif quote and not ns.allowed %}
+<div class="hs-empty-state" role="alert">
+  <p class="hs-empty-state__title">Access denied</p>
+  <p class="hs-empty-state__text">This quote is not linked to your contact.</p>
+  <p><a class="hs-btn hs-btn--primary" href="/portal/quotes">Back to quotes</a></p>
+</div>
+{% else %}
+<div class="hs-empty-state">
+  <p class="hs-empty-state__title">Quote not found</p>
+  <p><a class="hs-btn hs-btn--primary" href="/portal/quotes">Back to quotes</a></p>
+</div>
+{% endif %}

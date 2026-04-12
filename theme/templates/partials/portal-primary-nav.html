@@ -1,10 +1,25 @@
-{# Shared primary nav for customer portal chrome (portal-sidebar.module). Active state: theme/js/main.js + data-nav-link. #}
+{# Shared primary nav for customer portal chrome (portal-sidebar.module). Active state: theme/js/main.js + data-nav-link (in-portal links only). #}
 <ul class="portal-sidebar__list" role="list">
   <li class="portal-sidebar__item">
     <a class="portal-sidebar__link" data-nav-link href="/portal">Dashboard</a>
   </li>
+  <li class="portal-sidebar__item portal-sidebar__item--section-start">
+    <a class="portal-sidebar__link"{% if not customer_portal_is_external %} data-nav-link{% endif %} href="{{ customer_portal_url }}"{% if customer_portal_is_external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ support_label }}</a>
+  </li>
+  <li class="portal-sidebar__item">
+    <a class="portal-sidebar__link"{% if not knowledge_base_is_external %} data-nav-link{% endif %} href="{{ knowledge_base_url }}"{% if knowledge_base_is_external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ knowledge_base_label }}</a>
+  </li>
   <li class="portal-sidebar__item">
     <a class="portal-sidebar__link" data-nav-link href="/portal/orders">Orders</a>
+  </li>
+  <li class="portal-sidebar__item">
+    <a class="portal-sidebar__link" data-nav-link href="/portal/quotes">Quotes</a>
+  </li>
+  <li class="portal-sidebar__item">
+    <a class="portal-sidebar__link" data-nav-link href="/portal/documents">Documents</a>
+  </li>
+  <li class="portal-sidebar__item">
+    <a class="portal-sidebar__link" data-nav-link href="/portal/events">Events</a>
   </li>
   <li class="portal-sidebar__item">
     <a class="portal-sidebar__link" data-nav-link href="/portal/profile">Hair profile</a>
@@ -20,12 +35,6 @@
   </li>
   <li class="portal-sidebar__item">
     <a class="portal-sidebar__link" data-nav-link href="/portal/invoices">Invoices</a>
-  </li>
-  <li class="portal-sidebar__item portal-sidebar__item--section-start">
-    <a class="portal-sidebar__link" data-nav-link href="{{ customer_portal_url }}">{{ support_label }}</a>
-  </li>
-  <li class="portal-sidebar__item">
-    <a class="portal-sidebar__link" data-nav-link href="{{ knowledge_base_url }}">{{ knowledge_base_label }}</a>
   </li>
   <li class="portal-sidebar__item">
     <a class="portal-sidebar__link" data-nav-link href="/portal/settings">Settings</a>

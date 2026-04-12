@@ -1,10 +1,20 @@
-{% set customer_portal_url = module.support_portal_url if module.support_portal_url else "/customer-portal" %}
+{% set customer_portal_url = module.support_portal_url|default('')|trim %}
+{% if not customer_portal_url %}
+  {% set customer_portal_url = theme.portal.native_customer_portal_url|default('/customer-portal')|trim %}
+{% endif %}
+{% set knowledge_base_url = module.knowledge_base_url|default('')|trim %}
+{% if not knowledge_base_url %}
+  {% set knowledge_base_url = theme.portal.native_knowledge_base_url|default('/knowledge-base')|trim %}
+{% endif %}
+{% set customer_portal_is_external = customer_portal_url and '://' in customer_portal_url %}
+{% set knowledge_base_is_external = knowledge_base_url and '://' in knowledge_base_url %}
 <section class="quick-actions hs-card" aria-label="Quick actions">
   <h2>Quick actions</h2>
   <div class="quick-actions__grid">
     <a class="hs-btn hs-btn--secondary" href="/portal/shop">New order</a>
     <a class="hs-btn hs-btn--secondary" href="/portal/profile">Update profile</a>
-    <a class="hs-btn hs-btn--secondary" href="{{ customer_portal_url }}">Open support portal</a>
+    <a class="hs-btn hs-btn--secondary" href="{{ customer_portal_url }}"{% if customer_portal_is_external %} target="_blank" rel="noopener noreferrer"{% endif %}>Open tickets</a>
+    <a class="hs-btn hs-btn--secondary" href="{{ knowledge_base_url }}"{% if knowledge_base_is_external %} target="_blank" rel="noopener noreferrer"{% endif %}>Knowledge base</a>
     <a class="hs-btn hs-btn--secondary" href="/portal/invoices">View invoices</a>
   </div>
 </section>

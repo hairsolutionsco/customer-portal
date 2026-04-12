@@ -1,0 +1,15 @@
+.documents-library__head {
+  margin-bottom: 1rem;
+}
+.documents-library__title {
+  margin-bottom: 0.35rem;
+}
+.documents-library__hint {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 0.875rem;
+  color: var(--hs-color-muted);
+}
+.documents-library__empty {
+  margin-top: 0.5rem;
+}

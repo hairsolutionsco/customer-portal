@@ -1,0 +1,29 @@
+# label: "Portal Events"
+# description: "Contact-associated meetings (engagements) for an events-style list UI. Alternative: marketing events — see VERIFY block."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# VERIFY (50966981): Default engagement association is often `meeting_collection__contact_to_meeting`.
+# If the product team uses **Marketing events** instead, introspect for a `marketing_event_collection__*` field on CRM.contact.associations and swap the RHS + fields.
+# Meeting property names differ between accounts; trim fields that explorer rejects.
+query events($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      associations {
+        p_event_collection__primary: meeting_collection__contact_to_meeting {
+          items {
+            hs_object_id
+            title: hs_meeting_title
+            start_at: hs_meeting_start_time
+            end_at: hs_meeting_end_time
+            outcome: hs_meeting_outcome
+            hs_createdate: createdate
+          }
+          total
+        }
+      }
+    }
+  }
+}

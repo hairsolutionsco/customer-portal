@@ -1,0 +1,35 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set notes = contact.associations.p_document_collection__primary.items if contact and contact.associations.p_document_collection__primary else [] %}
+<section class="documents-library" aria-label="Documents">
+  <div class="documents-library__head">
+    <h1 class="hs-page-title documents-library__title">Documents</h1>
+    <p class="documents-library__hint">Notes and shared items linked to your contact. Confirm the CRM object in GraphQL explorer if this should be files or a custom type.</p>
+  </div>
+  {% if notes %}
+  <div class="hs-table-wrap">
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Preview</th>
+          <th scope="col">Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for n in notes %}
+        <tr>
+          <td data-label="ID">{{ n.hs_object_id }}</td>
+          <td data-label="Preview">{% if n.preview %}{{ n.preview|truncate(140) }}{% else %}—{% endif %}</td>
+          <td data-label="Time">{{ n.hs_timestamp or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="hs-empty-state documents-library__empty">
+    <p class="hs-empty-state__title">No documents yet</p>
+    <p class="hs-empty-state__text">When items are associated with your account, they will show here.</p>
+  </div>
+  {% endif %}
+</section>

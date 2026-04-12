@@ -1,0 +1,40 @@
+.quote-detail__header {
+  margin-bottom: 1.25rem;
+}
+.quote-detail__back {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+}
+.quote-detail__back a {
+  color: var(--hs-color-nav-link);
+  text-decoration: none;
+}
+.quote-detail__back a:hover {
+  text-decoration: underline;
+}
+.quote-detail__subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--hs-color-muted);
+  font-size: 0.9375rem;
+}
+.quote-detail__card {
+  padding: 1.25rem;
+}
+.quote-detail__dl {
+  display: grid;
+  gap: 0.75rem 1.5rem;
+  margin: 0;
+}
+.quote-detail__dl > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 10rem) 1fr;
+  gap: 0.5rem;
+}
+.quote-detail__dl dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--hs-color-muted);
+}
+.quote-detail__dl dd {
+  margin: 0;
+}

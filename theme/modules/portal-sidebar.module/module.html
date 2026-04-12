@@ -1,7 +1,21 @@
-{% set customer_portal_url = module.customer_portal_url if module.customer_portal_url else '/customer-portal' %}
-{% set knowledge_base_url = module.knowledge_base_url if module.knowledge_base_url else '/knowledge-base' %}
-{% set support_label = module.support_label if module.support_label else 'Support' %}
-{% set knowledge_base_label = module.knowledge_base_label if module.knowledge_base_label else 'Knowledge base' %}
+{% set customer_portal_url = module.customer_portal_url|default('')|trim %}
+{% if not customer_portal_url %}
+  {% set customer_portal_url = theme.portal.native_customer_portal_url|default('/customer-portal')|trim %}
+{% endif %}
+{% set knowledge_base_url = module.knowledge_base_url|default('')|trim %}
+{% if not knowledge_base_url %}
+  {% set knowledge_base_url = theme.portal.native_knowledge_base_url|default('/knowledge-base')|trim %}
+{% endif %}
+{% set support_label = module.support_label|default('')|trim %}
+{% if not support_label %}
+  {% set support_label = theme.portal.native_customer_portal_label|default('Tickets')|trim %}
+{% endif %}
+{% set knowledge_base_label = module.knowledge_base_label|default('')|trim %}
+{% if not knowledge_base_label %}
+  {% set knowledge_base_label = theme.portal.native_knowledge_base_label|default('Knowledge Base')|trim %}
+{% endif %}
+{% set customer_portal_is_external = customer_portal_url and '://' in customer_portal_url %}
+{% set knowledge_base_is_external = knowledge_base_url and '://' in knowledge_base_url %}
 {% set brand_title = module.brand_title if module.brand_title else 'Hair Solutions' %}
 <aside id="portal-sidebar" class="portal-sidebar" data-portal-sidebar aria-label="Portal navigation">
   <div class="portal-sidebar__brand">

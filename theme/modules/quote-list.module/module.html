@@ -1,0 +1,38 @@
+{% set contact = data_query.data.CRM.contact %}
+{% set quotes = contact.associations.p_quote_collection__primary.items if contact and contact.associations.p_quote_collection__primary else [] %}
+<section class="quote-list" data-quote-list-root aria-label="Quotes">
+  <div class="quote-list__head">
+    <h1 class="hs-page-title quote-list__title">Quotes</h1>
+  </div>
+  {% if quotes %}
+  <div class="hs-table-wrap">
+    <table class="hs-table">
+      <thead>
+        <tr>
+          <th scope="col">Quote</th>
+          <th scope="col">Title</th>
+          <th scope="col">Status</th>
+          <th scope="col">Expires</th>
+          <th scope="col">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for q in quotes %}
+        <tr>
+          <td data-label="ID"><a href="/portal/quotes/{{ q.hs_object_id }}">{{ q.hs_object_id }}</a></td>
+          <td data-label="Title">{{ q.title or '—' }}</td>
+          <td data-label="Status">{{ q.status or '—' }}</td>
+          <td data-label="Expires">{{ q.expiration or '—' }}</td>
+          <td data-label="Created">{{ q.hs_createdate or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="hs-empty-state quote-list__empty">
+    <p class="hs-empty-state__title">No quotes yet</p>
+    <p class="hs-empty-state__text">When your team sends a quote, it will appear here.</p>
+  </div>
+  {% endif %}
+</section>

@@ -1,0 +1,30 @@
+# label: "Portal Tickets"
+# description: "Contact-associated service tickets for list UIs. Association name MUST be confirmed in portal 50966981 GraphQL explorer (CRM.contact.associations autocomplete)."
+# $contact_id: {{ request.contact.contact_vid || '' }}
+#
+# VERIFY (50966981): Default HubSpot-generated label is often `ticket_collection__contact_to_ticket`.
+# If explorer shows a different field (e.g. `ticket_collection__general` or a custom label), replace the RHS below and update SCHEMA_REGISTRY.md via A9a.
+# Alias mirrors deals-as-orders pattern so HubL can use a stable `p_ticket_collection__primary` key.
+query tickets($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      firstname
+      lastname
+      email
+      associations {
+        p_ticket_collection__primary: ticket_collection__contact_to_ticket {
+          items {
+            hs_object_id
+            subject
+            status: hs_pipeline_stage
+            priority: hs_ticket_priority
+            category: hs_ticket_category
+            hs_createdate: createdate
+            hs_lastmodifieddate
+          }
+          total
+        }
+      }
+    }
+  }
+}

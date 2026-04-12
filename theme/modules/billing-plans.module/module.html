@@ -2,10 +2,14 @@
 {% set plans = hubdb_table_rows(hubdb_pid) if hubdb_pid else [] %}
 {% set contact = data_query.data.CRM.contact if data_query and data_query.data and data_query.data.CRM and data_query.data.CRM.contact else none %}
 {% set cur_plan = contact.current_plan|trim if contact and contact.current_plan else '' %}
-{% set support_href = module.support_portal_url if module.support_portal_url else '/customer-portal' %}
+{% set support_href = module.support_portal_url|default('')|trim %}
+{% if not support_href %}
+  {% set support_href = theme.portal.native_customer_portal_url|default('/customer-portal')|trim %}
+{% endif %}
+{% set support_href_external = support_href and '://' in support_href %}
 <section id="plans" class="billing-plans" aria-label="Available plans">
   <h2 class="billing-plans__title">Plans</h2>
-  <p class="billing-plans__intro" style="margin:-0.5rem 0 1rem;font-size:0.9375rem;color:var(--hs-color-muted,#64748b);">Plan changes below go to the request form on this page. For other billing questions, <a href="{{ support_href }}">open the support portal</a>.</p>
+  <p class="billing-plans__intro" style="margin:-0.5rem 0 1rem;font-size:0.9375rem;color:var(--hs-color-muted,#64748b);">Plan changes below go to the request form on this page. For other billing questions, <a href="{{ support_href }}"{% if support_href_external %} target="_blank" rel="noopener noreferrer"{% endif %}>open tickets</a>.</p>
   {% if plans %}
   <div class="billing-plans__grid">
     {% for p in plans %}

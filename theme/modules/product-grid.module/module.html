@@ -1,6 +1,10 @@
 {% set hubdb_tid = theme.hubdb.products_table_id %}
 {% set items = hubdb_table_rows(hubdb_tid) if hubdb_tid else [] %}
-{% set support_href = module.support_portal_url if module.support_portal_url else '/customer-portal' %}
+{% set support_href = module.support_portal_url|default('')|trim %}
+{% if not support_href %}
+  {% set support_href = theme.portal.native_customer_portal_url|default('/customer-portal')|trim %}
+{% endif %}
+{% set support_href_external = support_href and '://' in support_href %}
 <section class="product-grid" aria-label="Shop" data-product-root>
   <h1 class="hs-page-title">Shop</h1>
   <div class="product-grid__tabs" role="tablist" aria-label="Filter by category">
@@ -40,7 +44,7 @@
           {% if p.compare_at_price %}<s class="product-grid__compare">${{ p.compare_at_price }}</s>{% endif %}
           <span class="product-grid__currency">{{ p.currency }}</span>
         </p>
-        <a class="hs-btn hs-btn--outline hs-btn--sm" href="{{ support_href }}">Inquire</a>
+        <a class="hs-btn hs-btn--outline hs-btn--sm" href="{{ support_href }}"{% if support_href_external %} target="_blank" rel="noopener noreferrer"{% endif %}>Inquire</a>
       </div>
     </article>
     {% endfor %}

@@ -1,31 +1,31 @@
 [
   {
     "name": "customer_portal_url",
-    "label": "Native customer portal URL",
+    "label": "Native customer portal URL (override)",
     "type": "text",
-    "default": "/customer-portal",
-    "help_text": "HubSpot Service customer portal: path (e.g. /customer-portal) or full URL."
+    "default": "",
+    "help_text": "Optional. When empty, uses theme Portal → Native Customer Portal URL (tickets)."
   },
   {
     "name": "knowledge_base_url",
-    "label": "Native knowledge base URL",
+    "label": "Native knowledge base URL (override)",
     "type": "text",
-    "default": "/knowledge-base",
-    "help_text": "Knowledge base home: path or full URL for this account."
+    "default": "",
+    "help_text": "Optional. When empty, uses theme Portal → Native Knowledge Base URL."
   },
   {
     "name": "support_label",
-    "label": "Customer portal link label",
+    "label": "Customer portal link label (override)",
     "type": "text",
-    "default": "Support",
-    "help_text": "Sidebar label for the native customer portal link above."
+    "default": "",
+    "help_text": "Optional. When empty, uses theme Portal → Customer Portal sidebar label (e.g. Tickets)."
   },
   {
     "name": "knowledge_base_label",
-    "label": "Knowledge base link label",
+    "label": "Knowledge base link label (override)",
     "type": "text",
-    "default": "Knowledge base",
-    "help_text": "Sidebar label for the knowledge base link above."
+    "default": "",
+    "help_text": "Optional. When empty, uses theme Portal → Knowledge Base sidebar label."
   },
   {
     "name": "brand_title",

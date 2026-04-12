@@ -1,0 +1,14 @@
+.quote-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.quote-list__title {
+  margin-bottom: 0;
+}
+.quote-list__empty {
+  margin-top: 0.5rem;
+}
